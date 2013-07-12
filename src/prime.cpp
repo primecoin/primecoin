@@ -7,7 +7,8 @@
 // Prime Table
 std::vector<unsigned int> vPrimes;
 static const unsigned int nPrimeTableLimit = nMaxSieveSize;
-
+static volatile unsigned int timeouts = 0, completed = 0;
+static volatile int sieveBuildTime = 0;
 void GeneratePrimeTable()
 {
     vPrimes.clear();
@@ -351,17 +352,21 @@ bool MineProbablePrimeChain(CBlock& block, CBigNum& bnFixedMultiplier, bool& fNe
     }
     fNewBlock = false;
 
-    int64 nStart, nCurrent; // microsecond timer
+    int64 nStart, nCurrent, nSearch; // microsecond timer
     CBlockIndex* pindexPrev = pindexBest;
+    if(sieveBuildTime == 0) {
+		sieveBuildTime = (int)GetArg("-gensieveroundlimitms", 400000);
+	}
     if (psieve.get() == NULL)
     {
         // Build sieve
         nStart = GetTimeMicros();
         psieve.reset(new CSieveOfEratosthenes(nMaxSieveSize, block.nBits, block.GetHeaderHash(), bnFixedMultiplier));
-        int64 nSieveRoundLimit = (int)GetArg("-gensieveroundlimitms", 1000);
-        while (psieve->Weave() && pindexPrev == pindexBest && (GetTimeMicros() - nStart < 1000 * nSieveRoundLimit));
+        
+    //    while (psieve->Weave() && pindexPrev == pindexBest && (GetTimeMicros() - nStart < sieveBuildTime));
+	psieve->Weave_Chemisist(pindexPrev, pindexBest);
         if (fDebug && GetBoolArg("-printmining"))
-            printf("MineProbablePrimeChain() : new sieve (%u/%u@%u%%) ready in %uus\n", psieve->GetCandidateCount(), nMaxSieveSize, psieve->GetProgressPercentage(), (unsigned int) (GetTimeMicros() - nStart));
+            printf("\nTimers: MineProbablePrimeChain() : new sieve (%u/%u@%u%%) ready with numCandidates: %u %u ", psieve->GetCandidateCount(), nMaxSieveSize, psieve->GetProgressPercentage(), psieve->GetCandidateCount(), (unsigned int) (GetTimeMicros() - nStart)/1000);
     }
 
     CBigNum bnChainOrigin;
@@ -369,14 +374,28 @@ bool MineProbablePrimeChain(CBlock& block, CBigNum& bnFixedMultiplier, bool& fNe
     nStart = GetTimeMicros();
     nCurrent = nStart;
 
-    while (nCurrent - nStart < 10000 && nCurrent >= nStart && pindexPrev == pindexBest)
+    while (nCurrent - nStart < sieveBuildTime*3 && nCurrent >= nStart)
     {
-        nTests++;
+    	if(pindexPrev != pindexBest) {
+        	if (fDebug && GetBoolArg("-printmining"))
+			printf("%u ms (Timers: pindexPrev != pindexBest: %u\n", (unsigned int) (GetTimeMicros() - nStart)/1000, completed);
+		return false;
+	}
+	nTests++;
         if (!psieve->GetNextCandidateMultiplier(nTriedMultiplier))
         {
             // power tests completed for the sieve
             psieve.reset();
             fNewBlock = true; // notify caller to change nonce
+	    completed++;
+	    nSearch = GetTimeMicros() - nStart;
+	    if(nSearch < sieveBuildTime) {
+		sieveBuildTime *= 0.99;
+	    } else {
+		sieveBuildTime *= 1.01;
+	    }
+            if (fDebug && GetBoolArg("-printmining"))
+	        printf("%u ms (Timers: num power tests completed: %u\n", (unsigned int) (GetTimeMicros() - nStart)/1000, completed);
             return false;
         }
         bnChainOrigin = CBigNum(block.GetHeaderHash()) * bnFixedMultiplier * nTriedMultiplier;
@@ -397,6 +416,12 @@ bool MineProbablePrimeChain(CBlock& block, CBigNum& bnFixedMultiplier, bool& fNe
 
         nCurrent = GetTimeMicros();
     }
+	timeouts++;
+	sieveBuildTime *= 1.025;
+        if (fDebug && GetBoolArg("-printmining"))
+	    printf("%u ms (Timers: num total time outs: %u\n", (unsigned int) (GetTimeMicros() - nStart)/1000, completed);
+
+	//printf("\nTimers: Time to check (timed out, #%u) %u ms", timeouts, (unsigned int) (GetTimeMicros() - nStart)/1000);
     return false; // stop as timed out
 }
 
@@ -564,3 +589,79 @@ bool CSieveOfEratosthenes::Weave()
     return true;
 }
 
+unsigned static int TESTING_FREQUENCY = 1000;
+
+void CSieveOfEratosthenes::Weave_Chemisist(CBlockIndex* pindexPrev, CBlockIndex* pindexBest) {
+    int64 nStart = GetTimeMicros(), nCurrent = GetTimeMicros();
+    bool keepWeaving = true;
+    CAutoBN_CTX pctx;
+    CBigNum bnFixedInverse;
+    CBigNum bnTwo = 2;
+    CBigNum bnTwoInverse, p;
+    unsigned int nChainLength = TargetGetLength(nBits);
+    unsigned int nChainLength2 = 2*nChainLength;
+    unsigned int nSolvedMultiplier, nVariableMultiplier, nBiTwinSeq, uP;
+    unsigned int nPrimeSeqMax;
+    if(vPrimes[vPrimes.size()-1] < nSieveSize) {
+        nPrimeSeqMax = vPrimes.size();
+    } else {
+        for(nPrimeSeqMax = 0; nPrimeSeqMax < vPrimes.size() && vPrimes[nPrimeSeqMax] < nSieveSize; nPrimeSeqMax++) ;
+    }
+
+	// create no new variables during the loop to eliminate all malloc() operations
+    for(nPrimeSeq = 0; nPrimeSeq < nPrimeSeqMax; nPrimeSeq++) {
+        p = vPrimes[nPrimeSeq];
+        uP = vPrimes[nPrimeSeq];
+        
+        if (bnFixedFactor % p == 0) { continue; }
+        // Find the modulo inverse of fixed factor
+        if (!BN_mod_inverse(&bnFixedInverse, &bnFixedFactor, &p, pctx)) {
+            error("CSieveOfEratosthenes::Weave2(): BN_mod_inverse of fixed factor failed for prime #%u=%u", nPrimeSeq, vPrimes[nPrimeSeq]);
+            return;
+        }
+        if (!BN_mod_inverse(&bnTwoInverse, &bnTwo, &p, pctx)) {
+            error("CSieveOfEratosthenes::Weave2(): BN_mod_inverse of 2 failed for prime #%u=%u", nPrimeSeq, vPrimes[nPrimeSeq]);
+            return;
+        }
+// calling the GetTimeMicros() method and the additional boolean testing ends up taking a while, so the speed can be increased by just
+// calculating it every so often.
+        if(nPrimeSeq % TESTING_FREQUENCY == 0) {
+            nCurrent = GetTimeMicros() - nStart;
+            if(nCurrent > (sieveBuildTime)) 
+		return;
+        }
+        
+        for (nBiTwinSeq = 0; nBiTwinSeq < nChainLength; nBiTwinSeq++) {
+            if((nBiTwinSeq & 1u) == 0) {
+                nSolvedMultiplier = ((bnFixedInverse * (p + 1)) % p).getuint();
+                for (nVariableMultiplier = nSolvedMultiplier; nVariableMultiplier < nSieveSize; nVariableMultiplier += uP) {
+                    vfCompositeCunningham1[nVariableMultiplier] = true;
+                }
+            } else {
+                nSolvedMultiplier = ((bnFixedInverse * (p - 1)) % p).getuint();
+                bnFixedInverse *= bnTwoInverse; // for next number in chain
+                for (nVariableMultiplier = nSolvedMultiplier; nVariableMultiplier < nSieveSize; nVariableMultiplier += uP) {
+                    vfCompositeCunningham2[nVariableMultiplier] = true;
+                }
+            }
+            for (nVariableMultiplier = nSolvedMultiplier; nVariableMultiplier < nSieveSize; nVariableMultiplier += uP) {
+                vfCompositeBiTwin[nVariableMultiplier] = true;
+            }
+        }
+        // continue loop without the composite_bi_twin
+        for (; nBiTwinSeq < nChainLength2; nBiTwinSeq++) {
+            if((nBiTwinSeq & 1u) == 0) {
+                nSolvedMultiplier = ((bnFixedInverse * (p + 1)) % p).getuint();
+                for (nVariableMultiplier = nSolvedMultiplier; nVariableMultiplier < nSieveSize; nVariableMultiplier += uP) {
+                    vfCompositeCunningham1[nVariableMultiplier] = true;
+                }
+            } else {
+                nSolvedMultiplier = ((bnFixedInverse * (p - 1)) % p).getuint();
+                bnFixedInverse *= bnTwoInverse; // for next number in chain
+                for (nVariableMultiplier = nSolvedMultiplier; nVariableMultiplier < nSieveSize; nVariableMultiplier += uP) {
+                    vfCompositeCunningham2[nVariableMultiplier] = true;
+                }
+            }
+        }
+    }
+}
