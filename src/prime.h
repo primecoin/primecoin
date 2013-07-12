@@ -91,7 +91,10 @@ class CSieveOfEratosthenes
     unsigned int nPrimeSeq; // prime sequence number currently being processed
     unsigned int nCandidateMultiplier; // current candidate for power test
 
+
 public:
+    int64 prevTotalTime, prevWeaveTime;
+
     CSieveOfEratosthenes(unsigned int nSieveSize, unsigned int nBits, uint256 hashBlockHeader, CBigNum& bnFixedMultiplier)
     {
         this->nSieveSize = nSieveSize;
@@ -103,6 +106,8 @@ public:
         vfCompositeCunningham2 = std::vector<bool> (1000000, false);
         vfCompositeBiTwin = std::vector<bool> (1000000, false);
         nCandidateMultiplier = 0;
+    	prevWeaveTime = 0;
+		prevTotalTime = 0;
     }
 
     // Get total number of candidates for power test
@@ -151,6 +156,7 @@ public:
     //   True  - weaved another prime; nComposite - number of composites removed
     //   False - sieve already completed
     bool Weave();
+    void Weave_Chemisist(CBlockIndex* pindexPrev, CBlockIndex* pindexBest);
 };
 
 #endif
