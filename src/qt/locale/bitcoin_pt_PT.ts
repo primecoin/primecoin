@@ -670,7 +670,7 @@ Endereço: %4
         <translation>A carteira está &lt;b&gt;encriptada&lt;/b&gt; e atualmente &lt;b&gt;bloqueada&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../Primecoin.cpp" line="+111"/>
+        <location filename="../bitcoin.cpp" line="+111"/>
         <source>A fatal error occurred. Primecoin can no longer continue safely and will quit.</source>
         <translation>Ocorreu um erro fatal. O Primecoin não pode continuar com segurança e irá fechar.</translation>
     </message>

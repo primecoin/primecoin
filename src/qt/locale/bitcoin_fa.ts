@@ -665,7 +665,7 @@ Address: %4
         <translation>زمایش شبکه</translation>
     </message>
     <message>
-        <location filename="../Primecoin.cpp" line="+111"/>
+        <location filename="../bitcoin.cpp" line="+111"/>
         <source>A fatal error occurred. Primecoin can no longer continue safely and will quit.</source>
         <translation>خطا روی داده است. Primecoin نمی تواند بدون مشکل ادامه دهد و باید بسته شود</translation>
     </message>

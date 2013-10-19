@@ -661,7 +661,7 @@ Address: %4
         <translation>Новчаник јс &lt;b&gt;шифрован&lt;/b&gt; и тренутно &lt;b&gt;закључан&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../Primecoin.cpp" line="+111"/>
+        <location filename="../bitcoin.cpp" line="+111"/>
         <source>A fatal error occurred. Primecoin can no longer continue safely and will quit.</source>
         <translation type="unfinished"/>
     </message>
