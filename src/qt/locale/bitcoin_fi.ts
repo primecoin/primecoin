@@ -324,7 +324,7 @@ Tämä ohjelma sisältää OpenSSL projektin OpenSSL työkalupakin (http://www.o
 <context>
     <name>PrimecoinGUI</name>
     <message>
-        <location filename="../Primecoingui.cpp" line="+233"/>
+        <location filename="../bitcoingui.cpp" line="+233"/>
         <source>Sign &amp;message...</source>
         <translation>&amp;Allekirjoita viesti...</translation>
     </message>

@@ -326,7 +326,7 @@ Eric Young (eay@cryptsoft.com) y el software UPnP escrito por Thomas Bernard.</t
 <context>
     <name>PrimecoinGUI</name>
     <message>
-        <location filename="../Primecoingui.cpp" line="+233"/>
+        <location filename="../bitcoingui.cpp" line="+233"/>
         <source>Sign &amp;message...</source>
         <translation>Firmar &amp;mensaje...</translation>
     </message>

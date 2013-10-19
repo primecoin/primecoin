@@ -323,7 +323,7 @@ Tento produkt zahrnuje programy vyvinuté OpenSSL Projektem pro použití v Open
 <context>
     <name>PrimecoinGUI</name>
     <message>
-        <location filename="../Primecoingui.cpp" line="+233"/>
+        <location filename="../bitcoingui.cpp" line="+233"/>
         <source>Sign &amp;message...</source>
         <translation>Po&amp;depiš zprávu...</translation>
     </message>

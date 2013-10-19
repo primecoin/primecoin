@@ -322,7 +322,7 @@ Ez a termék az OpenSSL Project által lett kifejlesztve az OpenSSL Toolkit (htt
 <context>
     <name>PrimecoinGUI</name>
     <message>
-        <location filename="../Primecoingui.cpp" line="+233"/>
+        <location filename="../bitcoingui.cpp" line="+233"/>
         <source>Sign &amp;message...</source>
         <translation>Üzenet aláírása...</translation>
     </message>

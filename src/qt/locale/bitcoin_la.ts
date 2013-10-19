@@ -322,7 +322,7 @@ Hoc productum continet programmata composita ab OpenSSL Project pro utendo in Op
 <context>
     <name>PrimecoinGUI</name>
     <message>
-        <location filename="../Primecoingui.cpp" line="+233"/>
+        <location filename="../bitcoingui.cpp" line="+233"/>
         <source>Sign &amp;message...</source>
         <translation>Signa &amp;nuntium...</translation>
     </message>

@@ -323,7 +323,7 @@ Ce produit comprend des logiciels développés par le projet OpenSSL pour être 
 <context>
     <name>PrimecoinGUI</name>
     <message>
-        <location filename="../Primecoingui.cpp" line="+233"/>
+        <location filename="../bitcoingui.cpp" line="+233"/>
         <source>Sign &amp;message...</source>
         <translation type="unfinished"/>
     </message>

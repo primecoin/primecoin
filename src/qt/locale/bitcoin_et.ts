@@ -323,7 +323,7 @@ Toode sisaldab OpenSSL Projekti all toodetud tarkvara, mis on kasutamiseks OpenS
 <context>
     <name>PrimecoinGUI</name>
     <message>
-        <location filename="../Primecoingui.cpp" line="+233"/>
+        <location filename="../bitcoingui.cpp" line="+233"/>
         <source>Sign &amp;message...</source>
         <translation>Signeeri &amp;sõnum</translation>
     </message>
