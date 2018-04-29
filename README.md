@@ -1,7 +1,9 @@
 Primecoin integration/staging tree
 ==================================
 
-http://primecoin.org
+http://bitcoinprime.org
+
+Copyright (c) 2018 Bitcoin Prime Developers
 
 Copyright (c) 2013 Primecoin Developers
 
