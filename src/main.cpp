@@ -3005,8 +3005,6 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos *dbp)
 // CAlert
 //
 
-extern CCriticalSection cs_mapAlerts;
-
 string GetWarnings(string strFor)
 {
     int nPriority = 0;
@@ -3045,20 +3043,6 @@ string GetWarnings(string strFor)
     {
         nPriority = 3000;
         strStatusBar = strRPC = "WARNING: Inconsistent checkpoint found! Stop enforcing checkpoints and notify developers to resolve the issue.";
-    }
-
-    // Alerts
-    {
-        LOCK(cs_mapAlerts);
-        BOOST_FOREACH(PAIRTYPE(const uint256, CAlert)& item, mapAlerts)
-        {
-            const CAlert& alert = item.second;
-            if (alert.AppliesToMe() && alert.nPriority > nPriority)
-            {
-                nPriority = alert.nPriority;
-                strStatusBar = alert.strStatusBar;
-            }
-        }
     }
 
     if (strFor == "statusbar")
