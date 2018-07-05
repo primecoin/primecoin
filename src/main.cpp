@@ -3005,7 +3005,6 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos *dbp)
 // CAlert
 //
 
-extern map<uint256, CAlert> mapAlerts;
 extern CCriticalSection cs_mapAlerts;
 
 string GetWarnings(string strFor)
