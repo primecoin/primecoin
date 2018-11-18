@@ -3,7 +3,7 @@
 // see the accompanying file COPYING
 
 #include "prime.h"
-
+#include <iostream>
 /**********************/
 /* PRIMECOIN PROTOCOL */
 /**********************/
@@ -524,6 +524,12 @@ boost::thread_specific_ptr<CPrimeMiner> pminer;
 // Mine probable prime chain of form: n = h * p# +/- 1
 bool MineProbablePrimeChain(CBlock& block, CBigNum& bnFixedMultiplier, bool& fNewBlock, unsigned int& nTriedMultiplier, unsigned int& nProbableChainLength, unsigned int& nTests, unsigned int& nPrimesHit)
 {
+    std::cout << "MineProbablePrimeChain() - "
+        << " bits =" << block.nBits
+        << " header hash = " << block.GetHeaderHash().GetHex().c_str()
+        << " fixedMultiplier=" << bnFixedMultiplier.GetHex().c_str()
+        << " newBlock " << fNewBlock
+        << " triedMultiplier= " << nTriedMultiplier;
     nProbableChainLength = 0;
     nTests = 0;
     nPrimesHit = 0;

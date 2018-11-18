@@ -104,6 +104,7 @@ T* alignup(T* p)
 #endif
 #else
 #define MAX_PATH            1024
+#define MSG_NOSIGNAL        0
 #endif
 
 inline void MilliSleep(int64 n)

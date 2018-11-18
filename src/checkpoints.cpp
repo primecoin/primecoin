@@ -6,6 +6,8 @@
 #include <boost/assign/list_of.hpp> // for 'map_list_of()'
 #include <boost/foreach.hpp>
 
+#include <iostream>
+
 #include "checkpoints.h"
 
 #include "main.h"
@@ -61,8 +63,10 @@ namespace Checkpoints
     };
 
     const CCheckpointData &Checkpoints() {
-        if (fTestNet)
+        if (fTestNet) {
+            std::cout << "Return testnet data\n";
             return dataTestnet;
+        }
         else
             return data;
     }
@@ -75,7 +79,10 @@ namespace Checkpoints
         const MapCheckpoints& checkpoints = *Checkpoints().mapCheckpoints;
 
         MapCheckpoints::const_iterator i = checkpoints.find(nHeight);
-        if (i == checkpoints.end()) return true;
+        if (i == checkpoints.end()){
+            std::cout << "Couldn't find block " << nHeight << "\n";
+            return true;
+        } 
         return hash == i->second;
     }
 

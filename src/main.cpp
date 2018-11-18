@@ -4625,11 +4625,11 @@ void static BitcoinMiner(CWallet *pwallet)
         unsigned int nTransactionsUpdatedLast = nTransactionsUpdated;
         CBlockIndex* pindexPrev = pindexBest;
 
-	// pindexBest may be NULL (e.g. when doing a -reindex)
-	if (!pindexPrev) {
-		MilliSleep(1000);
-		continue;
-	}
+        // pindexBest may be NULL (e.g. when doing a -reindex)
+        if (!pindexPrev) {
+            MilliSleep(1000);
+            continue;
+        }
 
         auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlock(reservekey));
         if (!pblocktemplate.get())
