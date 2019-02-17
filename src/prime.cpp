@@ -200,7 +200,7 @@ bool TargetSetFractionalDifficulty(uint64 nFractionalDifficulty, unsigned int& n
         return error("TargetSetFractionalDifficulty() : difficulty below min");
     uint64 nFractional = nFractionalDifficultyMax / nFractionalDifficulty;
     if (nFractional > (1u<<nFractionalBits))
-        return error("TargetSetFractionalDifficulty() : fractional overflow: nFractionalDifficulty=%016"PRI64x, nFractionalDifficulty);
+        return error("TargetSetFractionalDifficulty() : fractional overflow: nFractionalDifficulty=%016" PRI64x, nFractionalDifficulty);
     nFractional = (1u<<nFractionalBits) - nFractional;
     nBits &= TARGET_LENGTH_MASK;
     nBits |= (unsigned int)nFractional;
@@ -256,7 +256,7 @@ bool TargetGetNext(unsigned int nBits, int64 nInterval, int64 nTargetSpacing, in
         bnFractionalDifficulty = nFractionalDifficultyMin;
     uint64 nFractionalDifficultyNew = bnFractionalDifficulty.getuint256().Get64();
     if (fDebug && GetBoolArg("-printtarget"))
-        printf("TargetGetNext() : nActualSpacing=%d nFractionDiff=%016"PRI64x" nFractionDiffNew=%016"PRI64x"\n", (int)nActualSpacing, nFractionalDifficulty, nFractionalDifficultyNew);
+        printf("TargetGetNext() : nActualSpacing=%d nFractionDiff=%016" PRI64x" nFractionDiffNew=%016" PRI64x"\n", (int)nActualSpacing, nFractionalDifficulty, nFractionalDifficultyNew);
     // Step up length if fractional past threshold
     if (nFractionalDifficultyNew > nFractionalDifficultyThreshold)
     {
@@ -271,7 +271,7 @@ bool TargetGetNext(unsigned int nBits, int64 nInterval, int64 nTargetSpacing, in
     }
     // Convert fractional difficulty back to length
     if (!TargetSetFractionalDifficulty(nFractionalDifficultyNew, nBitsNext))
-        return error("TargetGetNext() : unable to set fractional difficulty prev=0x%016"PRI64x" new=0x%016"PRI64x, nFractionalDifficulty, nFractionalDifficultyNew);
+        return error("TargetGetNext() : unable to set fractional difficulty prev=0x%016" PRI64x" new=0x%016" PRI64x, nFractionalDifficulty, nFractionalDifficultyNew);
     return true;
 }
 

@@ -8,13 +8,14 @@
 # Originally by Laszlo Hanyecz (solar@heliacal.net)
 
 CXX=llvm-g++
-DEPSDIR=/usr/local/opt
+DEPSDIR=/usr/local
 
 INCLUDEPATHS= \
  -I"$(CURDIR)" \
  -I"$(CURDIR)"/obj \
  -I"$(DEPSDIR)/include" \
- -I"$(DEPSDIR)/berkeley-db@4/include"
+ -I"/usr/local/Cellar/berkeley-db@4/4.8.30/include" \
+ -I"/usr/local/Cellar/openssl/1.0.2g/include"
 
 LIBPATHS= \
  -L"$(DEPSDIR)/lib" \
