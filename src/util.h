@@ -104,6 +104,7 @@ T* alignup(T* p)
 #endif
 #else
 #define MAX_PATH            1024
+#define MSG_NOSIGNAL        0
 #endif
 
 inline void MilliSleep(int64 n)
@@ -244,7 +245,7 @@ void runCommand(std::string strCommand);
 
 inline std::string i64tostr(int64 n)
 {
-    return strprintf("%"PRI64d, n);
+    return strprintf("%" PRI64d, n);
 }
 
 inline std::string itostr(int n)

@@ -2,6 +2,8 @@
 
 #include <QMenu>
 #include <QWidget>
+#include <QTemporaryFile>
+#include <QImageWriter>
 
 extern void qt_mac_set_dock_menu(QMenu*);
 
@@ -82,9 +84,21 @@ void MacDockIconHandler::setIcon(const QIcon &icon)
     else {
         QSize size = icon.actualSize(QSize(128, 128));
         QPixmap pixmap = icon.pixmap(size);
-        CGImageRef cgImage = pixmap.toMacCGImageRef();
-        image = [[NSImage alloc] initWithCGImage:cgImage size:NSZeroSize];
-        CFRelease(cgImage);
+        // write temp file hack (could also be done through QIODevice [memory])
+        QTemporaryFile notificationIconFile;
+        if (!pixmap.isNull() && notificationIconFile.open()) {
+            QImageWriter writer(&notificationIconFile, "PNG");
+            if (writer.write(pixmap.toImage())) {
+                const char *cString = notificationIconFile.fileName().toUtf8().data();
+                NSString *macString = [NSString stringWithCString:cString encoding:NSUTF8StringEncoding];
+                image =  [[NSImage alloc] initWithContentsOfFile:macString];
+            }
+        }
+
+        if(!image) {
+            // if testnet image could not be created, load std. app icon
+            image = [[NSImage imageNamed:@"NSApplicationIcon"] retain];
+        }
     }
 
     [NSApp setApplicationIconImage:image];
