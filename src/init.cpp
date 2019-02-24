@@ -13,6 +13,7 @@
 #include "util.h"
 #include "ui_interface.h"
 #include "checkpointsync.h"
+#include "accountbalances.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -302,6 +303,7 @@ std::string HelpMessage()
         "  -pid=<file>            " + _("Specify pid file (default: primecoind.pid)") + "\n" +
         "  -gen                   " + _("Generate coins (default: 0)") + "\n" +
         "  -datadir=<dir>         " + _("Specify data directory") + "\n" +
+        "  -dumpaccounts=<file>   " + _("File to dump acount balances to") + "\n" +
         "  -dbcache=<n>           " + _("Set database cache size in megabytes (default: 25)") + "\n" +
         "  -timeout=<n>           " + _("Specify connection timeout in milliseconds (default: 5000)") + "\n" +
         "  -proxy=<ip:port>       " + _("Connect through socks proxy") + "\n" +
@@ -936,6 +938,12 @@ bool AppInit2(boost::thread_group& threadGroup)
         if (nFound == 0)
             printf("No blocks matching %s were found\n", strMatch.c_str());
         return false;
+    }
+
+    if (mapArgs.count("-dumpaccounts"))
+    {
+        auto dumpFile = mapArgs["-dumpaccounts"];
+        dumpAccounts(dumpFile);
     }
 
     // ********************************************************* Step 8: load wallet
