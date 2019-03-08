@@ -104,10 +104,9 @@ BOOST_AUTO_TEST_CASE(accountbalances_testmultipletransactions)
     BOOST_CHECK(block.WriteToDisk(blockPos));
     BOOST_CHECK(block.AddToBlockIndex(state, blockPos));
     BOOST_CHECK(mapBlockIndex.size() == 1);
-    mempool.addUnchecked(txNew.GetHash(), txNew);
-    BOOST_CHECK(mempool.mapTx.size() == 1);
     auto balances = calculateAccountBalances();
     BOOST_CHECK(balances.size() == 2);
+    BOOST_CHECK(mempool.mapTx.size() == 2);
 
     BOOST_CHECK(balances[account1] == 0);
     BOOST_CHECK(balances[account2] == COIN);

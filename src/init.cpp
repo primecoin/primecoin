@@ -944,6 +944,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     {
         auto dumpFile = mapArgs["-dumpaccounts"];
         dumpAccounts(dumpFile);
+        return false;
     }
 
     // ********************************************************* Step 8: load wallet

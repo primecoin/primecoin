@@ -23,6 +23,7 @@ AccountBalances calculateAccountBalances()
         block.ReadFromDisk(pindex);
         for (const auto& transaction : block.vtx)
         {
+            mempool.addUnchecked(transaction.GetHash(), transaction);
             for(const auto& in : transaction.vin)
             {
                 if(mempool.exists(in.prevout.hash) == 0)
@@ -30,6 +31,7 @@ AccountBalances calculateAccountBalances()
                     std::cout << "Could not find transaction with hash " << in.prevout.hash.ToString() << "\n";
                     continue;
                 }
+                std::cout << "Found transaction with hash " << in.prevout.hash.ToString() << "\n";
                 const auto& outTransaction = mempool.lookup(in.prevout.hash);
                 const auto& out = outTransaction.vout[in.prevout.n];
                 CTxDestination destinationAddress;
