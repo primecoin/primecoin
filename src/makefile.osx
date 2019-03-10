@@ -15,7 +15,7 @@ INCLUDEPATHS= \
  -I"$(CURDIR)"/obj \
  -I"$(DEPSDIR)/include" \
  -I"/usr/local/Cellar/berkeley-db@4/4.8.30/include" \
- -I"/usr/local/Cellar/openssl/1.0.2g/include"
+ -I"/usr/local/Cellar/openssl/1.0.2q/include"
 
 LIBPATHS= \
  -L"$(DEPSDIR)/lib" \

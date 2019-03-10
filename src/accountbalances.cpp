@@ -13,12 +13,14 @@ void ensureExists(const CBitcoinAddress& address, AccountBalances& accountBalanc
     }
 }
 
-AccountBalances calculateAccountBalances()
+BalanceData calculateAccountBalances()
 {
     AccountBalances accountBalances;
+    int height = 0;
     for (std::map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.begin(); mi != mapBlockIndex.end(); ++mi)
     {
-        CBlockIndex* pindex = (*mi).second;
+        CBlockIndex* pindex = mi->second;
+        height = pindex->nHeight;
         CBlock block;
         block.ReadFromDisk(pindex);
         for (const auto& transaction : block.vtx)
@@ -50,18 +52,21 @@ AccountBalances calculateAccountBalances()
             }
         }
     }
-    return accountBalances;
+    return BalanceData(height, accountBalances);
 }
 
-std::string accountsToJson(const AccountBalances& balances)
+std::string accountsToJson(const BalanceData& balanceData)
 {
     using boost::property_tree::ptree;
     using boost::property_tree::write_json;
-    ptree pt; 
-    for (auto& balance : balances) 
-        pt.put (balance.first.ToString(), balance.second);
+    ptree balanceTree;
+    for (auto& balance : balanceData.balances)
+        balanceTree.put(balance.first.ToString(), balance.second);
+    ptree dataTree;
+    dataTree.put("height", balanceData.height);
+    dataTree.add_child("balances", balanceTree);
     std::ostringstream buf; 
-    write_json(buf, pt);
+    write_json(buf, dataTree);
     return buf.str();
 }
 

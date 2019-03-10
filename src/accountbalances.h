@@ -6,9 +6,17 @@
 
 using AccountBalances = std::map<CBitcoinAddress, int64>;
 
+struct BalanceData {
+    int height;
+    AccountBalances balances;
 
-AccountBalances calculateAccountBalances();
-std::string accountsToJson(const AccountBalances& balances);
+    BalanceData(const int& height, const AccountBalances& balances)
+        :height(height), balances(balances)
+    {}
+};
+
+BalanceData calculateAccountBalances();
+std::string accountsToJson(const BalanceData& balances);
 void dumpAccounts(const std::string& dumpFile);
 
 #endif
