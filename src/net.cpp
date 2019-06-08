@@ -1203,6 +1203,7 @@ static const char *strTestNetDNSSeed[][2] = {
     {"primecoin.info", "tnseed.primecoin.info"},
     {"primeseedtn.muuttuja.org", "primeseedtn.muuttuja.org"},
     {"primecoin.org", "tnseed.primecoin.org"},
+    {"coinsforall.io", "xpmtestnet.dnsseed.coinsforall.io"},
     {NULL, NULL}
 };
 
