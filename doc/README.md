@@ -1,4 +1,4 @@
-Primecoin 0.1.2 BETA
+Primecoin 0.1.3
 ====================
 
 Copyright (c) 2013 Primecoin Developers
