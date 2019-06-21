@@ -63,6 +63,8 @@ Continue:
     ./bin/gbuild --commit primecoin=HEAD ../primecoin/contrib/gitian-descriptors/gitian.yml
 
     # Build Win32 x86 dependencies: (only needs to be done once, or when dependency versions change)
+    export USE_DOCKER=1
+    
     ./bin/gbuild --commit primecoin=HEAD ../primecoin/contrib/gitian-descriptors/boost-win32.yml && mv build/out/boost-win32-1.52.0-gitian.zip inputs/
     ./bin/gbuild --commit primecoin=HEAD ../primecoin/contrib/gitian-descriptors/deps-win32.yml && mv build/out/primecoin-deps-0.0.2.zip inputs
     ./bin/gbuild --commit primecoin=HEAD ../primecoin/contrib/gitian-descriptors/qt-win32.yml && mv build/out/qt-win32-4.8.7-gitian-r1.zip inputs
