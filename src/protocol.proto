@@ -1,0 +1,155 @@
+
+package pool.proto;
+
+
+
+message Block {
+	
+	required uint32 height = 1;
+	required string hash = 2;
+	required string prevhash = 3;
+	required uint32 reqdiff = 4;
+	required uint32 minshare = 5;
+	
+}
+
+message Signal {
+	
+	enum Type { NEWBLOCK = 1; SHUTDOWN = 2; }
+	
+	required Type type = 1;
+	
+	optional Block block = 2;
+	
+}
+
+
+
+message ClientStats {
+	
+	required string addr = 1;
+	required string name = 2;
+	required fixed64 clientid = 3;
+	required fixed64 instanceid = 4;
+	
+	required uint32 version = 10;
+	required float cpd = 11;
+	required uint32 latency = 12;
+	required uint32 temp = 13;
+	required uint32 errors = 14;
+	required uint32 ngpus = 15;
+	required uint32 height = 16;
+	
+}
+
+message Share {
+	
+	required string addr = 1;
+	required string name = 2;
+	required fixed64 clientid = 3;
+	optional uint32 gpuid = 4;
+	
+	required string hash = 10;
+	required string merkle = 11;
+	required uint32 time = 12;
+	required uint32 bits = 13;
+	required uint32 nonce = 14;
+	required string multi = 15;
+	optional string blockhash = 16;
+	
+	required uint32 height = 20;
+	required uint32 length = 21;
+	required uint32 chaintype = 22;
+	required bool isblock = 23;
+	optional uint64 genvalue = 24;
+	
+}
+
+message Request {
+	
+	enum Type { NONE = 0; CONNECT = 1; GETWORK = 2; SHARE = 3; STATS = 4; PING = 5; }
+	
+	required Type type = 1;
+	required uint32 reqid = 2;
+	
+	optional uint32 version = 10;
+	optional uint32 height = 11;
+	optional bytes reqnonce = 12;
+	
+	optional Share share = 20;
+	optional ClientStats stats = 21;
+	
+}
+
+
+
+message ServerInfo {
+	
+	required string host = 1;
+	required uint32 router = 2;
+	required uint32 pub = 3;
+	required uint32 target = 4;
+	
+}
+
+message Work {
+	
+	required uint32 height = 1;
+	required string merkle = 2;
+	required uint32 time = 3;
+	required uint32 bits = 4;
+	
+}
+
+message Reply {
+	
+	enum ErrType { NONE = 0; VERSION = 1; HEIGHT = 2; REQNONCE = 3; STALE = 4; INVALID = 5; DUPLICATE = 6; }
+	
+	required Request.Type type = 1;
+	required uint32 reqid = 2;
+	
+	required ErrType error = 10;
+	optional string errstr = 11;
+	
+	optional ServerInfo sinfo = 20;
+	optional Work work = 21;
+	optional Block block = 22;
+	
+}
+
+
+
+message ReqStats {
+	
+	required Request.Type reqtype = 1;
+	required Reply.ErrType errtype = 2;
+	required uint32 count = 3;
+	
+}
+
+message ServerStats {
+	
+	required string name = 1;
+	required uint32 thread = 2;
+	
+	required uint32 workers = 10;
+	required uint32 latency = 11;
+	required float cpd = 12;
+	
+	repeated ReqStats reqstats = 20;
+	
+}
+
+message Data {
+	
+	optional Share share = 1;
+	optional ClientStats clientstats = 2;
+	optional ServerStats serverstats = 3;
+	
+}
+
+
+
+
+
+

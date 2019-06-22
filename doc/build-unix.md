@@ -8,6 +8,13 @@ cryptographic software written by Eric Young ([eay@cryptsoft.com](mailto:eay@cry
 UNIX BUILD NOTES
 ====================
 
+Pool Mining Custom Protocol Mad Prime Miner
+-------------------------------------------
+sudo apt-get install libprotobuf-dev protobuf-compiler
+cd src
+protoc --proto_path=./ --cpp_out=./ protocol.proto
+mv protocol.pb.cc protocol.pb.cpp
+
 To Build
 ---------------------
 
