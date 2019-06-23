@@ -16,6 +16,11 @@ To Build
 
 See readme-qt.rst for instructions on building Bitcoin-Qt, the graphical user interface.
 
+Additional Dependencies for Mad Prime Solo Mining Server
+--------------------------------------------------------
+sudo apt install libzmq3-dev libczmq-dev
+sudo apt install libprotobuf-dev protobuf-compilers
+
 Dependencies
 ---------------------
 
