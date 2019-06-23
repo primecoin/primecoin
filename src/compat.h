@@ -5,6 +5,8 @@
 #ifndef _BITCOIN_COMPAT_H
 #define _BITCOIN_COMPAT_H 1
 
+#include <czmq.h>
+
 #ifdef WIN32
 #define _WIN32_WINNT 0x0501
 #define WIN32_LEAN_AND_MEAN 1
@@ -26,7 +28,6 @@
 #include <ifaddrs.h>
 #endif
 
-typedef u_int SOCKET;
 #ifdef WIN32
 #define MSG_NOSIGNAL        0
 #define MSG_DONTWAIT        0
@@ -42,7 +43,6 @@ typedef int socklen_t;
 #define WSAEINPROGRESS      EINPROGRESS
 #define WSAEADDRINUSE       EADDRINUSE
 #define WSAENOTSOCK         EBADF
-#define INVALID_SOCKET      (SOCKET)(~0)
 #define SOCKET_ERROR        -1
 #endif
 
@@ -58,7 +58,6 @@ inline int myclosesocket(SOCKET& hSocket)
     hSocket = INVALID_SOCKET;
     return ret;
 }
-#define closesocket(s)      myclosesocket(s)
 
 
 #endif
