@@ -41,7 +41,10 @@ LIBS += \
    -l boost_thread$(BOOST_LIB_SUFFIX) \
    -l db_cxx$(BDB_LIB_SUFFIX) \
    -l ssl \
-   -l crypto
+   -l crypto \
+   -l protobuf \
+   -l czmq \
+   -l zmq
 
 TESTLIBS += \
  -Wl,-B$(LMODE) \
@@ -159,7 +162,6 @@ test check: test_primecoin FORCE
 #
 MAKEOVERRIDES =
 LIBS += $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a
-LIBS += $(addprefix /usr/local/lib/, libprotobuf.a libczmq.a libzmq.a) -lrt
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/include)
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/helpers)
 leveldb/libleveldb.a:
