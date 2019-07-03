@@ -2033,6 +2033,7 @@ public:
 
     void Set(const CBlockIndex* pindex)
     {
+        printf("block locator make @ epoch=%f height=%d\n", GetTimeMicros() * 0.000001, pindex->nHeight);
         vHave.clear();
         int nStep = 1;
         while (pindex)
@@ -2046,6 +2047,7 @@ public:
                 nStep *= 2;
         }
         vHave.push_back(hashGenesisBlock);
+        printf("block locator made @ epoch=%f\n", GetTimeMicros() * 0.000001);
     }
 
     int GetDistanceBack()

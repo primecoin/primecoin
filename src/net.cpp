@@ -88,8 +88,16 @@ void CNode::PushGetBlocks(CBlockIndex* pindexBegin, uint256 hashEnd)
     // Filter out duplicate requests
     if (pindexBegin == pindexLastGetBlocksBegin && hashEnd == hashLastGetBlocksEnd)
         return;
+    // Workaround to sync performance issue: rate limit getblocks (block locator is expensive to construct)
+    if (nLastGetBlocksTime + 5 > GetTime() && nLastGetBlocksHeight + 250 > pindexBegin->nHeight) {
+        printf("getblocks from height=%d rate limited last=%d\n", pindexBegin->nHeight, nLastGetBlocksHeight);
+        return;
+    }
     pindexLastGetBlocksBegin = pindexBegin;
     hashLastGetBlocksEnd = hashEnd;
+    nLastGetBlocksTime = GetTime();
+    nLastGetBlocksHeight = pindexBegin->nHeight;
+    printf("getblocks from height=%d\n", pindexBegin->nHeight);
 
     PushMessage("getblocks", CBlockLocator(pindexBegin), hashEnd);
 }
