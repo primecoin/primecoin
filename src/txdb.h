@@ -102,7 +102,7 @@ struct CExtDiskTxPos : public CDiskTxPos
         return !(a == b);
     }
 
-    friend bool operator<(const CExtDiskTxPos &a, const CExtDiskTxPos &b) {
+    friend bool operator<(const CExtDiskTxPos &b, const CExtDiskTxPos &a) {
         if (a.nHeight < b.nHeight) return true;
         if (a.nHeight > b.nHeight) return false;
         return ((const CDiskTxPos)a < (const CDiskTxPos)b);
