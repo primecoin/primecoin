@@ -94,7 +94,7 @@ static bool FermatProbablePrimalityTest(const CBigNum& n, unsigned int& nLength)
     CBigNum a = 2; // base; Fermat witness
     CBigNum e = n - 1;
     CBigNum r;
-    BN_mod_exp(&r, &a, &e, &n, pctx);
+    BN_mod_exp(r.get(), a.get(), e.get(), n.cget(), pctx);
     if (r == 1)
         return true;
     // Failed Fermat test, calculate fractional length
@@ -118,7 +118,7 @@ static bool EulerLagrangeLifchitzPrimalityTest(const CBigNum& n, bool fSophieGer
     CBigNum a = 2;
     CBigNum e = (n - 1) >> 1;
     CBigNum r;
-    BN_mod_exp(&r, &a, &e, &n, pctx);
+    BN_mod_exp(r.get(), a.get(), e.get(), n.cget(), pctx);
     CBigNum nMod8 = n % 8;
     bool fPassedTest = false;
     if (fSophieGermain && (nMod8 == 7)) // Euler & Lagrange
@@ -643,11 +643,11 @@ bool CSieveOfEratosthenes::Weave()
     // Find the modulo inverse of fixed factor
     CAutoBN_CTX pctx;
     CBigNum bnFixedInverse;
-    if (!BN_mod_inverse(&bnFixedInverse, &bnFixedFactor, &p, pctx))
+    if (!BN_mod_inverse(bnFixedInverse.get(), bnFixedFactor.get(), p.get(), pctx))
         return error("CSieveOfEratosthenes::Weave(): BN_mod_inverse of fixed factor failed for prime #%u=%u", nPrimeSeq, vPrimes[nPrimeSeq]);
     CBigNum bnTwo = 2;
     CBigNum bnTwoInverse;
-    if (!BN_mod_inverse(&bnTwoInverse, &bnTwo, &p, pctx))
+    if (!BN_mod_inverse(bnTwoInverse.get(), bnTwo.get(), p.get(), pctx))
         return error("CSieveOfEratosthenes::Weave(): BN_mod_inverse of 2 failed for prime #%u=%u", nPrimeSeq, vPrimes[nPrimeSeq]);
 
     // Weave the sieve for the prime
