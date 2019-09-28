@@ -373,7 +373,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-sysperms", _("Create new files with system default permissions, instead of umask 077 (only effective with disabled wallet functionality)"));
 #endif
     strUsage += HelpMessageOpt("-txindex", strprintf(_("Maintain a full transaction index, used by the getrawtransaction rpc call (default: %u)"), DEFAULT_TXINDEX));
-
+    strUsage += HelpMessageOpt("-addrindex", strprintf(_("Maintain a full address index, used by the searchrawtransactions rpc call (default: %u)"), 0));
     strUsage += HelpMessageGroup(_("Connection options:"));
     strUsage += HelpMessageOpt("-addnode=<ip>", _("Add a node to connect to and attempt to keep the connection open (see the `addnode` RPC command help for more info)"));
     strUsage += HelpMessageOpt("-banscore=<n>", strprintf(_("Threshold for disconnecting misbehaving peers (default: %u)"), DEFAULT_BANSCORE_THRESHOLD));
@@ -1401,7 +1401,7 @@ bool AppInitMain()
     nTotalCache = std::max(nTotalCache, nMinDbCache << 20); // total cache cannot be less than nMinDbCache
     nTotalCache = std::min(nTotalCache, nMaxDbCache << 20); // total cache cannot be greater than nMaxDbcache
     int64_t nBlockTreeDBCache = nTotalCache / 8;
-    nBlockTreeDBCache = std::min(nBlockTreeDBCache, (gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX) ? nMaxBlockDBAndTxIndexCache : nMaxBlockDBCache) << 20);
+    nBlockTreeDBCache = std::min(nBlockTreeDBCache, ((gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX) && gArgs.GetBoolArg("-addrindex", DEFAULT_ADDRINDEX)) ? nMaxBlockDBAndTxIndexCache : nMaxBlockDBCache) << 20);
     nTotalCache -= nBlockTreeDBCache;
     int64_t nCoinDBCache = std::min(nTotalCache / 2, (nTotalCache / 4) + (1 << 23)); // use 25%-50% of the remainder for disk cache
     nCoinDBCache = std::min(nCoinDBCache, nMaxCoinsDBCache << 20); // cap total coins db cache
@@ -1466,6 +1466,12 @@ bool AppInitMain()
                 // in the past, but is now trying to run unpruned.
                 if (fHavePruned && !fPruneMode) {
                     strLoadError = _("You need to rebuild the database using -reindex to go back to unpruned mode.  This will redownload the entire blockchain");
+                    break;
+                }
+                
+                // Check for changed -addrindex state
+                if (fAddrIndex != gArgs.GetBoolArg("-addrindex", DEFAULT_ADDRINDEX)) {
+                    strLoadError = _("You need to rebuild the database using -reindex to change -addrindex");
                     break;
                 }
 
