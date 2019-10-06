@@ -4410,6 +4410,8 @@ CBlockTemplate* CreateNewBlock(CReserveKey& reservekey)
             }
         }
 
+        //destroy transaction fee
+        nFees = 0;
         nLastBlockTx = nBlockTx;
         nLastBlockSize = nBlockSize;
         if (fDebug && GetBoolArg("-printmining"))
