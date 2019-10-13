@@ -4411,7 +4411,7 @@ CBlockTemplate* CreateNewBlock(CReserveKey& reservekey)
         }
 
         //Transaction fee will be destroyed after 1st Jan 2020
-        if (GetAdjustedTime() < 1577808000)
+        if (GetAdjustedTime() > 1577808000)
             nFees = 0;
         nLastBlockTx = nBlockTx;
         nLastBlockSize = nBlockSize;
