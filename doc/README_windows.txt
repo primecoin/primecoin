@@ -1,4 +1,4 @@
-Primecoin 0.1.3
+Primecoin 0.1.4
 ====================
 
 Copyright (c) 2013 Primecoin Developers
