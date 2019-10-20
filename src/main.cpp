@@ -1659,6 +1659,11 @@ bool CBlock::ConnectBlock(CValidationState &state, CBlockIndex* pindex, CCoinsVi
     if (fBenchmark)
         printf("- Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin)\n", (unsigned)vtx.size(), 0.001 * nTime, 0.001 * nTime / vtx.size(), nInputs <= 1 ? 0 : 0.001 * nTime / (nInputs-1));
 
+    //transaction fee will be destroyed after 1st Jan 2020
+    int64 nDestroyFeeSwitchTime = 1577808000;
+    if(pindex->nTime >= nDestroyFeeSwitchTime)
+        nFees = 0;
+
     if (vtx[0].GetValueOut() > GetBlockValue(pindex->nBits, nFees) - vtx[0].GetMinFee() + MIN_TX_FEE)
         return state.DoS(100, error("ConnectBlock() : coinbase pays too much (actual=%s vs limit=%s)", FormatMoney(vtx[0].GetValueOut()).c_str(), FormatMoney(GetBlockValue(pindex->nBits, nFees) - vtx[0].GetMinFee() + MIN_TX_FEE).c_str()));
 
