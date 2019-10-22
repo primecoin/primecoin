@@ -116,7 +116,6 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1479168000; // November 15th, 2016.
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1510704000; // November 15th, 2017.
 
-        // Deployment of Destroying fee
         consensus.vDeployments[Consensus::DEPLOYMENT_DESTROYFEE].bit = 2;
         consensus.vDeployments[Consensus::DEPLOYMENT_DESTROYFEE].nStartTime = 1577808000; // January 1st, 2020.
         consensus.vDeployments[Consensus::DEPLOYMENT_DESTROYFEE].nTimeout = 1609430400; // January 1st, 2021.
@@ -219,7 +218,6 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = 1462060800; // May 1st 2016
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = 1493596800; // May 1st 2017
 
-        // Deployment of Destroying fee
         consensus.vDeployments[Consensus::DEPLOYMENT_DESTROYFEE].bit = 2;
         consensus.vDeployments[Consensus::DEPLOYMENT_DESTROYFEE].nStartTime = 1572537600; // November 1st, 2019.
         consensus.vDeployments[Consensus::DEPLOYMENT_DESTROYFEE].nTimeout = 1604160000; // November 1st, 2020.
@@ -311,6 +309,9 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].bit = 1;
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_DESTROYFEE].bit = 2;
+        consensus.vDeployments[Consensus::DEPLOYMENT_DESTROYFEE].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_DESTROYFEE].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");

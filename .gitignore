@@ -1,11 +1,10 @@
 *.tar.gz
 
 *.exe
-src/primecoin
-src/primecoind
-src/primecoin-cli
-src/primecoin-tx
-primecoin-qt
+src/bitcoin
+src/bitcoind
+src/bitcoin-cli
+src/bitcoin-tx
 src/test/test_bitcoin
 src/test/test_bitcoin_fuzzy
 src/qt/test/test_bitcoin-qt
