@@ -236,6 +236,10 @@ CScript COINBASE_FLAGS;
 
 const std::string strMessageMagic = "Bitcoin Signed Message:\n";
 
+void static BuildAddrIndex(const CScript &script, const CExtDiskTxPos &pos, std::vector<std::pair<uint160, CExtDiskTxPos> > &out);
+
+static bool EraseTxIndexDataForBlock(std::vector<std::pair<uint256, CDiskTxPos> > &vPosTxid,std::vector<std::pair<uint160, CExtDiskTxPos> > &vPosAddrid);
+
 // Internal stuff
 namespace {
     CBlockIndex *&pindexBestInvalid = g_chainstate.pindexBestInvalid;
@@ -1599,15 +1603,23 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
         return DISCONNECT_FAILED;
     }
 
+    CExtDiskTxPos pos(CDiskTxPos(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size())), pindex->nHeight);
+    std::vector<std::pair<uint256, CDiskTxPos> > vPosTxid;
+    std::vector<std::pair<uint160, CExtDiskTxPos> > vPosAddrid;
+    vPosTxid.reserve(block.vtx.size());
+	vPosAddrid.reserve(4*block.vtx.size());
+
     // undo transactions in reverse order
     for (int i = block.vtx.size() - 1; i >= 0; i--) {
         const CTransaction &tx = *(block.vtx[i]);
         uint256 hash = tx.GetHash();
         bool is_coinbase = tx.IsCoinBase();
+        vPosTxid.push_back(std::make_pair(hash, pos));
 
         // Check that all outputs are available and match the outputs in the block itself
         // exactly.
         for (size_t o = 0; o < tx.vout.size(); o++) {
+            BuildAddrIndex(tx.vout[o].scriptPubKey, pos, vPosAddrid);
             if (!tx.vout[o].scriptPubKey.IsUnspendable()) {
                 COutPoint out(hash, o);
                 Coin coin;
@@ -1626,6 +1638,8 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
                 return DISCONNECT_FAILED;
             }
             for (unsigned int j = tx.vin.size(); j-- > 0;) {
+                const Coin& coin = view.AccessCoin(tx.vin[j].prevout);
+				BuildAddrIndex(coin.out.scriptPubKey, pos, vPosAddrid);
                 const COutPoint &out = tx.vin[j].prevout;
                 int res = ApplyTxInUndo(std::move(txundo.vprevout[j]), view, out);
                 if (res == DISCONNECT_FAILED) return DISCONNECT_FAILED;
@@ -1637,6 +1651,9 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
 
     // move best block pointer to prevout block
     view.SetBestBlock(pindex->pprev->GetBlockHash());
+
+    if (!EraseTxIndexDataForBlock(vPosTxid,vPosAddrid))
+        return DISCONNECT_UNCLEAN;
 
     return fClean ? DISCONNECT_OK : DISCONNECT_UNCLEAN;
 }
@@ -1767,6 +1784,19 @@ static bool WriteTxIndexDataForBlock(CValidationState& state,std::vector<std::pa
     }
 	if (!pblocktree->AddAddrIndex(vPosAddrid)){
 		return AbortNode(state, "Failed to write address index");
+	}
+    return true;
+}
+
+static bool EraseTxIndexDataForBlock(std::vector<std::pair<uint256, CDiskTxPos> > &vPosTxid,std::vector<std::pair<uint160, CExtDiskTxPos> > &vPosAddrid)
+{
+    if (!fTxIndex || !fAddrIndex) return true;
+
+    if (!pblocktree->EraseTxIndex(vPosTxid)) {
+        return false;
+    }
+	if (!pblocktree->EraseAddrIndex(vPosAddrid)){
+		return false;
 	}
     return true;
 }

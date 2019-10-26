@@ -171,6 +171,8 @@ public:
     bool WriteTxIndex(const std::vector<std::pair<uint256, CDiskTxPos> > &vect);
     bool ReadAddrIndex(uint160 addrid, std::vector<CExtDiskTxPos> &list);
     bool AddAddrIndex(const std::vector<std::pair<uint160, CExtDiskTxPos> > &list);
+    bool EraseTxIndex(const std::vector<std::pair<uint256, CDiskTxPos> >&vect);
+    bool EraseAddrIndex(const std::vector<std::pair<uint160, CExtDiskTxPos> > &list);
     bool WriteFlag(const std::string &name, bool fValue);
     bool ReadFlag(const std::string &name, bool &fValue);
     bool LoadBlockIndexGuts(const Consensus::Params& consensusParams, std::function<CBlockIndex*(const uint256&)> insertBlockIndex);
