@@ -19,6 +19,7 @@
 #include "script/standard.h"
 #include <sync.h>
 #include "txdb.h"
+#include "addressindex.h"
 #include <versionbits.h>
 
 #include <algorithm>
@@ -43,6 +44,7 @@ class CBlockPolicyEstimator;
 class CTxMemPool;
 class CValidationState;
 struct ChainTxData;
+class CAddrIndexBlockTreeDB;
 
 struct PrecomputedTransactionData;
 struct LockPoints;
@@ -456,7 +458,7 @@ extern std::unique_ptr<CCoinsViewDB> pcoinsdbview;
 extern std::unique_ptr<CCoinsViewCache> pcoinsTip;
 
 /** Global variable that points to the active block tree (protected by cs_main) */
-extern std::unique_ptr<CBlockTreeDB> pblocktree;
+extern std::unique_ptr<CAddrIndexBlockTreeDB> pblocktree;
 
 /**
  * Return the spend height, which is one more than the inputs.GetBestBlock().
