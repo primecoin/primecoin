@@ -1,14 +1,10 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2017 The Bitcoin Core developers
-// Distributed under the MIT software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include <addressindex.h>
-
+#include <validation.h>
 #include <chainparams.h>
 #include <hash.h>
 #include <random.h>
 #include <pow.h>
+#include "base58.h"
 #include "random.h"
 #include <uint256.h>
 #include <util.h>
@@ -17,56 +13,10 @@
 #include <prime/prime.h>
 
 #include <stdint.h>
-
 #include <boost/thread.hpp>
-
-
-#include <validation.h>
-
-#include <arith_uint256.h>
-#include "base58.h"
-#include <chain.h>
-#include <chainparams.h>
-#include <checkpoints.h>
-#include <checkqueue.h>
-#include <consensus/consensus.h>
-#include <consensus/merkle.h>
-#include <consensus/tx_verify.h>
-#include <consensus/validation.h>
-#include <cuckoocache.h>
-#include <hash.h>
-#include <init.h>
-#include <policy/fees.h>
-#include <policy/policy.h>
-#include <policy/rbf.h>
-#include <pow.h>
-#include <primitives/block.h>
-#include <primitives/transaction.h>
-#include <prime/parameters.h>
-#include <random.h>
-#include <reverse_iterator.h>
-#include <script/script.h>
-#include <script/sigcache.h>
-#include <script/standard.h>
-#include <timedata.h>
-#include <tinyformat.h>
-#include <txdb.h>
-#include <addressindex.h>
-#include <txmempool.h>
-#include <ui_interface.h>
-#include <undo.h>
-#include <util.h>
-#include <utilmoneystr.h>
-#include <utilstrencodings.h>
-#include <validationinterface.h>
-#include <warnings.h>
-
-#include <future>
-#include <sstream>
 #include <core_io.h>
-#include <boost/algorithm/string/replace.hpp>
-#include <boost/algorithm/string/join.hpp>
-#include <boost/thread.hpp>
+
+
 
 CAddrIndexBlockTreeDB::CAddrIndexBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe) : CBlockTreeDB(nCacheSize, fMemory, fWipe) {
     if (!Read('S', salt)) {
