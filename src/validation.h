@@ -18,7 +18,6 @@
 #include <script/script_error.h>
 #include "script/standard.h"
 #include <sync.h>
-#include "txdb.h"
 #include "addressindex.h"
 #include <versionbits.h>
 

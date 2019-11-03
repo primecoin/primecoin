@@ -6,7 +6,6 @@
 #include <validation.h>
 
 #include <arith_uint256.h>
-#include "base58.h"
 #include <chain.h>
 #include <chainparams.h>
 #include <checkpoints.h>
@@ -32,7 +31,6 @@
 #include <script/standard.h>
 #include <timedata.h>
 #include <tinyformat.h>
-#include <txdb.h>
 #include <addressindex.h>
 #include <txmempool.h>
 #include <ui_interface.h>
@@ -45,7 +43,6 @@
 
 #include <future>
 #include <sstream>
-#include <core_io.h>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/thread.hpp>
