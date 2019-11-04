@@ -1,8 +1,7 @@
-#ifndef ADDRESSINDEX_H
-#define ADDRESSINDEX_H
+#ifndef ADDRINDEX_H
+#define ADDRINDEX_H
 
 #include <txdb.h>
-
 #include <chainparams.h>
 #include <hash.h>
 #include <random.h>
@@ -15,7 +14,6 @@
 #include <prime/prime.h>
 
 #include <stdint.h>
-
 #include <boost/thread.hpp>
 
 struct CExtDiskTxPos : public CDiskTxPos
@@ -80,4 +78,4 @@ void BuildAddrIndex(const CScript &script, const CExtDiskTxPos &pos, std::vector
 
 bool EraseTxIndexDataForBlock(std::vector<std::pair<uint256, CDiskTxPos> > &vPosTxid,std::vector<std::pair<uint160, CExtDiskTxPos> > &vPosAddrid);
 
-#endif // ADDRESSINDEX_H
+#endif // ADDRINDEX_H

@@ -31,7 +31,7 @@
 #include <script/standard.h>
 #include <timedata.h>
 #include <tinyformat.h>
-#include <addressindex.h>
+#include <addrindex.h>
 #include <txmempool.h>
 #include <ui_interface.h>
 #include <undo.h>

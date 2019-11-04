@@ -6,7 +6,7 @@
 #include <init.h>
 #include <keystore.h>
 #include <validation.h>
-#include <addressindex.h>
+#include <addrindex.h>
 #include <validationinterface.h>
 #include <merkleblock.h>
 #include <net.h>
@@ -30,9 +30,7 @@
 
 #include <future>
 #include <stdint.h>
-
 #include <univalue.h>
-
 
 extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry);
 

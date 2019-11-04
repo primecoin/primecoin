@@ -1,4 +1,4 @@
-#include <addressindex.h>
+#include <addrindex.h>
 #include <validation.h>
 #include <chainparams.h>
 #include <hash.h>
@@ -15,8 +15,6 @@
 #include <stdint.h>
 #include <boost/thread.hpp>
 #include <core_io.h>
-
-
 
 CAddrIndexBlockTreeDB::CAddrIndexBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe) : CBlockTreeDB(nCacheSize, fMemory, fWipe) {
     if (!Read('S', salt)) {

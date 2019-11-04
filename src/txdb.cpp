@@ -3,8 +3,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <addressindex.h>
-
+#include <addrindex.h>
 #include <chainparams.h>
 #include <hash.h>
 #include <random.h>
@@ -16,7 +15,6 @@
 #include <prime/prime.h>
 
 #include <stdint.h>
-
 #include <boost/thread.hpp>
 
 static const char DB_COIN = 'C';

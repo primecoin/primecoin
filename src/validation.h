@@ -18,7 +18,7 @@
 #include <script/script_error.h>
 #include "script/standard.h"
 #include <sync.h>
-#include "addressindex.h"
+#include "addrindex.h"
 #include <versionbits.h>
 
 #include <algorithm>
