@@ -50,6 +50,9 @@ static const unsigned int BLOCKFILE_CHUNK_SIZE = 0x1000000; // 16 MiB
 static const unsigned int UNDOFILE_CHUNK_SIZE = 0x100000; // 1 MiB
 /** Fake height value used in CCoins to signify they are only in the memory pool (since 0.8) */
 static const unsigned int MEMPOOL_HEIGHT = 0x7FFFFFFF;
+/** the activation time for destroy transaction fee*/
+static const int64 DESTROYFEESWITCHTIME_MAINNET = 1588262400;
+static const int64 DESTROYFEESWITCHTIME_TESTNET = 1577808000;
 /** No amount larger than this (in satoshi) is valid */
 static const int64 MAX_MONEY = 2000000000u * COIN;
 inline bool MoneyRange(int64 nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }

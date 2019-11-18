@@ -1659,9 +1659,9 @@ bool CBlock::ConnectBlock(CValidationState &state, CBlockIndex* pindex, CCoinsVi
     if (fBenchmark)
         printf("- Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin)\n", (unsigned)vtx.size(), 0.001 * nTime, 0.001 * nTime / vtx.size(), nInputs <= 1 ? 0 : 0.001 * nTime / (nInputs-1));
 
-    //transaction fee will be destroyed after 1st January 2020 in the mainnet, and 1st December 2019 in the testnet
-    int64 nDestroyFeeSwitchTime = 1577808000;
-    if(fTestNet) nDestroyFeeSwitchTime = 1575129600;
+    //destroy transaction fees
+    int64 nDestroyFeeSwitchTime = DESTROYFEESWITCHTIME_MAINNET;
+    if(fTestNet) nDestroyFeeSwitchTime = DESTROYFEESWITCHTIME_TESTNET;
     if(pindex->nTime >= nDestroyFeeSwitchTime)
         nFees = 0;
 
@@ -4416,6 +4416,11 @@ CBlockTemplate* CreateNewBlock(CReserveKey& reservekey)
             }
         }
 
+        //destroy transaction fees
+        int64 nDestroyFeeSwitchTime = DESTROYFEESWITCHTIME_MAINNET;
+        if(fTestNet) nDestroyFeeSwitchTime = DESTROYFEESWITCHTIME_TESTNET;
+        if(GetAdjustedTime() > nDestroyFeeSwitchTime)
+            nFees = 0;
         nLastBlockTx = nBlockTx;
         nLastBlockSize = nBlockSize;
         if (fDebug && GetBoolArg("-printmining"))
