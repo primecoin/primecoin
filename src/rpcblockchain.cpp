@@ -92,10 +92,10 @@ Value settxfee(const Array& params, bool fHelp)
     if (fHelp || params.size() < 1 || params.size() > 1 || AmountFromValue(params[0]) < MIN_TX_FEE)
         throw runtime_error(
             "settxfee <amount>\n"
-            "<amount> is a real and is rounded to 0.01 (cent)\n"
-            "Minimum and default transaction fee per KB is 1 cent");
+            "<amount> is a real and is rounded to 0.001 (milicoin)\n"
+            "Minimum and default transaction fee per Byte is 1 milicoin");
 
-    nTransactionFee = (AmountFromValue(params[0]) / CENT) * CENT; // round to cent
+    nTransactionFee = (AmountFromValue(params[0]) / mCOIN) * mCOIN; // round to cent
     return true;
 }
 
