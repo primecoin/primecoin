@@ -55,21 +55,6 @@ struct CExtDiskTxPos : public CDiskTxPos
     }
 };
 
-class CAddrIndexBlockTreeDB : public CBlockTreeDB
-{
-private:
-    uint256 salt;
-public:
-    explicit CAddrIndexBlockTreeDB(size_t nCacheSize, bool fMemory = false, bool fWipe = false);
-
-    CAddrIndexBlockTreeDB(const CBlockTreeDB&) = delete;
-    CAddrIndexBlockTreeDB& operator=(const CBlockTreeDB&) = delete;
-    
-    bool ReadAddrIndex(uint160 addrid, std::vector<CExtDiskTxPos> &list);
-    bool AddAddrIndex(const std::vector<std::pair<uint160, CExtDiskTxPos> > &list);
-    bool EraseAddrIndex(const std::vector<std::pair<uint160, CExtDiskTxPos> > &list);
-};
-
 bool ReadTransaction(CTransactionRef& tx, const CDiskTxPos &pos, uint256 &hashBlock);
 
 bool FindTransactionsByDestination(const CTxDestination &dest, std::set<CExtDiskTxPos> &setpos);

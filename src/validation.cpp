@@ -279,7 +279,7 @@ CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& loc
 
 std::unique_ptr<CCoinsViewDB> pcoinsdbview;
 std::unique_ptr<CCoinsViewCache> pcoinsTip;
-std::unique_ptr<CAddrIndexBlockTreeDB> pblocktree;
+std::unique_ptr<CBlockTreeDB> pblocktree;
 
 enum FlushStateMode {
     FLUSH_STATE_NONE,
@@ -1661,7 +1661,7 @@ static bool WriteTxIndexDataForBlock(CValidationState& state,std::vector<std::pa
     if (!pblocktree->WriteTxIndex(vPosTxid)) {
         return AbortNode(state, "Failed to write transaction index");
     }
-	if (!pblocktree->AddAddrIndex(vPosAddrid)){
+	if (!pblocktree->WriteAddrIndex(vPosAddrid)){
 		return AbortNode(state, "Failed to write address index");
 	}
     return true;

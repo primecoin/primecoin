@@ -16,62 +16,6 @@
 #include <boost/thread.hpp>
 #include <core_io.h>
 
-CAddrIndexBlockTreeDB::CAddrIndexBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe) : CBlockTreeDB(nCacheSize, fMemory, fWipe) {
-    if (!Read('S', salt)) {
-        salt = GetRandHash();
-        Write('S', salt);
-    }
-}
-
-bool CAddrIndexBlockTreeDB::ReadAddrIndex(uint160 addrid, std::vector<CExtDiskTxPos> &list) {
-    boost::scoped_ptr<CDBIterator> pcursor(NewIterator());
-
-    uint64_t lookupid;
-    {
-        CHashWriter ss(SER_GETHASH, 0);
-        ss << salt;
-        ss << addrid;
-        lookupid = UintToArith256(ss.GetHash()).GetLow64();
-    }
-
-    pcursor->Seek(std::make_pair('a', lookupid));
-
-    while (pcursor->Valid()) {
-        std::pair<std::pair<char, uint64_t>, CExtDiskTxPos> key;
-        if (pcursor->GetKey(key) && key.first.first == 'a' && key.first.second == lookupid) {
-            list.push_back(key.second);
-        } else {
-            break;
-        }
-        pcursor->Next();
-    }
-    return true;
-}
-
-bool CAddrIndexBlockTreeDB::AddAddrIndex(const std::vector<std::pair<uint160, CExtDiskTxPos> > &list) {
-    unsigned char foo[0];
-    CDBBatch batch(*this);
-    for (std::vector<std::pair<uint160, CExtDiskTxPos> >::const_iterator it=list.begin(); it!=list.end(); it++) {
-        CHashWriter ss(SER_GETHASH, 0);
-        ss << salt;
-        ss << it->first;
-        batch.Write(std::make_pair(std::make_pair('a', UintToArith256(ss.GetHash()).GetLow64()), it->second), FLATDATA(foo));
-    }
-    return WriteBatch(batch, true);
-}
-
-bool CAddrIndexBlockTreeDB::EraseAddrIndex(const std::vector<std::pair<uint160, CExtDiskTxPos> > &list) {
-    unsigned char foo[0];
-    CDBBatch batch(*this);
-    for (std::vector<std::pair<uint160, CExtDiskTxPos> >::const_iterator it=list.begin(); it!=list.end(); it++) {
-        CHashWriter ss(SER_GETHASH, 0);
-        ss << salt;
-        ss << it->first;
-        batch.Erase(std::make_pair(std::make_pair('a', UintToArith256(ss.GetHash()).GetLow64()), it->second));
-    }
-    return WriteBatch(batch, true);
-}
-
 bool ReadTransaction(CTransactionRef& tx, const CDiskTxPos &pos, uint256 &hashBlock) {
     CAutoFile file(OpenBlockFile(pos, true), SER_DISK, CLIENT_VERSION);
     if (file.IsNull())

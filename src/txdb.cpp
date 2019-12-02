@@ -21,6 +21,7 @@ static const char DB_COIN = 'C';
 static const char DB_COINS = 'c';
 static const char DB_BLOCK_FILES = 'f';
 static const char DB_TXINDEX = 't';
+static const char DB_ADDRINDEX = 'a';
 static const char DB_BLOCK_INDEX = 'b';
 
 static const char DB_BEST_BLOCK = 'B';
@@ -147,6 +148,10 @@ size_t CCoinsViewDB::EstimateSize() const
 }
 
 CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe) : CDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe) {
+    if (!Read('S', salt)) {
+        salt = GetRandHash();
+        Write('S', salt);
+    }
 }
 
 bool CBlockTreeDB::ReadBlockFileInfo(int nFile, CBlockFileInfo &info) {
@@ -251,6 +256,55 @@ bool CBlockTreeDB::EraseTxIndex(const std::vector<std::pair<uint256, CDiskTxPos>
     for (std::vector<std::pair<uint256,CDiskTxPos> >::const_iterator it=vect.begin(); it!=vect.end(); it++)
         batch.Erase(std::make_pair(DB_TXINDEX, it->first));
     return WriteBatch(batch);
+}
+
+bool CBlockTreeDB::ReadAddrIndex(uint160 addrid, std::vector<CExtDiskTxPos> &list) {
+    boost::scoped_ptr<CDBIterator> pcursor(NewIterator());
+
+    uint256 lookupid;
+    {
+        CHashWriter ss(SER_GETHASH, 0);
+        ss << salt;
+        ss << addrid;
+        lookupid = ss.GetHash();
+    }
+
+    pcursor->Seek(std::make_pair(DB_ADDRINDEX, lookupid));
+
+    while (pcursor->Valid()) {
+        std::pair<std::pair<char, uint256>, CExtDiskTxPos> key;
+        if (pcursor->GetKey(key) && key.first.first == DB_ADDRINDEX && key.first.second == lookupid) {
+            list.push_back(key.second);
+        } else {
+            break;
+        }
+        pcursor->Next();
+    }
+    return true;
+}
+
+bool CBlockTreeDB::WriteAddrIndex(const std::vector<std::pair<uint160, CExtDiskTxPos> > &list) {
+    unsigned char foo[0];
+    CDBBatch batch(*this);
+    for (std::vector<std::pair<uint160, CExtDiskTxPos> >::const_iterator it=list.begin(); it!=list.end(); it++) {
+        CHashWriter ss(SER_GETHASH, 0);
+        ss << salt;
+        ss << it->first;
+        batch.Write(std::make_pair(std::make_pair(DB_ADDRINDEX, ss.GetHash()), it->second), FLATDATA(foo));
+    }
+    return WriteBatch(batch, true);
+}
+
+bool CBlockTreeDB::EraseAddrIndex(const std::vector<std::pair<uint160, CExtDiskTxPos> > &list) {
+    unsigned char foo[0];
+    CDBBatch batch(*this);
+    for (std::vector<std::pair<uint160, CExtDiskTxPos> >::const_iterator it=list.begin(); it!=list.end(); it++) {
+        CHashWriter ss(SER_GETHASH, 0);
+        ss << salt;
+        ss << it->first;
+        batch.Erase(std::make_pair(std::make_pair(DB_ADDRINDEX, ss.GetHash()), it->second));
+    }
+    return WriteBatch(batch, true);
 }
 
 bool CBlockTreeDB::WriteFlag(const std::string &name, bool fValue) {
