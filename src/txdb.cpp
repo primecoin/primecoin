@@ -148,10 +148,6 @@ size_t CCoinsViewDB::EstimateSize() const
 }
 
 CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe) : CDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe) {
-    if (!Read('S', salt)) {
-        salt = GetRandHash();
-        Write('S', salt);
-    }
 }
 
 bool CBlockTreeDB::ReadBlockFileInfo(int nFile, CBlockFileInfo &info) {
@@ -264,7 +260,6 @@ bool CBlockTreeDB::ReadAddrIndex(uint160 addrid, std::vector<CExtDiskTxPos> &lis
     uint256 lookupid;
     {
         CHashWriter ss(SER_GETHASH, 0);
-        ss << salt;
         ss << addrid;
         lookupid = ss.GetHash();
     }
@@ -288,7 +283,6 @@ bool CBlockTreeDB::WriteAddrIndex(const std::vector<std::pair<uint160, CExtDiskT
     CDBBatch batch(*this);
     for (std::vector<std::pair<uint160, CExtDiskTxPos> >::const_iterator it=list.begin(); it!=list.end(); it++) {
         CHashWriter ss(SER_GETHASH, 0);
-        ss << salt;
         ss << it->first;
         batch.Write(std::make_pair(std::make_pair(DB_ADDRINDEX, ss.GetHash()), it->second), FLATDATA(foo));
     }
@@ -300,7 +294,6 @@ bool CBlockTreeDB::EraseAddrIndex(const std::vector<std::pair<uint160, CExtDiskT
     CDBBatch batch(*this);
     for (std::vector<std::pair<uint160, CExtDiskTxPos> >::const_iterator it=list.begin(); it!=list.end(); it++) {
         CHashWriter ss(SER_GETHASH, 0);
-        ss << salt;
         ss << it->first;
         batch.Erase(std::make_pair(std::make_pair(DB_ADDRINDEX, ss.GetHash()), it->second));
     }
