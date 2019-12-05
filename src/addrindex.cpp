@@ -91,13 +91,10 @@ void BuildAddrIndex(const CScript &script, const CExtDiskTxPos &pos, std::vector
 	}
 }
 
-bool EraseTxIndexDataForBlock(std::vector<std::pair<uint256, CDiskTxPos> > &vPosTxid,std::vector<std::pair<uint160, CExtDiskTxPos> > &vPosAddrid)
+bool EraseAddrIndex(std::vector<std::pair<uint160, CExtDiskTxPos> > &vPosAddrid)
 {
     if (!fTxIndex || !fAddrIndex) return true;
 
-    if (!pblocktree->EraseTxIndex(vPosTxid)) {
-        return false;
-    }
 	if (!pblocktree->EraseAddrIndex(vPosAddrid)){
 		return false;
 	}

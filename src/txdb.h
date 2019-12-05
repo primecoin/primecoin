@@ -128,7 +128,6 @@ public:
     bool ReadReindexing(bool &fReindexing);
     bool ReadTxIndex(const uint256 &txid, CDiskTxPos &pos);
     bool WriteTxIndex(const std::vector<std::pair<uint256, CDiskTxPos> > &vect);
-    bool EraseTxIndex(const std::vector<std::pair<uint256, CDiskTxPos> >&vect);
     bool ReadAddrIndex(uint160 addrid, std::vector<CExtDiskTxPos> &list);
     bool WriteAddrIndex(const std::vector<std::pair<uint160, CExtDiskTxPos> > &list);
     bool EraseAddrIndex(const std::vector<std::pair<uint160, CExtDiskTxPos> > &list);

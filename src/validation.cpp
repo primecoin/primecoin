@@ -1556,9 +1556,7 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
     }
 
     CExtDiskTxPos pos(CDiskTxPos(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size())), pindex->nHeight);
-    std::vector<std::pair<uint256, CDiskTxPos> > vPosTxid;
     std::vector<std::pair<uint160, CExtDiskTxPos> > vPosAddrid;
-    vPosTxid.reserve(block.vtx.size());
 	vPosAddrid.reserve(4*block.vtx.size());
 
     // undo transactions in reverse order
@@ -1566,7 +1564,6 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
         const CTransaction &tx = *(block.vtx[i]);
         uint256 hash = tx.GetHash();
         bool is_coinbase = tx.IsCoinBase();
-        vPosTxid.push_back(std::make_pair(hash, pos));
 
         // Check that all outputs are available and match the outputs in the block itself
         // exactly.
@@ -1604,7 +1601,7 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
     // move best block pointer to prevout block
     view.SetBestBlock(pindex->pprev->GetBlockHash());
     
-    if (!EraseTxIndexDataForBlock(vPosTxid,vPosAddrid))
+    if (!EraseAddrIndex(vPosAddrid))
         return DISCONNECT_UNCLEAN;
 
     return fClean ? DISCONNECT_OK : DISCONNECT_UNCLEAN;

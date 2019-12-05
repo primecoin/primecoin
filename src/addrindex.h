@@ -61,6 +61,6 @@ bool FindTransactionsByDestination(const CTxDestination &dest, std::set<CExtDisk
 
 void BuildAddrIndex(const CScript &script, const CExtDiskTxPos &pos, std::vector<std::pair<uint160, CExtDiskTxPos> > &out);
 
-bool EraseTxIndexDataForBlock(std::vector<std::pair<uint256, CDiskTxPos> > &vPosTxid,std::vector<std::pair<uint160, CExtDiskTxPos> > &vPosAddrid);
+bool EraseAddrIndex(std::vector<std::pair<uint160, CExtDiskTxPos> > &vPosAddrid);
 
 #endif // ADDRINDEX_H
