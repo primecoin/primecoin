@@ -137,6 +137,7 @@ BITCOIN_CORE_H = \
   rpc/server.h \
   rpc/register.h \
   rpc/util.h \
+  rpc/addresstransaction.h \
   scheduler.h \
   script/sigcache.h \
   script/sign.h \
@@ -154,6 +155,7 @@ BITCOIN_CORE_H = \
   timedata.h \
   torcontrol.h \
   txdb.h \
+  addrindex.h \
   txmempool.h \
   ui_interface.h \
   undo.h \
@@ -221,11 +223,13 @@ libbitcoin_server_a_SOURCES = \
   rpc/rawtransaction.cpp \
   rpc/safemode.cpp \
   rpc/server.cpp \
+  rpc/addresstransaction.cpp \
   script/sigcache.cpp \
   script/ismine.cpp \
   timedata.cpp \
   torcontrol.cpp \
   txdb.cpp \
+  addrindex.cpp \
   txmempool.cpp \
   ui_interface.cpp \
   validation.cpp \

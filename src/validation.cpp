@@ -31,7 +31,7 @@
 #include <script/standard.h>
 #include <timedata.h>
 #include <tinyformat.h>
-#include <txdb.h>
+#include <addrindex.h>
 #include <txmempool.h>
 #include <ui_interface.h>
 #include <undo.h>
@@ -221,6 +221,7 @@ bool fPruneMode = false;
 bool fIsBareMultisigStd = DEFAULT_PERMIT_BAREMULTISIG;
 bool fRequireStandard = true;
 bool fCheckBlockIndex = false;
+bool fAddrIndex = false;
 bool fCheckpointsEnabled = DEFAULT_CHECKPOINTS_ENABLED;
 size_t nCoinCacheUsage = 5000 * 300;
 uint64_t nPruneTarget = 0;
@@ -1568,6 +1569,10 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
         return DISCONNECT_FAILED;
     }
 
+    CExtDiskTxPos pos(CDiskTxPos(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size())), pindex->nHeight);
+    std::vector<std::pair<uint160, CExtDiskTxPos> > vPosAddrid;
+	vPosAddrid.reserve(4*block.vtx.size());
+
     // undo transactions in reverse order
     for (int i = block.vtx.size() - 1; i >= 0; i--) {
         const CTransaction &tx = *(block.vtx[i]);
@@ -1577,6 +1582,7 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
         // Check that all outputs are available and match the outputs in the block itself
         // exactly.
         for (size_t o = 0; o < tx.vout.size(); o++) {
+            BuildAddrIndex(tx.vout[o].scriptPubKey, pos, vPosAddrid);
             if (!tx.vout[o].scriptPubKey.IsUnspendable()) {
                 COutPoint out(hash, o);
                 Coin coin;
@@ -1595,6 +1601,8 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
                 return DISCONNECT_FAILED;
             }
             for (unsigned int j = tx.vin.size(); j-- > 0;) {
+                const Coin& coin = view.AccessCoin(tx.vin[j].prevout);
+                BuildAddrIndex(coin.out.scriptPubKey, pos, vPosAddrid);
                 const COutPoint &out = tx.vin[j].prevout;
                 int res = ApplyTxInUndo(std::move(txundo.vprevout[j]), view, out);
                 if (res == DISCONNECT_FAILED) return DISCONNECT_FAILED;
@@ -1606,6 +1614,9 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
 
     // move best block pointer to prevout block
     view.SetBestBlock(pindex->pprev->GetBlockHash());
+    
+    if (!EraseAddrIndex(vPosAddrid))
+        return DISCONNECT_UNCLEAN;
 
     return fClean ? DISCONNECT_OK : DISCONNECT_UNCLEAN;
 }
@@ -1654,23 +1665,16 @@ static bool WriteUndoDataForBlock(const CBlockUndo& blockundo, CValidationState&
     return true;
 }
 
-static bool WriteTxIndexDataForBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex)
+static bool WriteTxIndexDataForBlock(CValidationState& state,std::vector<std::pair<uint256, CDiskTxPos> > &vPosTxid,std::vector<std::pair<uint160, CExtDiskTxPos> > &vPosAddrid)
 {
-    if (!fTxIndex) return true;
+    if (!fTxIndex || !fAddrIndex) return true;
 
-    CDiskTxPos pos(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size()));
-    std::vector<std::pair<uint256, CDiskTxPos> > vPos;
-    vPos.reserve(block.vtx.size());
-    for (const CTransactionRef& tx : block.vtx)
-    {
-        vPos.push_back(std::make_pair(tx->GetHash(), pos));
-        pos.nTxOffset += ::GetSerializeSize(*tx, SER_DISK, CLIENT_VERSION);
-    }
-
-    if (!pblocktree->WriteTxIndex(vPos)) {
+    if (!pblocktree->WriteTxIndex(vPosTxid)) {
         return AbortNode(state, "Failed to write transaction index");
     }
-
+	if (!pblocktree->WriteAddrIndex(vPosAddrid)){
+		return AbortNode(state, "Failed to write address index");
+	}
     return true;
 }
 
@@ -1904,6 +1908,14 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     blockundo.vtxundo.reserve(block.vtx.size() - 1);
     std::vector<PrecomputedTransactionData> txdata;
     txdata.reserve(block.vtx.size()); // Required so that pointers to individual PrecomputedTransactionData don't get invalidated
+    
+    // store address in tx.vin here, some tx may can't access at the tail part
+    CExtDiskTxPos pos(CDiskTxPos(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size())), pindex->nHeight);
+    std::vector<std::pair<uint256, CDiskTxPos> > vPosTxid;
+    std::vector<std::pair<uint160, CExtDiskTxPos> > vPosAddrid;
+    vPosTxid.reserve(block.vtx.size());
+    vPosAddrid.reserve(4*block.vtx.size());
+    
     for (unsigned int i = 0; i < block.vtx.size(); i++)
     {
         const CTransaction &tx = *(block.vtx[i]);
@@ -1927,7 +1939,9 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
             // be in ConnectBlock because they require the UTXO set
             prevheights.resize(tx.vin.size());
             for (size_t j = 0; j < tx.vin.size(); j++) {
-                prevheights[j] = view.AccessCoin(tx.vin[j].prevout).nHeight;
+                const Coin& coin = view.AccessCoin(tx.vin[j].prevout);
+                prevheights[j] = coin.nHeight;
+                BuildAddrIndex(coin.out.scriptPubKey, pos, vPosAddrid);
             }
 
             if (!SequenceLocks(tx, nLockTimeFlags, &prevheights, *pindex)) {
@@ -1935,6 +1949,12 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
                                  REJECT_INVALID, "bad-txns-nonfinal");
             }
         }
+
+        for(const CTxOut &txout: tx.vout) {
+	        BuildAddrIndex(txout.scriptPubKey, pos, vPosAddrid);
+        }
+        vPosTxid.push_back(std::make_pair(tx.GetHash(), pos));
+        pos.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
 
         // GetTransactionSigOpCost counts 3 types of sigops:
         // * legacy (always)
@@ -1988,7 +2008,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
         setDirtyBlockIndex.insert(pindex);
     }
 
-    if (!WriteTxIndexDataForBlock(block, state, pindex))
+    if (!WriteTxIndexDataForBlock(state,vPosTxid,vPosAddrid))
         return false;
 
     assert(pindex->phashBlock);
@@ -3807,6 +3827,9 @@ bool static LoadBlockIndexDB(const CChainParams& chainparams)
     pblocktree->ReadFlag("txindex", fTxIndex);
     LogPrintf("%s: transaction index %s\n", __func__, fTxIndex ? "enabled" : "disabled");
 
+    pblocktree->ReadFlag("addrindex", fAddrIndex);
+    LogPrintf("LoadBlockIndexDB(): address index %s\n", fAddrIndex ? "enabled" : "disabled");
+    
     return true;
 }
 
@@ -4193,6 +4216,8 @@ bool LoadBlockIndex(const CChainParams& chainparams)
         // Use the provided setting for -txindex in the new database
         fTxIndex = gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX);
         pblocktree->WriteFlag("txindex", fTxIndex);
+        fAddrIndex = gArgs.GetBoolArg("-addrindex", DEFAULT_ADDRINDEX);
+        pblocktree->WriteFlag("addrindex", fAddrIndex);
     }
     return true;
 }

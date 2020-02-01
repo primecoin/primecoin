@@ -19,6 +19,7 @@
 class CBlockIndex;
 class CCoinsViewDBCursor;
 class uint256;
+struct CExtDiskTxPos; 
 
 //! No need to periodic flush if at least this much space still available.
 static constexpr int MAX_BLOCK_COINSDB_USAGE = 10;
@@ -61,6 +62,12 @@ struct CDiskTxPos : public CDiskBlockPos
     void SetNull() {
         CDiskBlockPos::SetNull();
         nTxOffset = 0;
+    }
+    
+    friend bool operator<(const CDiskTxPos &a, const CDiskTxPos &b) {
+        return (a.nFile < b.nFile || (
+               (a.nFile == b.nFile) && (a.nPos < b.nPos || (
+               (a.nPos == b.nPos) && (a.nTxOffset < b.nTxOffset)))));
     }
 };
 
@@ -122,6 +129,9 @@ public:
     bool ReadReindexing(bool &fReindexing);
     bool ReadTxIndex(const uint256 &txid, CDiskTxPos &pos);
     bool WriteTxIndex(const std::vector<std::pair<uint256, CDiskTxPos> > &vect);
+    bool ReadAddrIndex(uint160 addrid, std::vector<CExtDiskTxPos> &list);
+    bool WriteAddrIndex(const std::vector<std::pair<uint160, CExtDiskTxPos> > &list);
+    bool EraseAddrIndex(const std::vector<std::pair<uint160, CExtDiskTxPos> > &list);
     bool WriteFlag(const std::string &name, bool fValue);
     bool ReadFlag(const std::string &name, bool &fValue);
     bool LoadBlockIndexGuts(const Consensus::Params& consensusParams, std::function<CBlockIndex*(const uint256&)> insertBlockIndex);
