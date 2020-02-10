@@ -320,6 +320,15 @@ UniValue searchutxos(const JSONRPCRequest& request)
                     object.pushKV("txid", ptx->GetHash().GetHex());
                     object.pushKV("n", (int64_t)i);
                     object.pushKV("value", ValueFromAmount(itOut.nValue));
+                    BlockMap::iterator mi = mapBlockIndex.find(hashBlock);
+                    if (mi != mapBlockIndex.end() && (*mi).second) {
+                        CBlockIndex* pindex = (*mi).second;
+                        if (chainActive.Contains(pindex)) {
+                            object.pushKV("confirmations", (int64_t)(1 + chainActive.Height() - pindex->nHeight));
+                        } else {
+                            object.pushKV("confirmations", (int64_t)0);
+                        }
+                    }
                     UniValue o(UniValue::VOBJ);
                     ScriptPubKeyToUniv(itOut.scriptPubKey, o, true);
                     object.pushKV("scriptPubKey", o);
