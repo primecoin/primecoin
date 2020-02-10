@@ -1046,7 +1046,7 @@ static const CRPCCommand commands[] =
     { "rawtransactions",    "combinerawtransaction",  &combinerawtransaction,  {"txs"} },
     { "rawtransactions",    "signrawtransaction",     &signrawtransaction,     {"hexstring","prevtxs","privkeys","sighashtype"} }, /* uses wallet if enabled */
     { "addressindex",       "searchrawtransactions",  &searchrawtransactions,  {"address","verbose","skip","count"}  },
-    { "addressindex",       "searchutxos",  &getaddressutxo,  {"address","verbose","skip","count"}  },
+    { "addressindex",       "searchutxos",            &searchutxos,  {"address","verbose","skip","count"}  },
     { "addressindex",       "getaddressbalance",      &getaddressbalance,      {"address"} },
     { "blockchain",         "gettxoutproof",          &gettxoutproof,          {"txids", "blockhash"} },
     { "blockchain",         "verifytxoutproof",       &verifytxoutproof,       {"proof"} },
