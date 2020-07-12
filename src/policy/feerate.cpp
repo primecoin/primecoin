@@ -28,7 +28,7 @@ CAmount CFeeRate::GetFee(size_t nBytes_) const
     // Bitcoin:
     // CAmount nFee = nSatoshisPerK * nSize / 1000;
     // Primecoin:
-    CAmount nFee = (1 + (nSize / 1000)) * nSatoshisPerK;
+    CAmount nFee = nSize * (nSatoshisPerK / 1000);
 
     if (nFee == 0 && nSize != 0) {
         if (nSatoshisPerK > 0)
