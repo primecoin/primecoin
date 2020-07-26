@@ -37,9 +37,8 @@ public:
     CAmount GetFee(size_t nBytes) const;
     /**
      * Return the fee in satoshis for a size of 1000 bytes
-     * Primecoin use aligned to minimum (0.01) fee, use 999 as argument of GetFee
      */
-    CAmount GetFeePerK() const { return GetFee(999); }
+    CAmount GetFeePerK() const { return GetFee(1000); }
     friend bool operator<(const CFeeRate& a, const CFeeRate& b) { return a.nSatoshisPerK < b.nSatoshisPerK; }
     friend bool operator>(const CFeeRate& a, const CFeeRate& b) { return a.nSatoshisPerK > b.nSatoshisPerK; }
     friend bool operator==(const CFeeRate& a, const CFeeRate& b) { return a.nSatoshisPerK == b.nSatoshisPerK; }

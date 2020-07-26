@@ -52,7 +52,7 @@ static const bool DEFAULT_WHITELISTRELAY = true;
 /** Default for -whitelistforcerelay. */
 static const bool DEFAULT_WHITELISTFORCERELAY = true;
 /** Default for -minrelaytxfee, minimum relay fee for transactions */
-static const unsigned int DEFAULT_MIN_RELAY_TX_FEE = 1000000;
+static const unsigned int DEFAULT_MIN_RELAY_TX_FEE = 100000000;
 //! -maxtxfee default (disabled for Primecoin network)
 static const CAmount DEFAULT_TRANSACTION_MAXFEE = 1000000000U * COIN;
 //! Discourage users to set fees higher than this amount (in satoshis) per kB
