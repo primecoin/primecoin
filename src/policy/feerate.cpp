@@ -37,6 +37,26 @@ CAmount CFeeRate::GetFee(size_t nBytes_) const
     return nFee;
 }
 
+CAmount CFeeRate::GetFeeV1(size_t nBytes_) const
+{
+    assert(nBytes_ <= uint64_t(std::numeric_limits<int64_t>::max()));
+    int64_t nSize = int64_t(nBytes_);
+
+    // Bitcoin:
+    // CAmount nFee = nSatoshisPerK * nSize / 1000;
+    // Primecoin:
+    CAmount nFee = (1 + (nSize / 1000)) * nSatoshisPerK;
+
+    if (nFee == 0 && nSize != 0) {
+        if (nSatoshisPerK > 0)
+            nFee = CAmount(1);
+        if (nSatoshisPerK < 0)
+            nFee = CAmount(-1);
+    }
+
+    return nFee;
+}
+
 std::string CFeeRate::ToString() const
 {
     return strprintf("%d.%08d %s/kB", nSatoshisPerK / COIN, nSatoshisPerK % COIN, CURRENCY_UNIT);

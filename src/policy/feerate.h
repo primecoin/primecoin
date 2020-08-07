@@ -36,6 +36,10 @@ public:
      */
     CAmount GetFee(size_t nBytes) const;
     /**
+     * Return the fee in satoshis for the given size in bytes. Old version.
+     */
+    CAmount GetFeeV1(size_t nBytes) const;
+    /**
      * Return the fee in satoshis for a size of 1000 bytes
      */
     CAmount GetFeePerK() const { return GetFee(1000); }
