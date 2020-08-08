@@ -53,8 +53,6 @@ static const bool DEFAULT_WHITELISTRELAY = true;
 static const bool DEFAULT_WHITELISTFORCERELAY = true;
 /** Default for -minrelaytxfee, minimum relay fee for transactions */
 static const unsigned int DEFAULT_MIN_RELAY_TX_FEE = 100000000;
-/** Default for -minprotocoltxfee, minimum fee for transactions */
-static const unsigned int DEFAULT_MIN_PROTOCOL_TX_FEE = 1000000;
 //! -maxtxfee default (disabled for Primecoin network)
 static const CAmount DEFAULT_TRANSACTION_MAXFEE = 1000000000U * COIN;
 //! Discourage users to set fees higher than this amount (in satoshis) per kB
@@ -184,6 +182,7 @@ extern size_t nCoinCacheUsage;
 extern CFeeRate minRelayTxFee;
 /** A transaction fee smaller than this is invalid */
 extern CFeeRate minProtocolTxFee;
+extern CFeeRate minProtocolTxFeeV1;
 /** Absolute maximum transaction fee (in satoshis) used by wallet and mempool (rejects high fee in sendrawtransaction) */
 extern CAmount maxTxFee;
 /** If the tip is older than this (in seconds), the node is considered to be in initial block download. */

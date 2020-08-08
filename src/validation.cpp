@@ -226,7 +226,8 @@ uint256 hashAssumeValid;
 arith_uint256 nMinimumChainWork;
 
 CFeeRate minRelayTxFee = CFeeRate(DEFAULT_MIN_RELAY_TX_FEE);
-CFeeRate minProtocolTxFee = CFeeRate(DEFAULT_MIN_PROTOCOL_TX_FEE);
+CFeeRate minProtocolTxFee = CFeeRate(COIN);
+CFeeRate minProtocolTxFeeV1 = CFeeRate(CENT);
 CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
 
 CBlockPolicyEstimator feeEstimator;
@@ -2026,7 +2027,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
             }
 
             size_t nSize = ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
-            if(txfee < ::minProtocolTxFee.GetFeeV1(nSize)) {
+            if(txfee < ::minProtocolTxFeeV1.GetFee(nSize, true)) {
                 return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "min transaction fee not met");
             }
 
