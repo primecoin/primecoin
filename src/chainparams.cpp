@@ -169,6 +169,11 @@ public:
                         //   (the tx=... number in the SetBestChain debug.log lines)
             3.1         // * estimated number of transactions per second after that timestamp
         };
+
+        // Deployment of upgrade fee rule, destroy fee
+        consensus.upgradFeeSwitchTime = 1609459200; // January 1st, 2021.
+        consensus.destroyMinerFeeSwitchTime = 1609459200; // January 1st, 2021.
+
     }
 };
 
@@ -260,6 +265,10 @@ public:
             17082348,
             0.09
         };
+
+        // Deployment of upgrade fee rule, destroy fee
+        consensus.upgradFeeSwitchTime = 1598918400; // September 1st, 2020.
+        consensus.destroyMinerFeeSwitchTime = 1598918400; // September 1st, 2020.
 
     }
 };

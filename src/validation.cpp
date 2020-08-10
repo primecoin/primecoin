@@ -2027,7 +2027,13 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
             }
 
             size_t nSize = ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
-            if(txfee < ::minProtocolTxFeeV1.GetFee(nSize, true)) {
+            CAmount minTxFee;
+            if(block.GetBlockTime() > chainparams.GetConsensus().upgradFeeSwitchTime) {
+                minTxFee = ::minProtocolTxFee.GetFee(nSize);
+            } else {
+                minTxFee = ::minProtocolTxFeeV1.GetFee(nSize, true);
+            }
+            if(txfee < minTxFee) {
                 return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "min transaction fee not met");
             }
 
@@ -2089,6 +2095,9 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     int64_t nTime3 = GetTimeMicros(); nTimeConnect += nTime3 - nTime2;
     LogPrint(BCLog::BENCH, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs (%.2fms/blk)]\n", (unsigned)block.vtx.size(), MILLI * (nTime3 - nTime2), MILLI * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : MILLI * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * MICRO, nTimeConnect * MILLI / nBlocksTotal);
 
+    if(block.GetBlockTime() > chainparams.GetConsensus().destroyMinerFeeSwitchTime) {
+        nFees = 0;
+    }
     CAmount blockReward = nFees + GetBlockSubsidy(pindex->nBits, chainparams.GetConsensus());
     if (block.vtx[0]->GetValueOut() > blockReward)
         return state.DoS(100,
