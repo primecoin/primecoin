@@ -24,8 +24,6 @@ public:
     CBigNum bnPrimeChainMultiplier;
     int64_t nMoneySupply;
 
-    uint32_t nPrimeChainType;
-    uint32_t nPrimeChainLength;
     uint32_t nWorkTransition;
 };
 
@@ -134,8 +132,6 @@ public:
         CBlockHeader::SetNull();
         vtx.clear();
         fChecked = false;
-        nPrimeChainType = 0;
-        nPrimeChainLength = 0;
     }
 
     CBlockHeader GetBlockHeader() const
