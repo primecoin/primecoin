@@ -195,7 +195,7 @@ public:
     arith_uint256 nChainWork;
 
     unsigned int nWorkTransition; 	/// primecoin: work transition ratio (memory-only)
-	unsigned int nPrimeChainType;   /// primecoin: chain type
+    unsigned int nPrimeChainType;   /// primecoin: chain type
     unsigned int nPrimeChainLength; /// primecoin: chain length
     
     //! Number of transactions in this block.
