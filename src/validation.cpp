@@ -2095,7 +2095,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     int64_t nTime3 = GetTimeMicros(); nTimeConnect += nTime3 - nTime2;
     LogPrint(BCLog::BENCH, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs (%.2fms/blk)]\n", (unsigned)block.vtx.size(), MILLI * (nTime3 - nTime2), MILLI * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : MILLI * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * MICRO, nTimeConnect * MILLI / nBlocksTotal);
 
-    if(block.GetBlockTime() > chainparams.GetConsensus().destroyMinerFeeSwitchTime) {
+    if(pindex->nHeight > chainparams.GetConsensus().RFC2Height) {
         nFees = 0;
     }
     CAmount blockReward = nFees + GetBlockSubsidy(pindex->nBits, chainparams.GetConsensus());
