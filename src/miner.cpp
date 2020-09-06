@@ -163,7 +163,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     coinbaseTx.vin[0].prevout.SetNull();
     coinbaseTx.vout.resize(1);
     coinbaseTx.vout[0].scriptPubKey = scriptPubKeyIn;
-    if(nTime1 > chainparams.GetConsensus().destroyMinerFeeSwitchTime) {
+    if(nHeight > chainparams.GetConsensus().RFC2Height) {
         coinbaseTx.vout[0].nValue = GetBlockSubsidy(pindexPrev->nBits, chainparams.GetConsensus());
     } else {
         coinbaseTx.vout[0].nValue = nFees + GetBlockSubsidy(pindexPrev->nBits, chainparams.GetConsensus());

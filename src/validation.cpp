@@ -2028,7 +2028,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
 
             size_t nSize = ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
             CAmount minTxFee;
-            if(block.GetBlockTime() > chainparams.GetConsensus().upgradFeeSwitchTime) {
+            if(pindex->nHeight > chainparams.GetConsensus().RFC2Height) {
                 minTxFee = ::minProtocolTxFee.GetFee(nSize);
             } else {
                 minTxFee = ::minProtocolTxFeeV1.GetFee(nSize, true);

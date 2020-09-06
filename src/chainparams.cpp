@@ -171,8 +171,7 @@ public:
         };
 
         // Deployment of upgrade fee rule, destroy fee
-        consensus.upgradFeeSwitchTime = 1609459200; // January 1st, 2021.
-        consensus.destroyMinerFeeSwitchTime = 1609459200; // January 1st, 2021.
+        consensus.RFC2Height = 4018268; // approximate January 1st, 2021.
 
     }
 };
@@ -267,8 +266,7 @@ public:
         };
 
         // Deployment of upgrade fee rule, destroy fee
-        consensus.upgradFeeSwitchTime = 1598918400; // September 1st, 2020.
-        consensus.destroyMinerFeeSwitchTime = 1598918400; // September 1st, 2020.
+        consensus.RFC2Height = 2587337; // approximate November 1st, 2020.
 
     }
 };
