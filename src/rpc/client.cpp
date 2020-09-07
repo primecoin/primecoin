@@ -144,6 +144,7 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "rescanblockchain", 0, "start_height"},
     { "rescanblockchain", 1, "stop_height"},
     { "listprimerecords", 0, "primechain_length"},
+    { "listtopprimes", 0, "primechain_length"},
 };
 
 class CRPCConvertTable

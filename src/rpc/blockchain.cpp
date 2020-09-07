@@ -1690,7 +1690,6 @@ UniValue listprimerecords(const JSONRPCRequest& request)
     return ret;
 }
 
-/*
 // Primecoin: list top prime chain within primecoin network
 UniValue listtopprimes(const JSONRPCRequest& request)
 {
@@ -1721,32 +1720,32 @@ UniValue listtopprimes(const JSONRPCRequest& request)
     unsigned int nSortVectorSize = 64; // vector size for sort operation
     CBigNum bnPrimeQualify = 0; // minimum qualify value for ranking list
     vector<pair<CBigNum, uint256> > vSortedByOrigin;
-    for (CBlockIndex* pindex = chainActive.Genesis(); pindex; pindex = pindex->Next())
+    for (CBlockIndex* pindex = chainActive.Genesis(); pindex; pindex = chainActive.Next(pindex))
     {
         if (nPrimeChainLength != (int) TargetGetLength(pindex->nPrimeChainLength))
             continue; // length not matching, next block
         if (nPrimeChainType && nPrimeChainType != pindex->nPrimeChainType)
             continue; // type not matching, next block
 
-		std::string strHash = pindex->GetBlockHash().ToString();
-		uint256 hash(uint256S(strHash));
+        std::string strHash = pindex->GetBlockHash().ToString();
+        uint256 hash(uint256S(strHash));
 
-		if (mapBlockIndex.count(hash) == 0)
-			throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
+        if (mapBlockIndex.count(hash) == 0)
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
 
-		CBlock block;
-		CBlockIndex* pblockindex = mapBlockIndex[hash];
+        CBlock block;
+        CBlockIndex* pblockindex = mapBlockIndex[hash];
 
-		if (fHavePruned && !(pblockindex->nStatus & BLOCK_HAVE_DATA) && pblockindex->nTx > 0)
-			throw JSONRPCError(RPC_MISC_ERROR, "Block not available (pruned data)");
+        if (fHavePruned && !(pblockindex->nStatus & BLOCK_HAVE_DATA) && pblockindex->nTx > 0)
+            throw JSONRPCError(RPC_MISC_ERROR, "Block not available (pruned data)");
 
-		if (!ReadBlockFromDisk(block, pblockindex, Params().GetConsensus()))
-			// Block not found on disk. This could be because we have the block
-			// header in our index but don't have the block (for example if a
-			// non-whitelisted node sends us an unrequested long chain of valid
-			// blocks, we add the headers to our index, but don't accept the
-			// block).
-			throw JSONRPCError(RPC_MISC_ERROR, "Block not found on disk");
+        if (!ReadBlockFromDisk(block, pblockindex, Params().GetConsensus()))
+            // Block not found on disk. This could be because we have the block
+            // header in our index but don't have the block (for example if a
+            // non-whitelisted node sends us an unrequested long chain of valid
+            // blocks, we add the headers to our index, but don't accept the
+            // block).
+            throw JSONRPCError(RPC_MISC_ERROR, "Block not found on disk");
 
         CBigNum bnPrimeChainOrigin = CBigNum(block.GetHeaderHash()) * block.bnPrimeChainMultiplier; // compute prime chain origin
 
@@ -1775,7 +1774,7 @@ UniValue listtopprimes(const JSONRPCRequest& request)
 
     // Output top prime chains
     UniValue ret(UniValue::VARR);
-    BOOST_FOREACH(const PAIRTYPE(CBigNum, uint256)& item, vSortedByOrigin)
+    for (const auto& item : vSortedByOrigin)
     {
         CBigNum bnPrimeChainOrigin = item.first;
         CBlockIndex* pindex = mapBlockIndex[item.second];
@@ -1813,7 +1812,6 @@ UniValue listtopprimes(const JSONRPCRequest& request)
 
     return ret;
 }
-*/
 
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         argNames
@@ -1841,6 +1839,7 @@ static const CRPCCommand commands[] =
     { "blockchain",         "preciousblock",          &preciousblock,          {"blockhash"} },
 
     { "blockchain",         "listprimerecords",       &listprimerecords,       {"primechain_length","primechain_type"} },
+    { "blockchain",         "listtopprimes",          &listtopprimes,          {"primechain_length","primechain_type"} },
 
     /* Not shown in help */
     { "hidden",             "invalidateblock",        &invalidateblock,        {"blockhash"} },
