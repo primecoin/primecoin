@@ -25,7 +25,7 @@
 #include <utilstrencodings.h>
 #include <validationinterface.h>
 #include <warnings.h>
-
+#include <consensus/merkle.h>
 #include <memory>
 #include <stdint.h>
 
@@ -291,6 +291,171 @@ std::string gbt_vb_name(const Consensus::DeploymentPos pos) {
         s.insert(s.begin(), '!');
     }
     return s;
+}
+
+inline uint32_t ByteReverse(uint32_t value)
+{
+    value = ((value & 0xFF00FF00) >> 8) | ((value & 0x00FF00FF) << 8);
+    return (value<<16) | (value>>16);
+}
+
+UniValue getwork(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() > 1)
+        throw std::runtime_error(
+            "getwork [data]\n"
+            "If [data] is not specified, returns formatted hash data to work on:\n"
+            "  \"midstate\" : precomputed hash state after hashing the first half of the data (DEPRECATED)\n" // deprecated
+            "  \"data\" : block data\n"
+            "  \"hash1\" : formatted hash buffer for second hash (DEPRECATED)\n" // deprecated
+            "  \"target\" : little endian hash target\n"
+            "If [data] is specified, tries to solve the block and returns true if it was successful.");
+
+    LOCK(cs_main);
+
+    if(!g_connman)
+        throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
+
+    if (g_connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0)
+        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Primecoin is not connected!");
+
+    if (IsInitialBlockDownload())
+        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Primecoin is downloading blocks...");
+
+    typedef std::map<uint256, std::pair<CBlock*, CScript> > mapNewBlock_t;
+    static mapNewBlock_t mapNewBlock;    // FIXME: thread safety
+
+    if (request.params.size() == 0)
+    {
+        // Update block
+        static unsigned int nTransactionsUpdatedLast;
+        static CBlockIndex* pindexPrev;
+        static int64_t nStart;
+        static std::unique_ptr<CBlockTemplate> pblocktemplate;
+        if (pindexPrev != chainActive.Tip() ||
+            (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 60))
+        {
+            if (pindexPrev != chainActive.Tip())
+            {
+                // Deallocate old blocks since they're obsolete now
+                mapNewBlock.clear();
+            }
+
+            // Clear pindexPrev so future getworks make a new block, despite any failures from here on
+            pindexPrev = nullptr;
+
+            // Store the pindexBest used before CreateNewBlock, to avoid races
+            nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
+            CBlockIndex* pindexPrevNew = chainActive.Tip();
+            nStart = GetTime();
+
+            // Create new block
+            CScript scriptDummy = CScript() << OP_TRUE;
+            pblocktemplate = BlockAssembler(Params()).CreateNewBlock(scriptDummy, false);
+            if (!pblocktemplate)
+                throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
+
+            // Need to update only after we know CreateNewBlock succeeded
+            pindexPrev = pindexPrevNew;
+        }
+        CBlock* pblock = &pblocktemplate->block; // pointer for convenience
+        const Consensus::Params& consensusParams = Params().GetConsensus();
+
+        // Update nTime
+        UpdateTime(pblock, consensusParams, pindexPrev);
+        pblock->nNonce = 0;
+
+        // Update nExtraNonce
+        static unsigned int nExtraNonce = 0;
+        IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+
+        // Save
+        mapNewBlock[pblock->hashMerkleRoot] = std::make_pair(pblock, pblock->vtx[0]->vin[0].scriptSig);
+
+        // Pre-build hash buffers
+        char pdata[128];
+        struct bitcoinheader
+        {
+            int nVersion;
+            uint256 hashPrevBlock;
+            uint256 hashMerkleRoot;
+            unsigned int nTime;
+            unsigned int nBits;
+            unsigned int nNonce;
+        }
+        tmpheader;
+        tmpheader.nVersion       = pblock->nVersion;
+        tmpheader.hashPrevBlock  = pblock->hashPrevBlock;
+        tmpheader.hashMerkleRoot = pblock->hashMerkleRoot;
+        tmpheader.nTime          = pblock->nTime;
+        tmpheader.nBits          = pblock->nBits;
+        tmpheader.nNonce         = pblock->nNonce;
+        // Byte swap all the input buffer
+        for (unsigned int i = 0; i < sizeof(tmpheader)/4; i++)
+            ((unsigned int*)&tmpheader)[i] = ByteReverse(((unsigned int*)&tmpheader)[i]);
+        memcpy(pdata, &tmpheader, 128);
+        //calls FormatHashBlocks, only use pdata, get correct pdata is
+
+        UniValue result;
+        result.push_back(Pair("data",     HexStr(BEGIN(pdata), END(pdata))));
+        return result;
+    }
+    else
+    {
+        // Parse parameters
+        std::vector<unsigned char> vchData = ParseHex(request.params[0].get_str());
+        if (vchData.size() != 128)
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter");
+        CBlock* pdata = (CBlock*)&vchData[0];
+
+        // Byte reverse
+        for (int i = 0; i < 128/4; i++)
+            ((unsigned int*)pdata)[i] = ByteReverse(((unsigned int*)pdata)[i]);
+
+        // Get saved block
+        if (!mapNewBlock.count(pdata->hashMerkleRoot))
+            return false;
+        std::shared_ptr<CBlock> pblock = std::make_shared<CBlock>(*(mapNewBlock[pdata->hashMerkleRoot].first));
+
+        pblock->nTime = pdata->nTime;
+        pblock->nNonce = pdata->nNonce;
+        pblock->vtx.clear();
+
+        CMutableTransaction coinbaseTx;
+        coinbaseTx.vin.resize(1);
+        coinbaseTx.vin[0].prevout.SetNull();
+        coinbaseTx.vout.resize(1);
+        coinbaseTx.vout[0].scriptPubKey = pblock->vtx[0]->vout[0].scriptPubKey;
+        coinbaseTx.vout[0].nValue = pblock->vtx[0]->vout[0].nValue;
+        coinbaseTx.vin[0].scriptSig = mapNewBlock[pdata->hashMerkleRoot].second;
+        pblock->vtx[0] = MakeTransactionRef(std::move(coinbaseTx));
+        pblock->hashMerkleRoot = BlockMerkleRoot(*pblock);
+
+        // Prime chain multiplier is formatted inside data as an uint256, same as hashMerkleRoot
+        uint256 *pMultiplier = (uint256 *)&pdata->bnPrimeChainMultiplier;
+        pblock->bnPrimeChainMultiplier = CBigNum(*pMultiplier);
+        if (pblock->GetHeaderHash() < hashBlockHeaderLimit)
+        {
+            const std::string message = strprintf("Header hash too low for submission hash=%s multiplier=%s", pblock->GetHeaderHash().GetHex().c_str(), pblock->bnPrimeChainMultiplier.GetHex().c_str());
+            throw JSONRPCError(RPC_MISC_ERROR, message);
+        }
+
+        CBigNum bnTarget = CBigNum().SetCompact(pblock->nBits);
+
+        if (!CheckProofOfWork(pblock->GetHeaderHash(), pblock->nBits, pblock->bnPrimeChainMultiplier, Params().GetConsensus()))
+            return error("PrimecoinMiner : failed proof-of-work check");
+
+        if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
+            return error("PrimecoinMiner : generated block is stale");
+
+        // Process this block the same as if we had received it from another node
+        CValidationState state;
+        bool fnewBlock;
+        if (!ProcessNewBlock(Params(), pblock, true, &fnewBlock))
+            return error("PrimecoinMiner : ProcessBlock, block not accepted");
+
+    return true;
+    }
 }
 
 UniValue getblocktemplate(const JSONRPCRequest& request)
