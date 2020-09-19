@@ -299,6 +299,21 @@ inline uint32_t ByteReverse(uint32_t value)
     return (value<<16) | (value>>16);
 }
 
+int static FormatHashBlocks(void* pbuffer, unsigned int len)
+{
+    unsigned char* pdata = (unsigned char*)pbuffer;
+    unsigned int blocks = 1 + ((len + 8) / 64);
+    unsigned char* pend = pdata + 64 * blocks;
+    memset(pdata + len, 0, 64 * blocks - len);
+    pdata[len] = 0x80;
+    unsigned int bits = len * 8;
+    pend[-1] = (bits >> 0) & 0xff;
+    pend[-2] = (bits >> 8) & 0xff;
+    pend[-3] = (bits >> 16) & 0xff;
+    pend[-4] = (bits >> 24) & 0xff;
+    return blocks;
+}
+
 UniValue getwork(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() > 1)
@@ -374,30 +389,45 @@ UniValue getwork(const JSONRPCRequest& request)
 
         // Pre-build hash buffers
         char pdata[128];
-        struct bitcoinheader
+        char phash1[64];
+        struct
         {
-            int nVersion;
-            uint256 hashPrevBlock;
-            uint256 hashMerkleRoot;
-            unsigned int nTime;
-            unsigned int nBits;
-            unsigned int nNonce;
+            struct unnamed2
+            {
+                int nVersion;
+                uint256 hashPrevBlock;
+                uint256 hashMerkleRoot;
+                unsigned int nTime;
+                unsigned int nBits;
+                unsigned int nNonce;
+            }
+            block;
+            unsigned char pchPadding0[64];
+            uint256 hash1;
+            unsigned char pchPadding1[64];
         }
-        tmpheader;
-        tmpheader.nVersion       = pblock->nVersion;
-        tmpheader.hashPrevBlock  = pblock->hashPrevBlock;
-        tmpheader.hashMerkleRoot = pblock->hashMerkleRoot;
-        tmpheader.nTime          = pblock->nTime;
-        tmpheader.nBits          = pblock->nBits;
-        tmpheader.nNonce         = pblock->nNonce;
+        tmp;
+        memset(&tmp, 0, sizeof(tmp));
+
+        tmp.block.nVersion       = pblock->nVersion;
+        tmp.block.hashPrevBlock  = pblock->hashPrevBlock;
+        tmp.block.hashMerkleRoot = pblock->hashMerkleRoot;
+        tmp.block.nTime          = pblock->nTime;
+        tmp.block.nBits          = pblock->nBits;
+        tmp.block.nNonce         = pblock->nNonce;
+
+        FormatHashBlocks(&tmp.block, sizeof(tmp.block));
+        FormatHashBlocks(&tmp.hash1, sizeof(tmp.hash1));
         // Byte swap all the input buffer
-        for (unsigned int i = 0; i < sizeof(tmpheader)/4; i++)
-            ((unsigned int*)&tmpheader)[i] = ByteReverse(((unsigned int*)&tmpheader)[i]);
-        memcpy(pdata, &tmpheader, 128);
+        for (unsigned int i = 0; i < sizeof(tmp)/4; i++)
+            ((unsigned int*)&tmp)[i] = ByteReverse(((unsigned int*)&tmp)[i]);
+        memcpy(pdata, &tmp.block, 128);
+        memcpy(phash1, &tmp.hash1, 64);
         //calls FormatHashBlocks, only use pdata, get correct pdata is
 
         UniValue result;
         result.push_back(Pair("data",     HexStr(BEGIN(pdata), END(pdata))));
+        result.push_back(Pair("hash1",    HexStr(BEGIN(phash1), END(phash1))));
         return result;
     }
     else
@@ -434,11 +464,6 @@ UniValue getwork(const JSONRPCRequest& request)
         // Prime chain multiplier is formatted inside data as an uint256, same as hashMerkleRoot
         uint256 *pMultiplier = (uint256 *)&pdata->bnPrimeChainMultiplier;
         pblock->bnPrimeChainMultiplier = CBigNum(*pMultiplier);
-        if (pblock->GetHeaderHash() < hashBlockHeaderLimit)
-        {
-            const std::string message = strprintf("Header hash too low for submission hash=%s multiplier=%s", pblock->GetHeaderHash().GetHex().c_str(), pblock->bnPrimeChainMultiplier.GetHex().c_str());
-            throw JSONRPCError(RPC_MISC_ERROR, message);
-        }
 
         CBigNum bnTarget = CBigNum().SetCompact(pblock->nBits);
 
