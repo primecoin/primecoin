@@ -389,7 +389,6 @@ UniValue getwork(const JSONRPCRequest& request)
 
         // Pre-build hash buffers
         char pdata[128];
-        char phash1[64];
         struct
         {
             struct unnamed2
@@ -417,17 +416,14 @@ UniValue getwork(const JSONRPCRequest& request)
         tmp.block.nNonce         = pblock->nNonce;
 
         FormatHashBlocks(&tmp.block, sizeof(tmp.block));
-        FormatHashBlocks(&tmp.hash1, sizeof(tmp.hash1));
         // Byte swap all the input buffer
         for (unsigned int i = 0; i < sizeof(tmp)/4; i++)
             ((unsigned int*)&tmp)[i] = ByteReverse(((unsigned int*)&tmp)[i]);
         memcpy(pdata, &tmp.block, 128);
-        memcpy(phash1, &tmp.hash1, 64);
         //calls FormatHashBlocks, only use pdata, get correct pdata is
 
-        UniValue result;
+        UniValue result(UniValue::VOBJ);
         result.push_back(Pair("data",     HexStr(BEGIN(pdata), END(pdata))));
-        result.push_back(Pair("hash1",    HexStr(BEGIN(phash1), END(phash1))));
         return result;
     }
     else
