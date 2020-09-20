@@ -432,7 +432,17 @@ UniValue getwork(const JSONRPCRequest& request)
         std::vector<unsigned char> vchData = ParseHex(request.params[0].get_str());
         if (vchData.size() != 128)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter");
-        CBlock* pdata = (CBlock*)&vchData[0];
+        struct oldheader
+        {
+            int nVersion;
+            uint256 hashPrevBlock;
+            uint256 hashMerkleRoot;
+            unsigned int nTime;
+            unsigned int nBits;
+            unsigned int nNonce;
+            CBigNum bnPrimeChainMultiplier;
+        };
+        oldheader* pdata = (oldheader*)&vchData[0];
 
         // Byte reverse
         for (int i = 0; i < 128/4; i++)
@@ -460,14 +470,21 @@ UniValue getwork(const JSONRPCRequest& request)
         // Prime chain multiplier is formatted inside data as an uint256, same as hashMerkleRoot
         uint256 *pMultiplier = (uint256 *)&pdata->bnPrimeChainMultiplier;
         pblock->bnPrimeChainMultiplier = CBigNum(*pMultiplier);
+        if (pblock->GetHeaderHash() < ArithToUint256(hashBlockHeaderLimit)){
+            const std::string message = strprintf("Header hash too low for submission hash=%s multiplier=%s",
+                pblock->GetHeaderHash().GetHex().c_str(), pblock->bnPrimeChainMultiplier.GetHex().c_str());
+            throw JSONRPCError(RPC_MISC_ERROR, message);
+        }
 
-        CBigNum bnTarget = CBigNum().SetCompact(pblock->nBits);
-
-        if (!CheckProofOfWork(pblock->GetHeaderHash(), pblock->nBits, pblock->bnPrimeChainMultiplier, Params().GetConsensus()))
-            return error("PrimecoinMiner : failed proof-of-work check");
+        if (!CheckProofOfWork(pblock->GetHeaderHash(), pblock->nBits, pblock->bnPrimeChainMultiplier, Params().GetConsensus())){
+            const std::string message = strprintf("Insufficient work ?<%s for header hash=%s multiplier=%s",
+                TargetToString(pblock->nBits).c_str(), pblock->GetHeaderHash().GetHex().c_str(),
+                pblock->bnPrimeChainMultiplier.GetHex().c_str());
+            throw JSONRPCError(RPC_INVALID_PARAMETER, message);
+        }
 
         if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
-            return error("PrimecoinMiner : generated block is stale");
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "PrimecoinMiner : generated block is stale");
 
         // Process this block the same as if we had received it from another node
         CValidationState state;
@@ -475,7 +492,7 @@ UniValue getwork(const JSONRPCRequest& request)
         if (!ProcessNewBlock(Params(), pblock, true, &fnewBlock))
             return error("PrimecoinMiner : ProcessBlock, block not accepted");
 
-    return true;
+        return true;
     }
 }
 
