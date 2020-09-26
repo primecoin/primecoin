@@ -28,7 +28,7 @@
 #include <consensus/merkle.h>
 #include <memory>
 #include <stdint.h>
-
+#include <prime/prime.h>
 unsigned int ParseConfirmTarget(const UniValue& value)
 {
     int target = value.get_int();
@@ -432,17 +432,7 @@ UniValue getwork(const JSONRPCRequest& request)
         std::vector<unsigned char> vchData = ParseHex(request.params[0].get_str());
         if (vchData.size() != 128)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter");
-        struct oldheader
-        {
-            int nVersion;
-            uint256 hashPrevBlock;
-            uint256 hashMerkleRoot;
-            unsigned int nTime;
-            unsigned int nBits;
-            unsigned int nNonce;
-            CBigNum bnPrimeChainMultiplier;
-        };
-        oldheader* pdata = (oldheader*)&vchData[0];
+        CBlock* pdata = (CBlock*)&vchData[0];
 
         // Byte reverse
         for (int i = 0; i < 128/4; i++)
@@ -455,7 +445,6 @@ UniValue getwork(const JSONRPCRequest& request)
 
         pblock->nTime = pdata->nTime;
         pblock->nNonce = pdata->nNonce;
-        pblock->vtx.clear();
 
         CMutableTransaction coinbaseTx;
         coinbaseTx.vin.resize(1);
@@ -475,10 +464,14 @@ UniValue getwork(const JSONRPCRequest& request)
                 pblock->GetHeaderHash().GetHex().c_str(), pblock->bnPrimeChainMultiplier.GetHex().c_str());
             throw JSONRPCError(RPC_MISC_ERROR, message);
         }
-
-        if (!CheckProofOfWork(pblock->GetHeaderHash(), pblock->nBits, pblock->bnPrimeChainMultiplier, Params().GetConsensus())){
-            const std::string message = strprintf("Insufficient work ?<%s for header hash=%s multiplier=%s",
-                TargetToString(pblock->nBits).c_str(), pblock->GetHeaderHash().GetHex().c_str(),
+        unsigned int nChainType = 0;
+        unsigned int nChainLength = 0;
+        LogPrintf("nBit %s\n", TargetToString(pblock->nBits).c_str());
+        if (!CheckPrimeProofOfWork(pblock->GetHeaderHash(), pblock->nBits, pblock->bnPrimeChainMultiplier, nChainType, nChainLength, Params().GetConsensus())){
+            const std::string message = strprintf("Insufficient work %s<%s for header hash=%s multiplier=%s",
+                GetPrimeChainName(nChainType, nChainLength).c_str(),
+                TargetToString(pblock->nBits).c_str(),
+                pblock->GetHeaderHash().GetHex().c_str(),
                 pblock->bnPrimeChainMultiplier.GetHex().c_str());
             throw JSONRPCError(RPC_INVALID_PARAMETER, message);
         }
