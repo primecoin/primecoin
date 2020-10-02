@@ -442,7 +442,20 @@ bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CB
     unsigned int nChainLengthCunningham2 = 0;
     unsigned int nChainLengthBiTwin = 0;
     if (!ProbablePrimeChainTest(bnPrimeChainOrigin, nBits, false, nChainLengthCunningham1, nChainLengthCunningham2, nChainLengthBiTwin)) {
-		LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : failed prime chain test target=%s length=(%s %s %s)", TargetToString(nBits).c_str(),
+        // Despite failing the check, still return info of longest primechain from the three chain types
+        nChainLength = nChainLengthCunningham1;
+        nChainType = PRIME_CHAIN_CUNNINGHAM1;
+        if (nChainLengthCunningham2 > nChainLength)
+        {
+            nChainLength = nChainLengthCunningham2;
+            nChainType = PRIME_CHAIN_CUNNINGHAM2;
+        }
+        if (nChainLengthBiTwin > nChainLength)
+        {
+            nChainLength = nChainLengthBiTwin;
+            nChainType = PRIME_CHAIN_BI_TWIN;
+        }
+        LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : failed prime chain test target=%s length=(%s %s %s)", TargetToString(nBits).c_str(),
 				TargetToString(nChainLengthCunningham1).c_str(), TargetToString(nChainLengthCunningham2).c_str(), TargetToString(nChainLengthBiTwin).c_str());
 		return false;
 	} 
