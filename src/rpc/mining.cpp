@@ -472,17 +472,16 @@ UniValue getwork(const JSONRPCRequest& request)
                 TargetToString(pblock->nBits).c_str(),
                 pblock->GetHeaderHash().GetHex().c_str(),
                 pblock->bnPrimeChainMultiplier.GetHex().c_str());
-            throw JSONRPCError(RPC_INVALID_PARAMETER, message);
+            throw JSONRPCError(RPC_MISC_ERROR, message);
         }
 
         if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
-            throw JSONRPCError(RPC_INVALID_PARAMETER, "PrimecoinMiner : generated block is stale");
+            throw JSONRPCError(RPC_MISC_ERROR, "PrimecoinMiner : generated block is stale");
 
         // Process this block the same as if we had received it from another node
-        CValidationState state;
         bool fnewBlock;
         if (!ProcessNewBlock(Params(), pblock, true, &fnewBlock))
-            return error("PrimecoinMiner : ProcessBlock, block not accepted");
+            throw JSONRPCError(RPC_MISC_ERROR, "PrimecoinMiner : ProcessBlock, block not accepted");
 
         return true;
     }
