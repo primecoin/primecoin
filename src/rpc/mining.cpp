@@ -440,7 +440,7 @@ UniValue getwork(const JSONRPCRequest& request)
 
         // Get saved block
         if (!mapNewBlock.count(pdata->hashMerkleRoot))
-            return false;
+            throw JSONRPCError(RPC_MISC_ERROR, "No matching candidate block found");
         std::shared_ptr<CBlock> pblock = std::make_shared<CBlock>(*(mapNewBlock[pdata->hashMerkleRoot].first));
 
         pblock->nTime = pdata->nTime;
