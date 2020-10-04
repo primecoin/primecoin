@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 
     while (true)
     {
-        if (block.GetHeaderHash() < hashBlockHeaderLimit)
+        if (UintToArith256(block.GetHeaderHash()) < hashBlockHeaderLimit)
         {
             block.nNonce++;
             fNewBlock = true;
