@@ -460,7 +460,7 @@ UniValue getwork(const JSONRPCRequest& request)
         // Prime chain multiplier is formatted inside data as an uint256, same as hashMerkleRoot
         uint256 *pMultiplier = (uint256 *)&pdata->bnPrimeChainMultiplier;
         pblock->bnPrimeChainMultiplier = CBigNum(*pMultiplier);
-        if (pblock->GetHeaderHash() < ArithToUint256(hashBlockHeaderLimit)){
+        if (UintToArith256(pblock->GetHeaderHash()) < hashBlockHeaderLimit){
             const std::string message = strprintf("Header hash too low for submission hash=%s multiplier=%s",
                 pblock->GetHeaderHash().GetHex().c_str(), pblock->bnPrimeChainMultiplier.GetHex().c_str());
             throw JSONRPCError(RPC_MISC_ERROR, message);
