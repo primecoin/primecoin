@@ -52,6 +52,10 @@ public:
     // BiTwin Chain:                    hash * multiplier * 2**k +/- 1
     CBigNum bnPrimeChainMultiplier;
 
+    // memory only
+    mutable uint32_t nPrimeChainType;
+    mutable uint32_t nPrimeChainLength;
+
     CBlockHeader()
     {
         SetNull();
@@ -79,6 +83,8 @@ public:
         nBits = 0;
         nNonce = 0;
         bnPrimeChainMultiplier = 0;
+        nPrimeChainType = 0;
+        nPrimeChainLength = 0;
     }
 
     bool IsNull() const

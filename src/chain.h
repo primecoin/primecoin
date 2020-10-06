@@ -267,6 +267,8 @@ public:
         nBits          = block.nBits;
         nNonce         = block.nNonce;
         bnPrimeChainMultiplier = block.bnPrimeChainMultiplier;
+        nPrimeChainType = block.nPrimeChainType;
+        nPrimeChainLength = block.nPrimeChainLength;
     }
 
     CDiskBlockPos GetBlockPos() const {

@@ -1121,7 +1121,7 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus:
     }
 
     // Check the header
-    if (!CheckProofOfWork(block.GetHeaderHash(), block.nBits, block.bnPrimeChainMultiplier, consensusParams))
+    if (!CheckProofOfWork(block.GetHeaderHash(), block.nBits, block.bnPrimeChainMultiplier, block.nPrimeChainType, block.nPrimeChainLength, consensusParams))
         return error("ReadBlockFromDisk: Errors in block header at %s", pos.ToString());
 
     return true;
@@ -2828,7 +2828,6 @@ CBlockIndex* CChainState::AddToBlockIndex(const CBlockHeader& block)
     }
     pindexNew->nTimeMax = (pindexNew->pprev ? std::max(pindexNew->pprev->nTimeMax, pindexNew->nTime) : pindexNew->nTime);
     pindexNew->nChainWork = (pindexNew->pprev ? pindexNew->pprev->nChainWork : 0) + GetBlockProof(*pindexNew, chainparams.GetConsensus());
-    CheckPrimeProofOfWork(block.GetHeaderHash(), block.nBits, block.bnPrimeChainMultiplier, pindexNew->nPrimeChainType, pindexNew->nPrimeChainLength, chainparams.GetConsensus()); // calculate primechain type and length
     pindexNew->RaiseValidity(BLOCK_VALID_TREE);
     if (pindexBestHeader == nullptr || pindexBestHeader->nChainWork < pindexNew->nChainWork)
         pindexBestHeader = pindexNew;
@@ -2978,7 +2977,7 @@ static bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, 
 static bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true)
 {
     // Check proof of work matches claimed amount
-    if (fCheckPOW && !CheckProofOfWork(block.GetHeaderHash(), block.nBits, block.bnPrimeChainMultiplier, consensusParams))
+    if (fCheckPOW && !CheckProofOfWork(block.GetHeaderHash(), block.nBits, block.bnPrimeChainMultiplier, block.nPrimeChainType, block.nPrimeChainLength, consensusParams))
         return state.DoS(50, false, REJECT_INVALID, "high-hash", false, "proof of work failed");
 
     return true;
@@ -3264,8 +3263,8 @@ bool CChainState::AcceptBlockHeader(const CBlockHeader& block, CValidationState&
             return true;
         }
 
-        // if (!CheckBlockHeader(block, state, chainparams.GetConsensus()))
-        //    return error("%s: Consensus::CheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state));
+        if (!CheckBlockHeader(block, state, chainparams.GetConsensus()))
+            return error("%s: Consensus::CheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state));
 
         // Get prev block index
         CBlockIndex* pindexPrev = nullptr;
@@ -4214,8 +4213,10 @@ bool CChainState::LoadGenesisBlock(const CChainParams& chainparams)
         CDiskBlockPos blockPos = SaveBlockToDisk(block, 0, chainparams, nullptr);
         if (blockPos.IsNull())
             return error("%s: writing genesis block to disk failed", __func__);
-        CBlockIndex *pindex = AddToBlockIndex(block);
         CValidationState state;
+        if (!CheckBlockHeader(block, state, chainparams.GetConsensus()))
+            return error("%s: genesis block header check failed: %s, %s", __func__, block.GetHash().ToString(), FormatStateMessage(state));
+        CBlockIndex *pindex = AddToBlockIndex(block);
         if (!ReceivedBlockTransactions(block, state, pindex, blockPos, chainparams.GetConsensus()))
             return error("%s: genesis block not accepted", __func__);
     } catch (const std::runtime_error& e) {
