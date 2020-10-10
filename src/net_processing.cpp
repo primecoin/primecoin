@@ -2613,7 +2613,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
 
             if (!CheckBlockHeaderIntegrity(headers[n].GetHeaderHash(), headers[n].nBits, headers[n].bnPrimeChainMultiplier, chainparams.GetConsensus())) {
               // Broken HEADERS message from old client, ignore
-              LogPrintf("Broken HEADERS message from old(?) client[%d] %s, blockhash %s, previous blockhash %s\n", n, pfrom->addr.ToString(), headers[n].GetHash().ToString(), headers[n].hashPrevBlock.ToString());
+              LogPrintf("Broken HEADERS message from old(?) client %s, n=%d, hash=%s, prev=%s\n", pfrom->addr.ToString(), n, headers[n].GetHash().ToString(), headers[n].hashPrevBlock.ToString());
               return false;
             }
         }
