@@ -2013,6 +2013,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     vPosTxid.reserve(block.vtx.size());
 	vPosAddrid.reserve(4*block.vtx.size());
 	
+    CAmount coinbasefee = 0;
     for (unsigned int i = 0; i < block.vtx.size(); i++)
     {
         const CTransaction &tx = *(block.vtx[i]);
@@ -2026,7 +2027,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
                 return error("%s: Consensus::CheckTxInputs: %s, %s", __func__, tx.GetHash().ToString(), FormatStateMessage(state));
             }
 
-            size_t nSize = ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
+            size_t nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
             CAmount minTxFee;
             if(pindex->nHeight > chainparams.GetConsensus().RFC2Height) {
                 minTxFee = ::minProtocolTxFee.GetFee(nSize);
@@ -2056,6 +2057,11 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
             if (!SequenceLocks(tx, nLockTimeFlags, &prevheights, *pindex)) {
                 return state.DoS(100, error("%s: contains a non-BIP68-final transaction", __func__),
                                  REJECT_INVALID, "bad-txns-nonfinal");
+            }
+        } else {
+            size_t nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
+            if(pindex->nHeight > chainparams.GetConsensus().RFC2Height) {
+                coinbasefee = ::minProtocolTxFee.GetFee(nSize);
             }
         }
 
@@ -2096,7 +2102,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     LogPrint(BCLog::BENCH, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs (%.2fms/blk)]\n", (unsigned)block.vtx.size(), MILLI * (nTime3 - nTime2), MILLI * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : MILLI * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * MICRO, nTimeConnect * MILLI / nBlocksTotal);
 
     if(pindex->nHeight > chainparams.GetConsensus().RFC2Height) {
-        nFees = 0;
+        nFees = - coinbasefee;
     }
     CAmount blockReward = nFees + GetBlockSubsidy(pindex->nBits, chainparams.GetConsensus());
     if (block.vtx[0]->GetValueOut() > blockReward)
