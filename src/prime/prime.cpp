@@ -381,8 +381,8 @@ bool CheckBlockHeaderIntegrity(uint256 hashBlockHeader, unsigned int nBits, cons
     }
 
     // Check header hash limit
-    if (hashBlockHeader < ArithToUint256(hashBlockHeaderLimit)) {
-        LogPrint(BCLog::PRIME, "CheckBlockHeaderIntegrity() : block header hash under limit: %s", hashBlockHeader.ToString().c_str());
+    if (UintToArith256(hashBlockHeader) < hashBlockHeaderLimit) {
+        LogPrint(BCLog::PRIME, "CheckBlockHeaderIntegrity() : block header hash under limit");
         return false;
     }
     // Check target for prime proof-of-work
@@ -421,8 +421,8 @@ bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CB
 	}
 	
     // Check header hash limit
-    if (hashBlockHeader < ArithToUint256(hashBlockHeaderLimit)) {
-        LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : block header hash under limit: %s", hashBlockHeader.ToString().c_str());
+    if (UintToArith256(hashBlockHeader) < hashBlockHeaderLimit) {
+        LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : block header hash under limit");
         return false;
 	}
     // Check target for prime proof-of-work
