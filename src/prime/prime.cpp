@@ -294,7 +294,8 @@ bool TargetGetNext(unsigned int nBits, int64_t nInterval, int64_t nTargetSpacing
 // prime chain type and length value
 std::string GetPrimeChainName(unsigned int nChainType, unsigned int nChainLength)
 {
-    return strprintf("%s%s", (nChainType==PRIME_CHAIN_CUNNINGHAM1)? "1CC" : ((nChainType==PRIME_CHAIN_CUNNINGHAM2)? "2CC" : "TWN"), TargetToString(nChainLength).c_str());
+    const std::string strLabels[5] = {"NUL", "1CC", "2CC", "TWN", "UNK"};
+    return strprintf("%s%s", strLabels[std::min(nChainType, 4u)].c_str(), TargetToString(nChainLength).c_str());
 }
 
 // primorial form of prime chain origin
@@ -381,7 +382,7 @@ bool CheckBlockHeaderIntegrity(uint256 hashBlockHeader, unsigned int nBits, cons
 
     // Check header hash limit
     if (UintToArith256(hashBlockHeader) < hashBlockHeaderLimit) {
-        LogPrint(BCLog::PRIME, "CheckBlockHeaderIntegrity() : block header hash under limit");
+        LogPrint(BCLog::PRIME, "CheckBlockHeaderIntegrity() : block header hash under limit: %s", hashBlockHeader.ToString().c_str());
         return false;
     }
     // Check target for prime proof-of-work
@@ -410,6 +411,9 @@ bool CheckBlockHeaderIntegrity(uint256 hashBlockHeader, unsigned int nBits, cons
 // Check prime proof-of-work
 bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CBigNum& bnPrimeChainMultiplier, unsigned int& nChainType, unsigned int& nChainLength, const Consensus::Params& consensus_params)
 {
+    nChainType = 0;   // clear output chain type
+    nChainLength = 0; // clear output chain length
+
     // Check target
     if (TargetGetLength(nBits) < consensus_params.nTargetMinLength || TargetGetLength(nBits) > 99) {
         LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : invalid chain length target %s", TargetToString(nBits).c_str());
@@ -418,7 +422,7 @@ bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CB
 	
     // Check header hash limit
     if (UintToArith256(hashBlockHeader) < hashBlockHeaderLimit) {
-        LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : block header hash under limit");
+        LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : block header hash under limit: %s", hashBlockHeader.ToString().c_str());
         return false;
 	}
     // Check target for prime proof-of-work
@@ -438,10 +442,22 @@ bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CB
     unsigned int nChainLengthCunningham2 = 0;
     unsigned int nChainLengthBiTwin = 0;
     if (!ProbablePrimeChainTest(bnPrimeChainOrigin, nBits, false, nChainLengthCunningham1, nChainLengthCunningham2, nChainLengthBiTwin)) {
-		LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : failed prime chain test target=%s length=(%s %s %s)", TargetToString(nBits).c_str(),
-				TargetToString(nChainLengthCunningham1).c_str(), TargetToString(nChainLengthCunningham2).c_str(), TargetToString(nChainLengthBiTwin).c_str());
-		return false;
-	} 
+        // Despite failing the check, still return info of longest primechain from the three chain types
+        nChainLength = nChainLengthCunningham1;
+        nChainType = PRIME_CHAIN_CUNNINGHAM1;
+        if (nChainLengthCunningham2 > nChainLength)
+        {
+            nChainLength = nChainLengthCunningham2;
+            nChainType = PRIME_CHAIN_CUNNINGHAM2;
+        }
+        if (nChainLengthBiTwin > nChainLength)
+        {
+            nChainLength = nChainLengthBiTwin;
+            nChainType = PRIME_CHAIN_BI_TWIN;
+        }
+        LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : failed prime chain test target=%s length=(%s %s %s)", TargetToString(nBits).c_str(), TargetToString(nChainLengthCunningham1).c_str(), TargetToString(nChainLengthCunningham2).c_str(), TargetToString(nChainLengthBiTwin).c_str());
+        return false;
+    }
     if (nChainLengthCunningham1 < nBits && nChainLengthCunningham2 < nBits && nChainLengthBiTwin < nBits) {
         LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : prime chain length assert target=%s length=(%s %s %s)", TargetToString(nBits).c_str(),
 				TargetToString(nChainLengthCunningham1).c_str(), TargetToString(nChainLengthCunningham2).c_str(), TargetToString(nChainLengthBiTwin).c_str());
