@@ -380,7 +380,7 @@ bool CheckBlockHeaderIntegrity(uint256 hashBlockHeader, unsigned int nBits, cons
     }
 
     // Check header hash limit
-    if (hashBlockHeader < ArithToUint256(hashBlockHeaderLimit)) {
+    if (UintToArith256(hashBlockHeader) < hashBlockHeaderLimit) {
         LogPrint(BCLog::PRIME, "CheckBlockHeaderIntegrity() : block header hash under limit");
         return false;
     }
@@ -417,7 +417,7 @@ bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CB
 	}
 	
     // Check header hash limit
-    if (hashBlockHeader < ArithToUint256(hashBlockHeaderLimit)) {
+    if (UintToArith256(hashBlockHeader) < hashBlockHeaderLimit) {
         LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : block header hash under limit");
         return false;
 	}
