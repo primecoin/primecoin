@@ -1320,6 +1320,7 @@ void static InvalidChainFound(CBlockIndex* pindexNew)
 void CChainState::InvalidBlockFound(CBlockIndex *pindex, const CValidationState &state) {
     if (!state.CorruptionPossible()) {
         pindex->nStatus |= BLOCK_FAILED_VALID;
+        LogPrintf("Block %s is marked as BLOCK_FAILED_VALID in InvalidBlockFound.\n", pindex->GetBlockHash().ToString());
         g_failed_blocks.insert(pindex);
         setDirtyBlockIndex.insert(pindex);
         setBlockIndexCandidates.erase(pindex);
@@ -2543,6 +2544,7 @@ CBlockIndex* CChainState::FindMostWorkChain() {
                 while (pindexTest != pindexFailed) {
                     if (fFailedChain) {
                         pindexFailed->nStatus |= BLOCK_FAILED_CHILD;
+                        LogPrintf("Block %s is marked as BLOCK_FAILED_CHILD in FindMostWorkChain.\n", pindexFailed->GetBlockHash().ToString());
                     } else if (fMissingData) {
                         // If we're missing data, then add back to mapBlocksUnlinked,
                         // so that if the block arrives in the future we can try adding
@@ -2835,6 +2837,7 @@ bool CChainState::InvalidateBlock(CValidationState& state, const CChainParams& c
     // (note this may not be all descendants).
     while (pindex_was_in_chain && invalid_walk_tip != pindex) {
         invalid_walk_tip->nStatus |= BLOCK_FAILED_CHILD;
+        LogPrintf("Block %s is marked as BLOCK_FAILED_CHILD in InvalidateBlock.\n", invalid_walk_tip->GetBlockHash().ToString());
         setDirtyBlockIndex.insert(invalid_walk_tip);
         setBlockIndexCandidates.erase(invalid_walk_tip);
         invalid_walk_tip = invalid_walk_tip->pprev;
@@ -2842,6 +2845,7 @@ bool CChainState::InvalidateBlock(CValidationState& state, const CChainParams& c
 
     // Mark the block itself as invalid.
     pindex->nStatus |= BLOCK_FAILED_VALID;
+    LogPrintf("Block %s is marked as BLOCK_FAILED_VALID in InvalidateBlock.\n", pindex->GetBlockHash().ToString());
     setDirtyBlockIndex.insert(pindex);
     setBlockIndexCandidates.erase(pindex);
     g_failed_blocks.insert(pindex);
@@ -3389,6 +3393,7 @@ bool CChainState::AcceptBlockHeader(const CBlockHeader& block, CValidationState&
                     CBlockIndex* invalid_walk = pindexPrev;
                     while (invalid_walk != failedit) {
                         invalid_walk->nStatus |= BLOCK_FAILED_CHILD;
+                        LogPrintf("Block %s is marked as BLOCK_FAILED_CHILD in AcceptBlockHeader.\n", invalid_walk->GetBlockHash().ToString());
                         setDirtyBlockIndex.insert(invalid_walk);
                         invalid_walk = invalid_walk->pprev;
                     }
@@ -3499,6 +3504,7 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CVali
         !ContextualCheckBlock(block, state, chainparams.GetConsensus(), pindex->pprev)) {
         if (state.IsInvalid() && !state.CorruptionPossible()) {
             pindex->nStatus |= BLOCK_FAILED_VALID;
+            LogPrintf("Block %s is marked as BLOCK_FAILED_VALID in AcceptBlock.\n", pindex->GetBlockHash().ToString());
             setDirtyBlockIndex.insert(pindex);
         }
         return error("%s: %s", __func__, FormatStateMessage(state));
@@ -3843,6 +3849,7 @@ bool CChainState::LoadBlockIndex(const Consensus::Params& consensus_params, CBlo
         }
         if (!(pindex->nStatus & BLOCK_FAILED_MASK) && pindex->pprev && (pindex->pprev->nStatus & BLOCK_FAILED_MASK)) {
             pindex->nStatus |= BLOCK_FAILED_CHILD;
+            LogPrintf("Block %s is marked as BLOCK_FAILED_CHILD in LoadBlockIndex.\n", pindex->GetBlockHash().ToString());
             setDirtyBlockIndex.insert(pindex);
         }
         if (pindex->IsValid(BLOCK_VALID_TRANSACTIONS) && (pindex->nChainTx || pindex->pprev == nullptr))
