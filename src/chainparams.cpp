@@ -164,12 +164,9 @@ public:
 
         checkpointData = { 
 			{
-                { 7000, uint256S("0x8129a538540682e37ffda6a38a21d73b13b00d97c4b865f2976f0e5a873778fc")},
-                { 70000, uint256S("0x89b8dafd07efc96e802594f0b497fb958dfdf1af7cf73f2b46f975ab0c36aa53")},
-                { 700000, uint256S("0xece5513cb4ccc49479f0831b6fea8c05d1716183a1ca968e9acfae0c339d1a32")},
-                { 1400000, uint256S("0xe03d4012d38c30d5224acaadf9e9020a8cf3e9f9037402931dda6224ea2c5515")},
-                { 2100000, uint256S("0x5084a216b157d585cd9c804bad834a6aae1bc12cdc6dd7e2a4a3c2f35b45ebfa")},
-                { 2800000, uint256S("0x108d47a6d15fb901254bf83e37a7b3c7314187b899423d15d7690208888870ce")},
+                {  854866, uint256S("0xb709d14ce9e24a044cbe6182c3ae05312b88291446c688bdce13207d4778bdb3")},
+                { 1617271, uint256S("0x54b0c41a8aae8d8ceebc4e2366b577f34c4ad7a1a629d2e8ce9d721cd4d704b1")},
+                { 2592901, uint256S("0xde07ddf776c3e5bbee0f4e67ba2802934a9152f79421273a0b682ab2d4162c05")},
                 { 2908166, uint256S("0xeee0c0cec4e5d7395bdd2fa36a2b804ac75bcbff0ddc550a86d47ec1890b0694")},
                 { 3685413, uint256S("0x47519676a8175884cd87db091e42c3a9a66fa566a368d3ba1897cd2cab5a5e5f")}
 			}
@@ -265,7 +262,7 @@ public:
 
         checkpointData = {
             {
-                {0, uint256S("0x221156cf301bc3585e72de34fe1efdb6fbd703bc27cfc468faa1cdd889d0efa0")},
+                { 1442707, uint256S("0xda3f7eb0c590bdbb806fc0f494d15e7d6f1f7d2385a1a63908fc3a9bbaa59ba2")},
             }
         };
 
