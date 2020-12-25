@@ -172,11 +172,11 @@ public:
 		};
 
         chainTxData = ChainTxData {
-            // Data as of block 00000000000000000166d612d5595e2b1cd88d71d695fc580af64d8da8658c23 (height 446482).
-            1373064429, // * UNIX timestamp of last known number of transactions
-            184495391,  // * total number of transactions between genesis and that timestamp
+            // Data as of block 0x47519676a8175884cd87db091e42c3a9a66fa566a368d3ba1897cd2cab5a5e5f (height 3685413).
+            1589479273, // * UNIX timestamp of last known number of transactions
+            7202526,  // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the SetBestChain debug.log lines)
-            3.1         // * estimated number of transactions per second after that timestamp
+            0.03         // * estimated number of transactions per second after that timestamp
         };
     }
 };
@@ -265,10 +265,10 @@ public:
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 000000000000033cfa3c975eb83ecf2bb4aaedf68e6d279f6ed2b427c64caff9 (height 1260526)
-            1516903490,
-            17082348,
-            0.09
+            // Data as of block 0xda3f7eb0c590bdbb806fc0f494d15e7d6f1f7d2385a1a63908fc3a9bbaa59ba2 (height 1442707)
+            1517811562,
+            1484979,
+            0.01
         };
 
     }
