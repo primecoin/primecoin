@@ -1368,7 +1368,6 @@ bool AppInitMain()
     // see Step 2: parameter interactions for more information about these
     fListen = gArgs.GetBoolArg("-listen", DEFAULT_LISTEN);
     fDiscover = gArgs.GetBoolArg("-discover", true);
-    LogPrintf("AK fDiscover is %d\n", fDiscover);
     fRelayTxes = !gArgs.GetBoolArg("-blocksonly", DEFAULT_BLOCKSONLY);
 
     for (const std::string& strAddr : gArgs.GetArgs("-externalip")) {
@@ -1681,7 +1680,6 @@ bool AppInitMain()
         StartTorControl(threadGroup, scheduler);
 
     Discover(threadGroup);
-    LogPrintf("AK finish Discover\n");
 
     // Map ports with UPnP
     MapPort(gArgs.GetBoolArg("-upnp", DEFAULT_UPNP));

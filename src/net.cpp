@@ -2150,13 +2150,10 @@ void Discover(boost::thread_group& threadGroup)
     struct ifaddrs* myaddrs;
     if (getifaddrs(&myaddrs) == 0)
     {
-        LogPrintf("AK enter if getifaddrs \n");
         for (struct ifaddrs* ifa = myaddrs; ifa != nullptr; ifa = ifa->ifa_next)
         {
-            LogPrintf("ifa_addr %ld\n", ifa->ifa_addr);
             if (ifa->ifa_addr == nullptr) continue;
             if ((ifa->ifa_flags & IFF_UP) == 0) continue;
-            LogPrintf("ifa_name %s\n", ifa->ifa_name);
             if (strcmp(ifa->ifa_name, "lo") == 0) continue;
             if (strcmp(ifa->ifa_name, "lo0") == 0) continue;
             if (ifa->ifa_addr->sa_family == AF_INET)
