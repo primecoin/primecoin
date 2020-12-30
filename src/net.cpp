@@ -264,8 +264,10 @@ bool SeenLocal(const CService& addr)
 {
     {
         LOCK(cs_mapLocalHost);
-        if (mapLocalHost.count(addr) == 0)
+        if (mapLocalHost.count(addr) == 0) {
+            AddLocal(addr, LOCAL_NONE);
             return false;
+        }
         mapLocalHost[addr].nScore++;
     }
     return true;

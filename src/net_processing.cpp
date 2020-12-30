@@ -1621,7 +1621,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             return true;
         }
 
-        if (pfrom->fInbound && addrMe.IsRoutable())
+        if (pfrom->addr.IsRoutable() && addrMe.IsRoutable())
         {
             SeenLocal(addrMe);
         }
