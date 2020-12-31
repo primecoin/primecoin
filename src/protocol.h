@@ -311,7 +311,9 @@ static ServiceFlags GetDesirableServiceFlags(ServiceFlags services) {
  * set of service flags are sufficient for a peer to be "relevant".
  */
 static inline bool HasAllDesirableServiceFlags(ServiceFlags services) {
-    return !(GetDesirableServiceFlags(services) & (~services));
+    return true;
+    // ServiceBits not yet supported
+    //return !(GetDesirableServiceFlags(services) & (~services));
 }
 
 /**
