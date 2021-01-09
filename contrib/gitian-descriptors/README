@@ -1,0 +1,23 @@
+Notes on getting gitian builds up and running using Docker:
+
+These instructions distilled from:
+  https://docs.docker.com/install/linux/docker-ce/ubuntu/
+  https://docs.docker.com/docker-for-mac/install/
+  
+... see there for complete details.
+
+
+Here's a description of eXtremal's setup on ubuntu 16.04 and 18.04:
+
+1. Prepare root directory for build
+2. git clone https://github.com/devrandom/gitian-builder.git
+3. git clone https://github.com/primecoin/primecoin -b primecoin-0.16.3
+4. Obtain MacOSX10.11.sdk.tar.gz as described in README https://github.com/primecoin/primecoin/blob/primecoin-0.16.3/doc/README_osx.md
+MacOSX10.11.sdk.tar.gz needs to be put in gitian-builder/inputs/
+5. Install docker https://docs.docker.com/install
+6, sudo apt-get install apt-cacher-ng
+6. Create VM (run from gitian-builder root directory): bin/make-base-vm --suite bionic --arch amd64 --docker
+7. Build primecoin (run from root build directory): primecoin/contrib/gitian-build.sh --build -c -j 8 -m 11000 eXtremal primecoin-0.16.3
+  Where is:
+    -j N: Parallel build using N threads
+    -m M: Memory limit in megabytes

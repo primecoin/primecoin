@@ -225,7 +225,7 @@ then
     # git clone https://github.com/primecoin/gitian.sigs.git
     # git clone https://github.com/primecoin/primecoin-detached-sigs.git    
     pushd ./gitian-builder
-    bin/make-base-vm --suite trusty --arch amd64 --docker
+    bin/make-base-vm --suite bionic --arch amd64 --docker
     popd
 fi
 
