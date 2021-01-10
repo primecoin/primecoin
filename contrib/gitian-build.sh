@@ -10,7 +10,7 @@ build=false
 # Systems to build
 linux=true
 windows=true
-
+osx=false
 # Other Basic variables
 SIGNER=
 VERSION=
@@ -94,10 +94,6 @@ while :; do
 		if [[ "$2" = *"w"* ]]
 		then
 		    windows=true
-		fi
-		if [[ "$2" = *"x"* ]]
-		then
-		    osx=true
 		fi
 		shift
 	    else
