@@ -237,7 +237,7 @@ then
     echo ""
     pushd ./gitian-builder    
     mkdir -p inputs
-    wget -N -P inputs -O miniupnpc-1.6.tar.gz 'http://miniupnp.tuxfamily.org/files/download.php?file=miniupnpc-1.6.tar.gz'
+    wget -N  -O inputs/miniupnpc-1.6.tar.gz 'http://miniupnp.tuxfamily.org/files/download.php?file=miniupnpc-1.6.tar.gz'
     wget -N -P inputs 'http://fukuchi.org/works/qrencode/qrencode-3.2.0.tar.bz2'
     wget -N -P inputs 'https://downloads.sourceforge.net/project/boost/boost/1.52.0/boost_1_52_0.tar.bz2'
     wget -N -P inputs 'http://www.openssl.org/source/openssl-1.0.1g.tar.gz'
