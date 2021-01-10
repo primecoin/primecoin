@@ -11,12 +11,26 @@ Here's a description of eXtremal's setup on ubuntu 16.04 and 18.04:
 
 1. Prepare root directory for build
 2. git clone https://github.com/devrandom/gitian-builder.git
+appy patch https://pastebin.com/AUtfxVsi
+
+diff --git a/bin/make-base-vm b/bin/make-base-vm
+index a0967ad..a636485 100755
+--- a/bin/make-base-vm
++++ b/bin/make-base-vm
+@@ -201,6 +201,7 @@ if [ $DOCKER = "1" ]; then
+ FROM $base_image
+
+ ENV DEBIAN_FRONTEND=noninteractive
++RUN rm /etc/apt/sources.list.d/ubuntu-esm-infra-trusty.list
+ RUN echo 'Acquire::http { Proxy "$MIRROR_BASE"; };' > /etc/apt/apt.conf.d/50cacher
+ RUN apt-get update && apt-get --no-install-recommends -y install $addpkg
+
 3. git clone https://github.com/primecoin/primecoin -b primecoin-0.16.3
 4. Obtain MacOSX10.11.sdk.tar.gz as described in README https://github.com/primecoin/primecoin/blob/primecoin-0.16.3/doc/README_osx.md
 MacOSX10.11.sdk.tar.gz needs to be put in gitian-builder/inputs/
 5. Install docker https://docs.docker.com/install
 6, sudo apt-get install apt-cacher-ng
-6. Create VM (run from gitian-builder root directory): bin/make-base-vm --suite bionic --arch amd64 --docker
+6. Create VM (run from gitian-builder root directory): bin/make-base-vm --suite trusty --arch amd64 --docker
 7. Build primecoin (run from root build directory): primecoin/contrib/gitian-build.sh --build -c -j 8 -m 11000 eXtremal primecoin-0.16.3
   Where is:
     -j N: Parallel build using N threads
