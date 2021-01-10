@@ -249,7 +249,7 @@ then
     # Linux
     if [[ $linux = true ]]
     then
-            echo ""
+        echo ""
         echo "Compiling ${VERSION} Linux"
         echo ""
         ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/gitian.yml
