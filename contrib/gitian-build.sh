@@ -253,8 +253,8 @@ then
         echo "Compiling ${VERSION} Linux"
         echo ""
         ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/gitian.yml
-        tar -cvf build/out/primecoin-0.1.5.tar.gz build/out/bin
-        mv build/out/primecoin-0.1.5.tar.gz ../primecoin-binaries/${VERSION}
+        tar -cvf build/out/primecoin-linux.tar.gz build/out/bin
+        mv build/out/primecoin-linux.tar.gz ../primecoin-binaries/${VERSION}
     fi
     # Windows
     if [[ $windows = true ]]
