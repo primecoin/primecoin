@@ -51,7 +51,7 @@ Apply this patch to gitian repository (patch -p1 < 'patch_file'):
 Continue:    
     
     cd gitian-builder
-    bin/make-base-vm --docker --suite bionic
+    bin/make-base-vm --docker --suite bionic --arch amd64
     bin/make-base-vm --docker --suite bionic --arch i386
     cd ..
 
@@ -110,3 +110,34 @@ Here's a description of Gavin's setup on OSX 10.6:
   export USE_LXC=1
   git clone git://github.com/bitcoin/bitcoin.git
   ... etc
+
+If your machine is 64-bit ubuntu 18.04, you can also build through gitian-build.sh
+1, git clone git://github.com/primecoin/primecoin.git
+2, git clone git://github.com/devrandom/gitian-builder.git
+Apply this patch to gitian repository (patch -p1 < 'patch_file'):
+
+    diff --git a/bin/make-base-vm b/bin/make-base-vm
+    index 18b2df8..49ed596 100755
+    --- a/bin/make-base-vm
+    +++ b/bin/make-base-vm
+    @@ -181,7 +181,11 @@ if [ $DOCKER = "1" ]; then
+         base_image="$DISTRO@sha256:$DOCKER_IMAGE_HASH"
+         OUT=base-$DOCKER_IMAGE_HASH-$ARCH
+       else
+    -    base_image="$DISTRO:$SUITE"
+    +    if [ $ARCH = "i386" ]; then
+    +      base_image="i386/$DISTRO:$SUITE"
+    +    else
+    +      base_image="$DISTRO:$SUITE"
+    +    fi
+       fi
+
+       # Generate the dockerfile
+3, cd gitian-builder
+    bin/make-base-vm --docker --suite bionic --arch amd64
+    bin/make-base-vm --docker --suite bionic --arch i386
+    cd ..
+4, Build primecoin (run from root build directory): primecoin/contrib/gitian-build.sh --build -c -j 8 -m 11000 primecoin master
+  Where is:
+    -j N: Parallel build using N threads
+    -m M: Memory limit in megabytes
