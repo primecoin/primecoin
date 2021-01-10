@@ -253,8 +253,8 @@ then
         echo "Compiling ${VERSION} Linux"
         echo ""
         ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/gitian.yml
-        tar -cvf build/out/primecoin-linux.tar.gz build/out/bin
-        mv build/out/primecoin-linux.tar.gz ../primecoin-binaries/${VERSION}
+        tar -cvf build/out/primecoin-${VERSION}-linux.tar.gz build/out/bin
+        mv build/out/primecoin-${VERSION}-linux.tar.gz ../primecoin-binaries/${VERSION}
     fi
     # Windows
     if [[ $windows = true ]]
@@ -266,8 +266,8 @@ then
         ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/deps-win32.yml && mv build/out/primecoin-deps-0.0.2.zip inputs
         ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/qt-win32.yml && mv build/out/qt-win32-4.8.7-gitian-r1.zip inputs
         ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/gitian-win32.yml
-        mv build/out/primecoin-*-win32-setup.exe ../primecoin-binaries/${VERSION}/primecoin-win32-setup.exe
-        mv build/out/primecoin-qt.exe ../primecoin-binaries/${VERSION}/primecoin-qt-win32.exe
+        mv build/out/primecoin-*-win32-setup.exe ../primecoin-binaries/${VERSION}/primecoin-${VERSION}-win32-setup.exe
+        mv build/out/primecoin-qt.exe ../primecoin-binaries/${VERSION}/primecoin-${VERSION}-qt-win32.exe
 
         echo ""
         echo "Compiling ${VERSION} Windows 64"
@@ -276,8 +276,8 @@ then
         ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/deps-win64.yml && mv build/out/primecoin-deps-win64-0.0.2.zip inputs
         ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/qt-win64.yml && mv build/out/qt-win64-4.8.7-gitian-r1.zip inputs
         ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/gitian-win64.yml
-        mv build/out/primecoin-*-win32-setup.exe ../primecoin-binaries/${VERSION}/primecoin-win64-setup.exe
-        mv build/out/primecoin-qt.exe ../primecoin-binaries/${VERSION}/primecoin-qt-win64.exe
+        mv build/out/primecoin-*-win32-setup.exe ../primecoin-binaries/${VERSION}/primecoin-${VERSION}-win64-setup.exe
+        mv build/out/primecoin-qt.exe ../primecoin-binaries/${VERSION}/primecoin-${VERSION}-qt-win64.exe
     fi
     popd
 
