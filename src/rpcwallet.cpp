@@ -69,9 +69,15 @@ Value getinfo(const Array& params, bool fHelp)
 
     proxyType proxy;
     GetProxy(NET_IPV4, proxy);
+    std::vector<std::string> uacomments;
+    for (const std::string& cmt : mapMultiArgs["-uacomment"]) {
+        uacomments.push_back(cmt);
+    }
+    std::string strSubVersion = FormatSubVersion(CLIENT_NAME, CLIENT_VERSION, uacomments);
 
     Object obj;
     obj.push_back(Pair("version",       FormatFullVersion()));
+    obj.push_back(Pair("subversion",    strSubVersion));
     obj.push_back(Pair("protocolversion",(int)PROTOCOL_VERSION));
     obj.push_back(Pair("walletversion", pwalletMain->GetVersion()));
     obj.push_back(Pair("balance",       ValueFromAmount(pwalletMain->GetBalance())));
