@@ -260,16 +260,6 @@ then
     if [[ $windows = true ]]
     then
         echo ""
-        echo "Compiling ${VERSION} Windows 32"
-        echo ""
-        ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/boost-win32.yml && mv build/out/boost-win32-1.52.0-gitian.zip inputs/
-        ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/deps-win32.yml && mv build/out/primecoin-deps-0.0.2.zip inputs
-        ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/qt-win32.yml && mv build/out/qt-win32-4.8.7-gitian-r1.zip inputs
-        ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/gitian-win32.yml
-        mv build/out/primecoin-*-win32-setup.exe ../primecoin-binaries/${VERSION}/primecoin-${VERSION}-win32-setup.exe
-        mv build/out/primecoin-qt.exe ../primecoin-binaries/${VERSION}/primecoin-${VERSION}-qt-win32.exe
-
-        echo ""
         echo "Compiling ${VERSION} Windows 64"
         echo ""
         ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/boost-win64.yml && mv build/out/boost-win64-1.52.0-gitian.zip inputs

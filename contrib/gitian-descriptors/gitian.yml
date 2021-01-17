@@ -3,7 +3,6 @@ name: "primecoin"
 suites:
 - "bionic"
 architectures:
-- "i386"
 - "amd64"
 packages:
 - "qt4-qmake"
