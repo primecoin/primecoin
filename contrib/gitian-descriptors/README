@@ -114,7 +114,8 @@ Here's a description of Gavin's setup on OSX 10.6:
 If your machine is 64-bit ubuntu 18.04, you can also build through gitian-build.sh
 1, git clone git://github.com/primecoin/primecoin.git
 2, git clone git://github.com/devrandom/gitian-builder.git
-Apply this patch to gitian repository (patch -p1 < 'patch_file'):
+
+To build tags before v0.1.5xpm, apply this patch to gitian repository (patch -p1 < 'patch_file'):
 
     diff --git a/bin/make-base-vm b/bin/make-base-vm
     index 18b2df8..49ed596 100755
@@ -135,6 +136,8 @@ Apply this patch to gitian repository (patch -p1 < 'patch_file'):
        # Generate the dockerfile
 3, cd gitian-builder
     bin/make-base-vm --docker --suite bionic --arch amd64
+    To build tags before v0.1.5xpm, create a 32 bit VM
+    bin/make-base-vm --docker --suite bionic --arch i386
     cd ..
 4, Build primecoin (run from root build directory): primecoin/contrib/gitian-build.sh --build -c -j 8 -m 11000 primecoin master
   Where is:
