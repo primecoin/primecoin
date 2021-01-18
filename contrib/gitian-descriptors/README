@@ -143,3 +143,4 @@ To build tags before v0.1.5xpm, apply this patch to gitian repository (patch -p1
   Where is:
     -j N: Parallel build using N threads
     -m M: Memory limit in megabytes
+    primecoin directory will be changed after this process
