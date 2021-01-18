@@ -198,9 +198,12 @@ fi
 # Add a "v" if no -c
 if [[ $commit = false ]]
 then
-    COMMIT="v${VERSION}"
+    COMMIT="v${VERSION}xpm"
+else
+    VERSION=${VERSION:1:5}
 fi
 echo ${COMMIT}
+echo ${VERSION}
 
 # Setup build environment
 if [[ $setup = true ]]
@@ -253,8 +256,8 @@ then
         echo "Compiling ${VERSION} Linux"
         echo ""
         ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/gitian.yml
-        tar -cvf build/out/primecoin-${VERSION}-linux.tar.gz build/out/bin
-        mv build/out/primecoin-${VERSION}-linux.tar.gz ../primecoin-binaries/${VERSION}
+        mv build/out//bin/64/primecoind ../primecoin-binaries/${VERSION}/primecoind-${VERSION}-linux
+        mv build/out//bin/64/primecoin-qt ../primecoin-binaries/${VERSION}/primecoin-qt-${VERSION}-linux
     fi
     # Windows
     if [[ $windows = true ]]
@@ -267,7 +270,7 @@ then
         ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/qt-win64.yml && mv build/out/qt-win64-4.8.7-gitian-r1.zip inputs
         ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} ../primecoin/contrib/gitian-descriptors/gitian-win64.yml
         mv build/out/primecoin-*-win32-setup.exe ../primecoin-binaries/${VERSION}/primecoin-${VERSION}-win64-setup.exe
-        mv build/out/primecoin-qt.exe ../primecoin-binaries/${VERSION}/primecoin-${VERSION}-qt-win64.exe
+        mv build/out/primecoin-qt.exe ../primecoin-binaries/${VERSION}/primecoin-qt-${VERSION}-win64.exe
     fi
     popd
 
