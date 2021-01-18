@@ -199,7 +199,8 @@ fi
 if [[ $commit = false ]]
 then
     COMMIT="v${VERSION}xpm"
-else
+elif [[ $VERSION == v*xpm ]]
+then
     VERSION=${VERSION:1:5}
 fi
 echo ${COMMIT}
