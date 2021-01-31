@@ -29,6 +29,7 @@
 #include <memory>
 #include <stdint.h>
 #include <prime/prime.h>
+#include <wallet/wallet.h>
 unsigned int ParseConfirmTarget(const UniValue& value)
 {
     int target = value.get_int();
