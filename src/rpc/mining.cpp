@@ -725,13 +725,13 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
         fLastTemplateSupportsSegwit = fSupportsSegwit;
 
         // Create new block
-        std::shared_ptr<CReserveScript> coinbase_script;
+        CScript scriptDummy = CScript() << OP_TRUE;
         if(!vpwallets.empty()) {
+            std::shared_ptr<CReserveScript> coinbase_script;
             vpwallets[0]->GetScriptForMining(coinbase_script);
-        } else {
-            coinbase_script->reserveScript = CScript() << OP_TRUE;;
+            scriptDummy = coinbase_script->reserveScript;
         }
-        pblocktemplate = BlockAssembler(Params()).CreateNewBlock(coinbase_script->reserveScript, fSupportsSegwit);
+        pblocktemplate = BlockAssembler(Params()).CreateNewBlock(scriptDummy, fSupportsSegwit);
         if (!pblocktemplate)
             throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
 
