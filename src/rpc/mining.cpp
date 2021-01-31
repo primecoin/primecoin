@@ -369,7 +369,7 @@ UniValue getwork(const JSONRPCRequest& request)
             if(!vpwallets.empty()) {
                 vpwallets[0]->GetScriptForMining(coinbase_script);
             } else {
-                coinbase_script->reserveScript = CScript() << OP_TRUE;;
+                throw JSONRPCError(RPC_MISC_ERROR, "Only support getblocktemplate/submitblock API for mining");
             }
             bool fSupportsSegwit = IsWitnessEnabled(pindexPrev, Params().GetConsensus());
             pblocktemplate = BlockAssembler(Params()).CreateNewBlock(coinbase_script->reserveScript, fSupportsSegwit);
@@ -724,8 +724,13 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
         fLastTemplateSupportsSegwit = fSupportsSegwit;
 
         // Create new block
-        CScript scriptDummy = CScript() << OP_TRUE;
-        pblocktemplate = BlockAssembler(Params()).CreateNewBlock(scriptDummy, fSupportsSegwit);
+        std::shared_ptr<CReserveScript> coinbase_script;
+        if(!vpwallets.empty()) {
+            vpwallets[0]->GetScriptForMining(coinbase_script);
+        } else {
+            coinbase_script->reserveScript = CScript() << OP_TRUE;;
+        }
+        pblocktemplate = BlockAssembler(Params()).CreateNewBlock(coinbase_script->reserveScript, fSupportsSegwit);
         if (!pblocktemplate)
             throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
 

@@ -1778,7 +1778,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
     {
         std::vector<CAddress> vAddr;
         vRecv >> vAddr;
-        LogPrintf("Reveived %d peer addresses from peer [%s]\n", vAddr.size(), pfrom->addr.ToString());
+        LogPrintf("Received %d peer addresses from peer [%s]\n", vAddr.size(), pfrom->addr.ToString());
 
         // Don't want addr from older versions unless seeding
         if (pfrom->nVersion < CADDR_TIME_VERSION && connman->GetAddressCount() > 1000)
