@@ -296,18 +296,18 @@ Value getblocktemplate(const Array& params, bool fHelp)
     Array transactions;
     map<uint256, int64_t> setTxIndex;
     int i = 0;
+    Object coinbasetxn;
     BOOST_FOREACH (CTransaction& tx, pblock->vtx)
     {
         uint256 txHash = tx.GetHash();
         setTxIndex[txHash] = i++;
-
-        if (tx.IsCoinBase())
-            continue;
-
         Object entry;
-
         CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
         ssTx << tx;
+        if (tx.IsCoinBase()) {
+            coinbasetxn.push_back(Pair("data", HexStr(ssTx.begin(), ssTx.end())));;
+            continue;
+        }
         entry.push_back(Pair("data", HexStr(ssTx.begin(), ssTx.end())));
 
         entry.push_back(Pair("hash", txHash.GetHex()));
@@ -355,6 +355,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     result.push_back(Pair("curtime", (int64_t)pblock->nTime));
     result.push_back(Pair("bits", HexBits(pblock->nBits)));
     result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight+1)));
+    result.push_back(Pair("coinbasetxn", coinbasetxn));
 
     return result;
 }
