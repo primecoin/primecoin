@@ -4415,7 +4415,7 @@ CBlockTemplate* CreateNewBlock(CReserveKey& reservekey)
         if (fDebug && GetBoolArg("-printmining"))
             printf("CreateNewBlock(): total size %"PRI64u"\n", nBlockSize);
         pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock);
-        pblock->vtx[0].vout[0].nValue = GetBlockValue(pblock->nBits, nFees) - pblock->vtx[0].GetMinFee() + MIN_TX_FEE;
+        pblock->vtx[0].vout[0].nValue = GetBlockValue(pblock->nBits, nFees);
         pblocktemplate->vTxFees[0] = -nFees;
 
         // Fill in header
