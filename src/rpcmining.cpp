@@ -293,6 +293,10 @@ Value getblocktemplate(const Array& params, bool fHelp)
     pblock->UpdateTime(pindexPrev);
     pblock->nNonce = 0;
 
+    // Update nExtraNonce
+    static unsigned int nExtraNonce = 0;
+    IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+
     Array transactions;
     map<uint256, int64_t> setTxIndex;
     int i = 0;
