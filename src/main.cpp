@@ -4415,14 +4415,15 @@ CBlockTemplate* CreateNewBlock(CReserveKey& reservekey)
         if (fDebug && GetBoolArg("-printmining"))
             printf("CreateNewBlock(): total size %"PRI64u"\n", nBlockSize);
         pblock->nBits          = GetNextWorkRequired(pindexPrev, pblock);
-        pblock->vtx[0].vout[0].nValue = GetBlockValue(pblock->nBits, nFees);
+        pblock->vtx[0].vout[0].nValue = GetBlockValue(pblock->nBits, nFees) - pblock->vtx[0].GetMinFee() + MIN_TX_FEE;
         pblocktemplate->vTxFees[0] = -nFees;
 
         // Fill in header
         pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
         pblock->UpdateTime(pindexPrev);
         pblock->nNonce         = 0;
-        pblock->vtx[0].vin[0].scriptSig = CScript() << OP_0 << OP_0;
+        int nheight = pindexPrev->nHeight + 1;
+        pblock->vtx[0].vin[0].scriptSig = CScript() << nheight << OP_0;
         pblocktemplate->vTxSigOps[0] = pblock->vtx[0].GetLegacySigOpCount();
 
         CBlockIndex indexDummy(*pblock);
