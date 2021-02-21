@@ -382,7 +382,7 @@ Value submitblock(const Array& params, bool fHelp)
     CValidationState state;
     bool fAccepted = ProcessBlock(state, NULL, &pblock);
     if (!fAccepted)
-        throw JSONRPCError(RPC_MISC_ERROR, "rejected");
+        throw JSONRPCError(RPC_MISC_ERROR, "rejected"); // TODO: report validation state
 
     return Value::null;
 }
