@@ -69,6 +69,10 @@ submit new unit tests for old code.
 
 Unit tests for the core code are in `src/test/`. To compile and run them:
 
+    sudo apt-get update
+    sudo apt-get install build-essential
+    sudo apt-get install -y build-essential autoconf libtool pkg-config libboost-all-dev libssl-dev libevent-dev libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler libqrencode-dev libminiupnpc-dev curl
+
     (In ubuntu 20.04)
     cd depends; make
     export BOOST_INCLUDE_PATH=`pwd`/x86_64-pc-linux-gnu/include
