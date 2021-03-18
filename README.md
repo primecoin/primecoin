@@ -81,6 +81,7 @@ Unit tests for the core code are in `src/test/`. To compile and run them:
     export BDB_INCLUDE_PATH=`pwd`/x86_64-pc-linux-gnu/include
     export OPENSSL_INCLUDE_PATH=`pwd`/x86_64-pc-linux-gnu/include
     export BOOST_LIB_PATH=`pwd`/x86_64-pc-linux-gnu/lib
+    export BOOST_LIB_SUFFIX=-mt
     cd ..
     cd src ; make -f makefile.unix USE_UPNP:=
 
