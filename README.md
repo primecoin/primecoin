@@ -69,7 +69,10 @@ submit new unit tests for old code.
 
 Unit tests for the core code are in `src/test/`. To compile and run them:
 
-    cd src; make -f makefile.unix test
+    cd depends
+    make
+    cd ../src
+    make -f makefile.unix test
 
 Unit tests for the GUI code are in `src/qt/test/`. To compile and run them:
 
