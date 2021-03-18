@@ -69,10 +69,17 @@ submit new unit tests for old code.
 
 Unit tests for the core code are in `src/test/`. To compile and run them:
 
-    cd depends
-    make
-    cd ../src
-    make -f makefile.unix
+    (In ubuntu 20.04)
+    cd depends; make
+    export BOOST_INCLUDE_PATH=`pwd`/x86_64-pc-linux-gnu/include
+    export BDB_INCLUDE_PATH=`pwd`/x86_64-pc-linux-gnu/include
+    export OPENSSL_INCLUDE_PATH=`pwd`/x86_64-pc-linux-gnu/include
+    export BOOST_LIB_PATH=`pwd`/x86_64-pc-linux-gnu/lib
+    cd ..
+    cd src ; make -f makefile.unix
+
+    (For other systems)
+    cd src ; make -f makefile.unix
 
 Unit tests for the GUI code are in `src/qt/test/`. To compile and run them:
 
