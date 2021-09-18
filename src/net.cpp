@@ -192,7 +192,7 @@ void AdvertiseLocal(CNode *pnode)
         }
         if (addrLocal.IsRoutable())
         {
-            LogPrint(BCLog::NET, "AdvertiseLocal: advertising address %s\n", addrLocal.ToString());
+            LogPrintf("AdvertiseLocal: advertising address %s\n", addrLocal.ToString());
             FastRandomContext insecure_rand;
             pnode->PushAddress(addrLocal, insecure_rand);
         }
@@ -264,8 +264,10 @@ bool SeenLocal(const CService& addr)
 {
     {
         LOCK(cs_mapLocalHost);
-        if (mapLocalHost.count(addr) == 0)
+        if (mapLocalHost.count(addr) == 0) {
+            AddLocal(addr, LOCAL_NONE);
             return false;
+        }
         mapLocalHost[addr].nScore++;
     }
     return true;
@@ -1615,7 +1617,7 @@ void CConnman::ThreadDNSAddressSeed()
             std::vector<CNetAddr> vIPs;
             std::vector<CAddress> vAdd;
             ServiceFlags requiredServiceBits = GetDesirableServiceFlags(NODE_NONE);
-            std::string host = strprintf("x%x.%s", requiredServiceBits, seed);
+            std::string host = strprintf("%s", seed); // ServiceBits not yet supported
             CNetAddr resolveSource;
             if (!resolveSource.SetInternal(host)) {
                 continue;
@@ -1845,14 +1847,14 @@ void CConnman::ThreadOpenConnections(const std::vector<std::string> connect)
             // for non-feelers, require all the services we'll want,
             // for feelers, only require they be a full node (only because most
             // SPV clients don't have a good address DB available)
-            if (!fFeeler && !HasAllDesirableServiceFlags(addr.nServices)) {
-                continue;
-            } else if (fFeeler && !MayHaveUsefulAddressDB(addr.nServices)) {
-                continue;
-            }
+            // TODO: restore these requirements after network has upgraded to
+            // Satoshi 0.16
+            // NOTE: disabled services requirements during Satoshi 0.16
+            // migration period for proper outbound connection to satoshi 0.8
 
-            // do not allow non-default ports, unless after 50 invalid addresses selected already
-            if (addr.GetPort() != Params().GetDefaultPort() && nTries < 50)
+            // NOTE: only slightly favor default port over non-default port
+            // do not allow non-default ports, unless after 5 invalid addresses selected already
+            if (addr.GetPort() != Params().GetDefaultPort() && nTries < 5)
                 continue;
 
             addrConnect = addr;

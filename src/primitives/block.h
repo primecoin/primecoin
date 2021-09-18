@@ -11,24 +11,6 @@
 #include <uint256.h>
 #include <prime/bignum.h>
 
-class PrimeBlock {
-public:
-    uint256 hashBlock; // Primecoin: Persist block hash as well
-
-    // Primecoin: proof-of-work certificate
-    // Multiplier to block hash to derive the probable prime chain (k=0, 1, ...)
-    // Cunningham Chain of first kind:  hash * multiplier * 2**k - 1
-    // Cunningham Chain of second kind: hash * multiplier * 2**k + 1
-    // BiTwin Chain:                    hash * multiplier * 2**k +/- 1
-    
-    CBigNum bnPrimeChainMultiplier;
-    int64_t nMoneySupply;
-
-    uint32_t nPrimeChainType;
-    uint32_t nPrimeChainLength;
-    uint32_t nWorkTransition;
-};
-
 /** Nodes collect new transactions into a block, hash them into a hash tree,
  * and scan through nonce values to make the block's hash satisfy proof-of-work
  * requirements.  When they solve the proof-of-work, they broadcast the block
@@ -36,7 +18,7 @@ public:
  * in the block is a special one that creates a new coin owned by the creator
  * of the block.
  */
-class CBlockHeader : public PrimeBlock
+class CBlockHeader
 {
 public:
     // header
@@ -53,6 +35,10 @@ public:
     // Cunningham Chain of second kind: hash * multiplier * 2**k + 1
     // BiTwin Chain:                    hash * multiplier * 2**k +/- 1
     CBigNum bnPrimeChainMultiplier;
+
+    // memory only
+    mutable uint32_t nPrimeChainType;
+    mutable uint32_t nPrimeChainLength;
 
     CBlockHeader()
     {
@@ -81,6 +67,8 @@ public:
         nBits = 0;
         nNonce = 0;
         bnPrimeChainMultiplier = 0;
+        nPrimeChainType = 0;
+        nPrimeChainLength = 0;
     }
 
     bool IsNull() const
@@ -134,8 +122,6 @@ public:
         CBlockHeader::SetNull();
         vtx.clear();
         fChecked = false;
-        nPrimeChainType = 0;
-        nPrimeChainLength = 0;
     }
 
     CBlockHeader GetBlockHeader() const

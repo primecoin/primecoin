@@ -141,15 +141,19 @@ public:
         
         assert(consensus.hashGenesisBlock 	== uint256S("0x963d17ba4dc753138078a2f56afb3af9674e2546822badff26837db9a0152106"));
         assert(genesis.hashMerkleRoot 		== uint256S("0xaca30eb61dffbb9412d0ae743c3d74554f710853daec40ebd2514e830e05c9ff"));
-        
+
+        vSeeds.emplace_back("seed.primecoin.info");
+        vSeeds.emplace_back("primeseed.muuttuja.org");
+        vSeeds.emplace_back("seed.primecoin.org");
+        vSeeds.emplace_back("xpm.dnsseed.coinsforall.io");
+
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,23);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,83);
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,151);
-        // TODO: BTC -> XPM
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
 
-        bech32_hrp = "bc";
+        bech32_hrp = "pm";
 
         vFixedSeeds = std::vector<SeedSpec6>(pnSeed6_main, pnSeed6_main + ARRAYLEN(pnSeed6_main));
 
@@ -159,21 +163,20 @@ public:
 
         checkpointData = { 
 			{
-                { 7000, uint256S("0x8129a538540682e37ffda6a38a21d73b13b00d97c4b865f2976f0e5a873778fc")},
-                { 70000, uint256S("0x89b8dafd07efc96e802594f0b497fb958dfdf1af7cf73f2b46f975ab0c36aa53")},
-                { 700000, uint256S("0xece5513cb4ccc49479f0831b6fea8c05d1716183a1ca968e9acfae0c339d1a32")},
-                { 1400000, uint256S("0xe03d4012d38c30d5224acaadf9e9020a8cf3e9f9037402931dda6224ea2c5515")},
-                { 2100000, uint256S("0x5084a216b157d585cd9c804bad834a6aae1bc12cdc6dd7e2a4a3c2f35b45ebfa")},
-                { 2800000, uint256S("0x108d47a6d15fb901254bf83e37a7b3c7314187b899423d15d7690208888870ce")}
+                {  854866, uint256S("0xb709d14ce9e24a044cbe6182c3ae05312b88291446c688bdce13207d4778bdb3")},
+                { 1617271, uint256S("0x54b0c41a8aae8d8ceebc4e2366b577f34c4ad7a1a629d2e8ce9d721cd4d704b1")},
+                { 2592901, uint256S("0xde07ddf776c3e5bbee0f4e67ba2802934a9152f79421273a0b682ab2d4162c05")},
+                { 2908166, uint256S("0xeee0c0cec4e5d7395bdd2fa36a2b804ac75bcbff0ddc550a86d47ec1890b0694")},
+                { 3685413, uint256S("0x47519676a8175884cd87db091e42c3a9a66fa566a368d3ba1897cd2cab5a5e5f")}
 			}
 		};
 
         chainTxData = ChainTxData {
-            // Data as of block 00000000000000000166d612d5595e2b1cd88d71d695fc580af64d8da8658c23 (height 446482).
-            1373064429, // * UNIX timestamp of last known number of transactions
-            184495391,  // * total number of transactions between genesis and that timestamp
+            // Data as of block 0x47519676a8175884cd87db091e42c3a9a66fa566a368d3ba1897cd2cab5a5e5f (height 3685413).
+            1589479273, // * UNIX timestamp of last known number of transactions
+            7202526,  // * total number of transactions between genesis and that timestamp
                         //   (the tx=... number in the SetBestChain debug.log lines)
-            3.1         // * estimated number of transactions per second after that timestamp
+            0.03         // * estimated number of transactions per second after that timestamp
         };
     }
 };
@@ -235,13 +238,14 @@ public:
         assert(consensus.hashGenesisBlock == uint256S("0x221156cf301bc3585e72de34fe1efdb6fbd703bc27cfc468faa1cdd889d0efa0"));
         assert(genesis.hashMerkleRoot == uint256S("0xaca30eb61dffbb9412d0ae743c3d74554f710853daec40ebd2514e830e05c9ff"));
 
-        vFixedSeeds.clear();
-        vSeeds.clear();
+        vSeeds.emplace_back("testseed.primecoin.info");
+        vSeeds.emplace_back("primeseedtn.muuttuja.org");
+        vSeeds.emplace_back("seed.testnet.primecoin.org");
+        vSeeds.emplace_back("xpmtestnet.dnsseed.coinsforall.io");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
-        // TODO: BTC -> XPM
         base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
         base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
 
@@ -256,15 +260,15 @@ public:
 
         checkpointData = {
             {
-                {0, uint256S("0x221156cf301bc3585e72de34fe1efdb6fbd703bc27cfc468faa1cdd889d0efa0")},
+                { 1442707, uint256S("0xda3f7eb0c590bdbb806fc0f494d15e7d6f1f7d2385a1a63908fc3a9bbaa59ba2")}
             }
         };
 
         chainTxData = ChainTxData{
-            // Data as of block 000000000000033cfa3c975eb83ecf2bb4aaedf68e6d279f6ed2b427c64caff9 (height 1260526)
-            1516903490,
-            17082348,
-            0.09
+            // Data as of block 0xda3f7eb0c590bdbb806fc0f494d15e7d6f1f7d2385a1a63908fc3a9bbaa59ba2 (height 1442707)
+            1517811562,
+            1484979,
+            0.01
         };
 
     }

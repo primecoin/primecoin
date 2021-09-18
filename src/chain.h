@@ -167,7 +167,7 @@ enum BlockStatus: uint32_t {
  * candidates to be the next block. A blockindex may have multiple pprev pointing
  * to it, but at most one of them can be part of the currently active branch.
  */
-class CBlockIndex : public PrimeBlock
+class CBlockIndex
 {
 public:
     //! pointer to the hash of the block, if any. Memory is owned by this CBlockIndex
@@ -195,8 +195,9 @@ public:
     arith_uint256 nChainWork;
 
     unsigned int nWorkTransition; 	/// primecoin: work transition ratio (memory-only)
-	unsigned int nPrimeChainType;   /// primecoin: chain type
+    unsigned int nPrimeChainType;   /// primecoin: chain type
     unsigned int nPrimeChainLength; /// primecoin: chain length
+    int64_t nMoneySupply;             // primecoin: money supply
     
     //! Number of transactions in this block.
     //! Note: in a potential headers-first mode, this number cannot be relied upon
@@ -267,6 +268,8 @@ public:
         nBits          = block.nBits;
         nNonce         = block.nNonce;
         bnPrimeChainMultiplier = block.bnPrimeChainMultiplier;
+        nPrimeChainType = block.nPrimeChainType;
+        nPrimeChainLength = block.nPrimeChainLength;
     }
 
     CDiskBlockPos GetBlockPos() const {

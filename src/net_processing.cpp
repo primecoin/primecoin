@@ -1570,7 +1570,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         {
             connman->SetServices(pfrom->addr, nServices);
         }
-        if (!pfrom->fInbound && !pfrom->fFeeler && !pfrom->m_manual_connection && !HasAllDesirableServiceFlags(nServices))
+        if (!pfrom->fInbound && !pfrom->fFeeler && !pfrom->m_manual_connection && false) // TODO: restore disabled services requirement for outbound connection to satoshi 0.8
         {
             LogPrint(BCLog::NET, "peer=%d does not offer the expected services (%08x offered, %08x expected); disconnecting\n", pfrom->GetId(), nServices, GetDesirableServiceFlags(nServices));
             connman->PushMessage(pfrom, CNetMsgMaker(INIT_PROTO_VERSION).Make(NetMsgType::REJECT, strCommand, REJECT_NONSTANDARD,
@@ -1621,9 +1621,11 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             return true;
         }
 
-        if (pfrom->fInbound && addrMe.IsRoutable())
+        if (pfrom->addr.IsRoutable() && addrMe.IsRoutable())
         {
-            SeenLocal(addrMe);
+            CAddress addrLocal = GetLocalAddress(&pfrom->addr, pfrom->GetLocalServices());
+            addrLocal.SetIP(addrMe);
+            SeenLocal(addrLocal);
         }
 
         // Be shy and don't send version until we hear
@@ -1665,17 +1667,17 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         if (!pfrom->fInbound)
         {
             // Advertise our address
-            if (fListen && !IsInitialBlockDownload())
+            if (fListen) // Advertise proactively even during initial download
             {
                 CAddress addr = GetLocalAddress(&pfrom->addr, pfrom->GetLocalServices());
                 FastRandomContext insecure_rand;
                 if (addr.IsRoutable())
                 {
-                    LogPrint(BCLog::NET, "ProcessMessages: advertising address %s\n", addr.ToString());
+                    LogPrintf("ProcessMessages: advertising address %s\n", addr.ToString());
                     pfrom->PushAddress(addr, insecure_rand);
                 } else if (IsPeerAddrLocalGood(pfrom)) {
                     addr.SetIP(addrMe);
-                    LogPrint(BCLog::NET, "ProcessMessages: advertising address %s\n", addr.ToString());
+                    LogPrintf("ProcessMessages: advertising seen-by-peer address %s\n", addr.ToString());
                     pfrom->PushAddress(addr, insecure_rand);
                 }
             }
@@ -1736,8 +1738,8 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             // Mark this node as currently connected, so we update its timestamp later.
             LOCK(cs_main);
             State(pfrom->GetId())->fCurrentlyConnected = true;
-            LogPrintf("New outbound peer connected: version: %d, blocks=%d, peer=%d%s\n",
-                      pfrom->nVersion.load(), pfrom->nStartingHeight, pfrom->GetId(),
+            LogPrintf("New outbound peer [%s] connected: version: %d, blocks=%d, peer=%d%s\n",
+                      pfrom->addr.ToString(), pfrom->nVersion.load(), pfrom->nStartingHeight, pfrom->GetId(),
                       (fLogIPs ? strprintf(", peeraddr=%s", pfrom->addr.ToString()) : ""));
         }
 
@@ -1776,6 +1778,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
     {
         std::vector<CAddress> vAddr;
         vRecv >> vAddr;
+        LogPrintf("Received %d peer addresses from peer [%s]\n", vAddr.size(), pfrom->addr.ToString());
 
         // Don't want addr from older versions unless seeding
         if (pfrom->nVersion < CADDR_TIME_VERSION && connman->GetAddressCount() > 1000)
@@ -2609,7 +2612,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
 
             if (!CheckBlockHeaderIntegrity(headers[n].GetHeaderHash(), headers[n].nBits, headers[n].bnPrimeChainMultiplier, chainparams.GetConsensus())) {
               // Broken HEADERS message from old client, ignore
-              LogPrintf("Broken HEADERS message from old(?) client %s\n", pfrom->addr.ToString().c_str());
+              LogPrintf("Broken HEADERS message from old(?) client %s, n=%d, hash=%s, prev=%s\n", pfrom->addr.ToString(), n, headers[n].GetHash().ToString(), headers[n].hashPrevBlock.ToString());
               return false;
             }
         }

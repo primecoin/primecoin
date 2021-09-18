@@ -13,12 +13,24 @@ using namespace std;
 
 PrimeCoin prime;
 
+// Get block work value for main chain protocol
 uint256 PrimeCoin::GetPrimeBlockProof(const CBlockIndex& block, const Consensus::Params& consensus_params)
 {
+    // Primecoin: 
+    // Difficulty multiplier of extra prime is estimated by nWorkTransitionRatio
+    // Difficulty multiplier of fractional is estimated by
+    //   r = 1/TransitionRatio
+    //   length >= n discovery rate = 1
+    //   length > n discovery rate = 1/TransitionRatio
+    //   length == n discovery rate: 1 - 1/TransitionRatio
+    //   meeting target rate 1/FractionalDiff * (1 - 1/TransitionRatio) + 1/TranstionRatio
+    //   fractionalDiff = nFractionalDiffculty / nFractionalDifficultyMin
+    //   fractional multiplier = 1 / meeting target rate
+    //       = (TransitionRatio * FractionalDiff) / (TransitionRatio - 1 + FractionalDiff)
     uint64_t nFractionalDifficulty = TargetGetFractionalDifficulty(block.nBits);
-    CBigNum bnWork = 256;
+    CBigNum bnWork = 1;
 
-    for (unsigned int nCount = consensus_params.nTargetMinLength; nCount < TargetGetLength(block.nBits); nCount++)
+    for (unsigned int nCount = 0; nCount < TargetGetLength(block.nBits); nCount++)
         bnWork *= nWorkTransitionRatio;
 
     bnWork *= ((uint64_t) nWorkTransitionRatio) * nFractionalDifficulty;
