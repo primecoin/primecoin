@@ -41,6 +41,8 @@ uint256 PrimeCoin::GetPrimeBlockProof(const CBlockIndex& block, const Consensus:
 
 unsigned int PrimeCoin::GetPrimeWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& consensus_params)
 {
+    int64_t nTargetTimespan = consensus_params.nPowTargetTimespan;
+    int64_t nTargetSpacing = consensus_params.nPowTargetSpacing;
     unsigned int nBits = TargetGetLimit(consensus_params);
 
     // Genesis block

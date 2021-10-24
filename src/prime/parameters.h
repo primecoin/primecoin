@@ -14,8 +14,6 @@ class PrimeCoin {
 
 private:
 	int64_t forkFromPrime = 0;
-	int64_t nTargetSpacing = 60;
-	int64_t nTargetTimespan = 604800;  // 7 * 24 * 60 * 60
 	std::string currencyName = "Primecoin";
 	std::string tickerName = "XPM";
 
