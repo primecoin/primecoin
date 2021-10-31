@@ -189,8 +189,8 @@ public:
         consensus.BIP16Height = 0; // 221156cf301bc3585e72de34fe1efdb6fbd703bc27cfc468faa1cdd889d0efa0
         consensus.BIP34Height = 0;
         consensus.BIP34Hash = uint256S("0x221156cf301bc3585e72de34fe1efdb6fbd703bc27cfc468faa1cdd889d0efa0");
-        consensus.BIP65Height = 3013511; // 00000000007f6655f22f98e72ed80d8b06dc761d5da09df0fa1dc4be4f861eb6
-        consensus.BIP66Height = 3013511; // 000000002104c8c45e99a8853285a3b592602a3ccde2b832481da85e9e4ba182
+        consensus.BIP65Height = 3013319; // twin prime 3013319, 3013321
+        consensus.BIP66Height = 3013319; //
         consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 7 * 24 * 60 * 60; // a week
         consensus.nPowTargetSpacing = 10 * 60;
