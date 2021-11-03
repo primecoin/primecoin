@@ -1907,7 +1907,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     blockundo.vtxundo.reserve(block.vtx.size() - 1);
     std::vector<PrecomputedTransactionData> txdata;
     txdata.reserve(block.vtx.size()); // Required so that pointers to individual PrecomputedTransactionData don't get invalidated
-    CAmount coinbasefee = 0;
+    CAmount nCoinbaseFee = 0;
     for (unsigned int i = 0; i < block.vtx.size(); i++)
     {
         const CTransaction &tx = *(block.vtx[i]);
@@ -1953,7 +1953,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
         } else {
             size_t nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
             if(pindex->nHeight > chainparams.GetConsensus().RFC2Height) {
-                coinbasefee = ::minProtocolTxFee.GetFee(nSize);
+                nCoinbaseFee = ::minProtocolTxFee.GetFee(nSize);
             }
         }
 
@@ -1987,7 +1987,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     LogPrint(BCLog::BENCH, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs (%.2fms/blk)]\n", (unsigned)block.vtx.size(), MILLI * (nTime3 - nTime2), MILLI * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : MILLI * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * MICRO, nTimeConnect * MILLI / nBlocksTotal);
 
     if(pindex->nHeight > chainparams.GetConsensus().RFC2Height) {
-        nFees = - coinbasefee; // destroy fee and charge for coinbase tx
+        nFees = - nCoinbaseFee; // destroy fee and charge for coinbase tx
     }
     CAmount blockReward = nFees + GetBlockSubsidy(pindex->nBits, chainparams.GetConsensus());
     if (block.vtx[0]->GetValueOut() > blockReward)
