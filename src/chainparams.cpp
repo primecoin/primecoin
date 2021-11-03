@@ -275,7 +275,7 @@ public:
         };
 
         // Deployment of upgrade fee rule, destroy fee
-        consensus.RFC2Height = 2981230; // approximate November 7, 2021.
+        consensus.RFC2Height = 3014189; // approximate November 28, 2021.
 
     }
 };
