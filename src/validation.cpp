@@ -1951,7 +1951,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
                                  REJECT_INVALID, "bad-txns-nonfinal");
             }
         } else {
-            size_t nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
+            size_t nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS);
             if(pindex->nHeight >= chainparams.GetConsensus().RFC2Height) {
                 nCoinbaseFee = ::minProtocolTxFee.GetFee(nSize);
             }
