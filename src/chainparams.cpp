@@ -180,7 +180,7 @@ public:
         };
 
         // Deployment of upgrade fee rule, destroy fee
-        consensus.RFC2Height = 4983115; // approximate November 3rd, 2022.
+        consensus.RFC2Height = 99999999; // approximate November 3rd, 2022.
     }
 };
 
