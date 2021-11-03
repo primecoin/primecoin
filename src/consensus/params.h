@@ -77,6 +77,7 @@ struct Params {
     int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing; }
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
+    int64_t RFC2Height; // Time to deploy upgrading fee rule and destroying fee in mining
 };
 } // namespace Consensus
 

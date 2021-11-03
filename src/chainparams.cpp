@@ -178,6 +178,9 @@ public:
                         //   (the tx=... number in the SetBestChain debug.log lines)
             0.03         // * estimated number of transactions per second after that timestamp
         };
+
+        // Deployment of upgrade fee rule, destroy fee
+        consensus.RFC2Height = 4983115; // approximate November 3rd, 2022.
     }
 };
 
@@ -270,6 +273,9 @@ public:
             1484979,
             0.01
         };
+
+        // Deployment of upgrade fee rule, destroy fee
+        consensus.RFC2Height = 2981230; // approximate November 7, 2021.
 
     }
 };
