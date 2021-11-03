@@ -1923,7 +1923,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
 
             size_t nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
             CAmount minTxFee;
-            if(pindex->nHeight > chainparams.GetConsensus().RFC2Height) {
+            if(pindex->nHeight >= chainparams.GetConsensus().RFC2Height) {
                 minTxFee = ::minProtocolTxFee.GetFee(nSize);
             } else {
                 minTxFee = ::minProtocolTxFeeV1.GetFee(nSize, true);
@@ -1952,7 +1952,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
             }
         } else {
             size_t nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
-            if(pindex->nHeight > chainparams.GetConsensus().RFC2Height) {
+            if(pindex->nHeight >= chainparams.GetConsensus().RFC2Height) {
                 nCoinbaseFee = ::minProtocolTxFee.GetFee(nSize);
             }
         }
@@ -1986,10 +1986,12 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     int64_t nTime3 = GetTimeMicros(); nTimeConnect += nTime3 - nTime2;
     LogPrint(BCLog::BENCH, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs (%.2fms/blk)]\n", (unsigned)block.vtx.size(), MILLI * (nTime3 - nTime2), MILLI * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : MILLI * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * MICRO, nTimeConnect * MILLI / nBlocksTotal);
 
-    if(pindex->nHeight > chainparams.GetConsensus().RFC2Height) {
-        nFees = - nCoinbaseFee; // destroy fee and charge for coinbase tx
+    CAmount blockReward = GetBlockSubsidy(pindex->nBits, chainparams.GetConsensus());
+    if(pindex->nHeight >= chainparams.GetConsensus().RFC2Height) {
+        blockReward -= nCoinbaseFee; // destroy fee and charge for coinbase tx
+    } else {
+        blockReward += nFees;
     }
-    CAmount blockReward = nFees + GetBlockSubsidy(pindex->nBits, chainparams.GetConsensus());
     if (block.vtx[0]->GetValueOut() > blockReward)
         return state.DoS(100,
                          error("ConnectBlock(): coinbase pays too much (actual=%d vs limit=%d)",
