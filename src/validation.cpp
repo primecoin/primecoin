@@ -1922,13 +1922,13 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
             }
 
             size_t nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
-            CAmount minTxFee;
+            CAmount nMinTxFee;
             if(pindex->nHeight >= chainparams.GetConsensus().RFC2Height) {
-                minTxFee = ::minProtocolTxFee.GetFee(nSize);
+                nMinTxFee = ::minProtocolTxFee.GetFee(nSize);
             } else {
-                minTxFee = ::minProtocolTxFeeV1.GetFee(nSize, true);
+                nMinTxFee = ::minProtocolTxFeeV1.GetFee(nSize, true);
             }
-            if(txfee < minTxFee) {
+            if(txfee < nMinTxFee) {
                 return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "min transaction fee not met");
             }
 
