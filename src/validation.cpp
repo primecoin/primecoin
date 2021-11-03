@@ -1921,7 +1921,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
                 return error("%s: Consensus::CheckTxInputs: %s, %s", __func__, tx.GetHash().ToString(), FormatStateMessage(state));
             }
 
-            size_t nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
+            size_t nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS);
             CAmount nMinTxFee;
             if(pindex->nHeight >= chainparams.GetConsensus().RFC2Height) {
                 nMinTxFee = ::minProtocolTxFee.GetFee(nSize);
