@@ -1916,8 +1916,8 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
 
         if (!tx.IsCoinBase())
         {
-            CAmount txfee = 0;
-            if (!Consensus::CheckTxInputs(tx, state, view, pindex->nHeight, txfee)) {
+            CAmount nTxFee = 0;
+            if (!Consensus::CheckTxInputs(tx, state, view, pindex->nHeight, nTxFee)) {
                 return error("%s: Consensus::CheckTxInputs: %s, %s", __func__, tx.GetHash().ToString(), FormatStateMessage(state));
             }
 
@@ -1928,12 +1928,12 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
             } else {
                 nMinTxFee = ::minProtocolTxFeeV1.GetFee(nSize, true);
             }
-            if(txfee < nMinTxFee) {
-                return state.DoS(0, error("%s: min transaction fee not met (actual=%d vs min=%d）", __func__, txfee, nMinTxFee),
+            if(nTxFee < nMinTxFee) {
+                return state.DoS(0, error("%s: min transaction fee not met (actual=%d vs min=%d）", __func__, nTxFee, nMinTxFee),
                                  REJECT_INVALID, "bad-txns-insuffcient-fee");
             }
 
-            nFees += txfee;
+            nFees += nTxFee;
             if (!MoneyRange(nFees)) {
                 return state.DoS(100, error("%s: accumulated fee in the block out of range.", __func__),
                                  REJECT_INVALID, "bad-txns-accumulated-fee-outofrange");
