@@ -1929,7 +1929,8 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
                 nMinTxFee = ::minProtocolTxFeeV1.GetFee(nSize, true);
             }
             if(txfee < nMinTxFee) {
-                return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "min transaction fee not met");
+                return state.DoS(0, error("%s: min transaction fee not met (actual=%d vs min=%d）", __func__, txfee, nMinTxFee),
+                                 REJECT_INVALID, "bad-txns-insuffcient-fee");
             }
 
             nFees += txfee;
