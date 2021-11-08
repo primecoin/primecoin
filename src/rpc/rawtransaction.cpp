@@ -492,7 +492,7 @@ UniValue decoderawtransaction(const JSONRPCRequest& request)
             "         \"reqSigs\" : n,            (numeric) The required sigs\n"
             "         \"type\" : \"pubkeyhash\",  (string) The type, eg 'pubkeyhash'\n"
             "         \"addresses\" : [           (json array of string)\n"
-            "           \"12tvKAXCxZjSmdNbao16dKXC8tRWfcF5oc\"   (string) primecoin address\n"
+            "           \"ANTqRE6wpE2psbJvvMLJLixfCFms1zp61y\"   (string) primecoin address\n"
             "           ,...\n"
             "         ]\n"
             "       }\n"
