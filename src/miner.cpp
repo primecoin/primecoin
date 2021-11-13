@@ -166,7 +166,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
     size_t nSize = ::GetSerializeSize(coinbaseTx, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS);
     CAmount nCoinbaseFee = ::minProtocolTxFee.GetFee(nSize);
-    coinbaseTx.vout[0].nValue = std::max(0, GetBlockSubsidy(pblock->nBits, chainparams.GetConsensus()) - nCoinbaseFee);
+    coinbaseTx.vout[0].nValue = std::max<CAmount>(0, GetBlockSubsidy(pblock->nBits, chainparams.GetConsensus()) - nCoinbaseFee);
     pblock->vtx[0] = MakeTransactionRef(std::move(coinbaseTx));
     pblocktemplate->vchCoinbaseCommitment = GenerateCoinbaseCommitment(*pblock, pindexPrev, chainparams.GetConsensus());
     pblocktemplate->vTxFees[0] = -nFees;
