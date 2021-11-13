@@ -163,13 +163,10 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     coinbaseTx.vout.resize(1);
     coinbaseTx.vout[0].scriptPubKey = scriptPubKeyIn;
     pblock->nBits = GetNextWorkRequired(pindexPrev, pblock, chainparams.GetConsensus());//fill in nBits
-    coinbaseTx.vout[0].nValue = nFees + GetBlockSubsidy(pblock->nBits, chainparams.GetConsensus());
     coinbaseTx.vin[0].scriptSig = CScript() << nHeight << OP_0;
-    if(pindexPrev->nHeight >= chainparams.GetConsensus().RFC2Height) {
-        size_t nSize = ::GetSerializeSize(coinbaseTx, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS);
-        CAmount nCoinbaseFee = ::minProtocolTxFee.GetFee(nSize);
-        coinbaseTx.vout[0].nValue -= nFees + nCoinbaseFee;
-    }
+    size_t nSize = ::GetSerializeSize(coinbaseTx, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS);
+    CAmount nCoinbaseFee = ::minProtocolTxFee.GetFee(nSize);
+    coinbaseTx.vout[0].nValue = std::max(0, GetBlockSubsidy(pblock->nBits, chainparams.GetConsensus()) - nCoinbaseFee);
     pblock->vtx[0] = MakeTransactionRef(std::move(coinbaseTx));
     pblocktemplate->vchCoinbaseCommitment = GenerateCoinbaseCommitment(*pblock, pindexPrev, chainparams.GetConsensus());
     pblocktemplate->vTxFees[0] = -nFees;
