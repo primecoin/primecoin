@@ -62,11 +62,11 @@
         <translation>收款地址</translation>
     </message>
     <message>
-        <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <source>These are your Primecoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
         <translation>這些是你要付款過去的 Primecoin 位址。在付款之前，務必要檢查金額和收款位址是否正確。</translation>
     </message>
     <message>
-        <source>These are your Bitcoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <source>These are your Primecoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
         <translation>這些是你用來收款的 Primecoin 位址。建議在每次交易時，都使用一個新的收款位址。</translation>
     </message>
     <message>
@@ -168,7 +168,7 @@
         <translation>確認錢包加密</translation>
     </message>
     <message>
-        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR BITCOINS&lt;/b&gt;!</source>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR PRIMECOINS&lt;/b&gt;!</source>
         <translation>警告: 如果你將錢包加密後又忘記密碼，你就會&lt;b&gt;失去所有 Primecoin 了&lt;/b&gt;！</translation>
     </message>
     <message>
@@ -180,7 +180,7 @@
         <translation>錢包已加密</translation>
     </message>
     <message>
-        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
+        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your primecoins from being stolen by malware infecting your computer.</source>
         <translation>%1 現在要關閉來完成加密程序。請記得將錢包加密不能完全防止你的 Primecoins 經被入侵電腦的惡意程式偷取。</translation>
     </message>
     <message>
@@ -322,7 +322,7 @@
         <translation>正在為磁碟區塊重建索引...</translation>
     </message>
     <message>
-        <source>Send coins to a Bitcoin address</source>
+        <source>Send coins to a Primecoin address</source>
         <translation>付款至一個 Primecoin 位址</translation>
     </message>
     <message>
@@ -346,7 +346,7 @@
         <translation>驗證訊息... &amp;V</translation>
     </message>
     <message>
-        <source>Bitcoin</source>
+        <source>Primecoin</source>
         <translation>Primecoin</translation>
     </message>
     <message>
@@ -382,7 +382,7 @@
         <translation>說明 &amp;H</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and bitcoin: URIs)</source>
+        <source>Request payments (generates QR codes and primecoin: URIs)</source>
         <translation>要求付款 (產生QR碼 Primecoin: URIs)</translation>
     </message>
     <message>
@@ -427,7 +427,7 @@
 <context>
     <name>Intro</name>
     <message>
-        <source>Bitcoin</source>
+        <source>Primecoin</source>
         <translation>Primecoin</translation>
     </message>
     <message>
@@ -468,7 +468,7 @@
 <context>
     <name>QObject</name>
     <message>
-        <source>Enter a Bitcoin address (e.g. %1)</source>
+        <source>Enter a Primecoin address (e.g. %1)</source>
         <translation>輸入一個 Primecoin 位址 (例如 %1)</translation>
     </message>
     <message>

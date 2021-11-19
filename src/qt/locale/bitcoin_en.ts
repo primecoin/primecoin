@@ -217,7 +217,7 @@
     <message>
         <location line="+1"/>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR PRIMECOINS&lt;/b&gt;!</source>
-        <translation type="unfinished"></translation>
+        <translation>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR PRIMECOINS&lt;/b&gt;!</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -233,7 +233,7 @@
     <message>
         <location line="-56"/>
         <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your primecoins from being stolen by malware infecting your computer.</source>
-        <translation type="unfinished"></translation>
+        <translation> %1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your primecoins from being stolen by malware infecting your computer. </translation>
     </message>
     <message>
         <location line="+4"/>
@@ -302,7 +302,7 @@
     </message>
 </context>
 <context>
-    <name>PrimecoinGUI</name>
+    <name>BitcoinGUI</name>
     <message>
         <location filename="../bitcoingui.cpp" line="+358"/>
         <source>Sign &amp;message...</source>
@@ -531,7 +531,7 @@
     <message>
         <location line="-158"/>
         <source>Request payments (generates QR codes and primecoin: URIs)</source>
-        <translation type="unfinished"></translation>
+        <translation>Request payments (generates QR codes and primecoin: URIs)</translation>
     </message>
     <message>
         <location line="+70"/>
@@ -546,7 +546,7 @@
     <message>
         <location line="+3"/>
         <source>Open a primecoin: URI or payment request</source>
-        <translation type="unfinished"></translation>
+        <translation>Open a primecoin: URI or payment request</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -4023,7 +4023,7 @@
     </message>
 </context>
 <context>
-    <name>primecoin-core</name>
+    <name>bitcoin-core</name>
     <message>
         <location filename="../bitcoinstrings.cpp" line="+349"/>
         <source>Options:</source>

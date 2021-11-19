@@ -62,11 +62,11 @@
         <translation>收款位址</translation>
     </message>
     <message>
-        <source>These are your Bitcoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <source>These are your Primecoin addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
         <translation>這些是你要付款過去的 Primecoin 位址。在付錢之前，務必要檢查金額和收款位址是否正確。</translation>
     </message>
     <message>
-        <source>These are your Bitcoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <source>These are your Primecoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
         <translation>這些是你用來收款的 Primecoin 位址。建議在每次交易時，都使用一個新的收款位址。</translation>
     </message>
     <message>
@@ -172,7 +172,7 @@
         <translation>確認錢包加密</translation>
     </message>
     <message>
-        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR BITCOINS&lt;/b&gt;!</source>
+        <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR PRIMECOINS&lt;/b&gt;!</source>
         <translation>警告: 如果把錢包加密後又忘記密碼，你就會從此&lt;b&gt;失去其中所有的 Primecoin 了&lt;/b&gt;！</translation>
     </message>
     <message>
@@ -184,7 +184,7 @@
         <translation>錢包已加密</translation>
     </message>
     <message>
-        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your bitcoins from being stolen by malware infecting your computer.</source>
+        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your primecoins from being stolen by malware infecting your computer.</source>
         <translation>%1 現在要關閉，好完成加密程序。請注意，加密錢包不能完全防止入侵你的電腦的惡意程式偷取錢幣。</translation>
     </message>
     <message>
@@ -342,7 +342,7 @@
         <translation>正在為磁碟裡的區塊重建索引...</translation>
     </message>
     <message>
-        <source>Send coins to a Bitcoin address</source>
+        <source>Send coins to a Primecoin address</source>
         <translation>付錢給一個 Primecoin 位址</translation>
     </message>
     <message>
@@ -366,7 +366,7 @@
         <translation>驗證訊息(&amp;V)...</translation>
     </message>
     <message>
-        <source>Bitcoin</source>
+        <source>Primecoin</source>
         <translation>Primecoin</translation>
     </message>
     <message>
@@ -394,11 +394,11 @@
         <translation>把錢包中的密鑰加密</translation>
     </message>
     <message>
-        <source>Sign messages with your Bitcoin addresses to prove you own them</source>
+        <source>Sign messages with your Primecoin addresses to prove you own them</source>
         <translation>用 Primecoin 位址簽署訊息來證明位址是你的</translation>
     </message>
     <message>
-        <source>Verify messages to ensure they were signed with specified Bitcoin addresses</source>
+        <source>Verify messages to ensure they were signed with specified Primecoin addresses</source>
         <translation>驗證訊息是用來確定訊息是用指定的 Primecoin 位址簽署的</translation>
     </message>
     <message>
@@ -418,7 +418,7 @@
         <translation>分頁工具列</translation>
     </message>
     <message>
-        <source>Request payments (generates QR codes and bitcoin: URIs)</source>
+        <source>Request payments (generates QR codes and primecoin: URIs)</source>
         <translation>要求付款(產生 QR Code 和 Primecoin 付款協議的資源識別碼: URI)</translation>
     </message>
     <message>
@@ -430,7 +430,7 @@
         <translation>顯示已使用過的收款位址和標記的清單</translation>
     </message>
     <message>
-        <source>Open a bitcoin: URI or payment request</source>
+        <source>Open a primecoin: URI or payment request</source>
         <translation>開啓 Primecoin 協議的資源識別碼(URI)或付款要求</translation>
     </message>
     <message>
@@ -438,7 +438,7 @@
         <translation>命令列選項(&amp;C)</translation>
     </message>
     <message numerus="yes">
-        <source>%n active connection(s) to Bitcoin network</source>
+        <source>%n active connection(s) to Primecoin network</source>
         <translation><numerusform>%n 個運作中的 Primecoin 網路連線</numerusform></translation>
     </message>
     <message>
@@ -482,7 +482,7 @@
         <translation>最新狀態</translation>
     </message>
     <message>
-        <source>Show the %1 help message to get a list with possible Bitcoin command-line options</source>
+        <source>Show the %1 help message to get a list with possible Primecoin command-line options</source>
         <translation>顯示 %1 的說明訊息，來取得可用命令列選項的列表</translation>
     </message>
     <message>
@@ -552,7 +552,7 @@
         <translation>錢包&lt;b&gt;已加密&lt;/b&gt;並且&lt;b&gt;上鎖中&lt;/b&gt;</translation>
     </message>
     <message>
-        <source>A fatal error occurred. Bitcoin can no longer continue safely and will quit.</source>
+        <source>A fatal error occurred. Primecoin can no longer continue safely and will quit.</source>
         <translation>發生了致命的錯誤。Primecoin 軟體沒辦法再繼續安全執行，只好結束。</translation>
     </message>
 </context>
@@ -746,7 +746,7 @@
         <translation>編輯付款位址</translation>
     </message>
     <message>
-        <source>The entered address "%1" is not a valid Bitcoin address.</source>
+        <source>The entered address "%1" is not a valid Primecoin address.</source>
         <translation>輸入的位址 %1 並不是有效的 Primecoin 位址。</translation>
     </message>
     <message>
@@ -875,7 +875,7 @@
         <translation>使用自訂的資料目錄:</translation>
     </message>
     <message>
-        <source>Bitcoin</source>
+        <source>Primecoin</source>
         <translation>Primecoin</translation>
     </message>
     <message>
@@ -887,7 +887,7 @@
         <translation>在這個目錄中大約會存放 %1 GB 的資料。</translation>
     </message>
     <message>
-        <source>%1 will download and store a copy of the Bitcoin block chain.</source>
+        <source>%1 will download and store a copy of the Primecoin block chain.</source>
         <translation>%1 會下載 Primecoin 區塊鏈並且儲存一份副本。</translation>
     </message>
     <message>
@@ -1092,7 +1092,7 @@
         <translation>可以花還沒確認的零錢(&amp;S)</translation>
     </message>
     <message>
-        <source>Automatically open the Bitcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <source>Automatically open the Primecoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
         <translation>自動在路由器上開放 Primecoin 的客戶端通訊埠。只有在你的路由器支援且開啓「通用即插即用」協定(UPnP)時才有作用。</translation>
     </message>
     <message>
@@ -1108,7 +1108,7 @@
         <translation>接受外來連線(&amp;G)</translation>
     </message>
     <message>
-        <source>Connect to the Bitcoin network through a SOCKS5 proxy.</source>
+        <source>Connect to the Primecoin network through a SOCKS5 proxy.</source>
         <translation>透過 SOCKS5 代理伺服器來連線到 Primecoin 網路。</translation>
     </message>
     <message>
@@ -1144,7 +1144,7 @@
         <translation>Tor</translation>
     </message>
     <message>
-        <source>Connect to the Bitcoin network through a separate SOCKS5 proxy for Tor hidden services.</source>
+        <source>Connect to the Primecoin network through a separate SOCKS5 proxy for Tor hidden services.</source>
         <translation>透過另外的 SOCKS5 代理伺服器來連線到 Primecoin 網路中的 Tor 隱藏服務。</translation>
     </message>
     <message>
@@ -1251,7 +1251,7 @@
         <translation>表單</translation>
     </message>
     <message>
-        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Bitcoin network after a connection is established, but this process has not completed yet.</source>
+        <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Primecoin network after a connection is established, but this process has not completed yet.</source>
         <translation>顯示的資訊可能是過期的。跟 Primecoin 網路的連線建立後，你的錢包會自動和網路同步，但是這個步驟還沒完成。</translation>
     </message>
     <message>
@@ -1326,7 +1326,7 @@
         <translation>要求付款時發生錯誤</translation>
     </message>
     <message>
-        <source>Cannot start bitcoin: click-to-pay handler</source>
+        <source>Cannot start primecoin: click-to-pay handler</source>
         <translation>沒辦法啟動 primecoin 協議的「按就付」處理器</translation>
     </message>
     <message>
@@ -1342,7 +1342,7 @@
         <translation>無效的付款位址 %1</translation>
     </message>
     <message>
-        <source>URI cannot be parsed! This can be caused by an invalid Bitcoin address or malformed URI parameters.</source>
+        <source>URI cannot be parsed! This can be caused by an invalid Primecoin address or malformed URI parameters.</source>
         <translation>沒辦法解析 URI 位址！可能是因為 Primecoin 位址無效，或是 URI 參數格式錯誤。</translation>
     </message>
     <message>
@@ -1444,7 +1444,7 @@
         <translation>金額</translation>
     </message>
     <message>
-        <source>Enter a Bitcoin address (e.g. %1)</source>
+        <source>Enter a Primecoin address (e.g. %1)</source>
         <translation>輸入 Primecoin 位址 (比如說 %1)</translation>
     </message>
     <message>
@@ -1868,7 +1868,7 @@
         <translation>訊息(&amp;M):</translation>
     </message>
     <message>
-        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Bitcoin network.</source>
+        <source>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Primecoin network.</source>
         <translation>附加在付款要求中的訊息，可以不填，打開要求內容時會顯示。注意: 這個訊息不會隨著付款送到 Primecoin 網路上。</translation>
     </message>
     <message>
@@ -2113,7 +2113,7 @@
         <translation>隱藏</translation>
     </message>
     <message>
-        <source>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks. But be aware that this can end up in a never confirming transaction once there is more demand for bitcoin transactions than the network can process.</source>
+        <source>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks. But be aware that this can end up in a never confirming transaction once there is more demand for primecoin transactions than the network can process.</source>
         <translation>當交易量少於區塊可容納的空間時，只付最低手續費不會有什麽問題。但是當交易量的需求成長到超過整體網路可以處理的量時，可能會造成一筆一直不會被確認的交易。</translation>
     </message>
     <message>
@@ -2281,7 +2281,7 @@
         <translation>只付必要的手續費 %1</translation>
     </message>
     <message>
-        <source>Warning: Invalid Bitcoin address</source>
+        <source>Warning: Invalid Primecoin address</source>
         <translation>警告: Primecoin 位址無效</translation>
     </message>
     <message>
@@ -2324,7 +2324,7 @@
         <translation>這是一筆正常的付款。</translation>
     </message>
     <message>
-        <source>The Bitcoin address to send the payment to</source>
+        <source>The Primecoin address to send the payment to</source>
         <translation>接收付款的 Primecoin 位址</translation>
     </message>
     <message>
@@ -2344,7 +2344,7 @@
         <translation>刪掉這個項目</translation>
     </message>
     <message>
-        <source>The fee will be deducted from the amount being sent. The recipient will receive less bitcoins than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
+        <source>The fee will be deducted from the amount being sent. The recipient will receive less primecoins than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
         <translation>手續費會從要付款出去的金額中扣掉。因此收款人會收到比輸入的金額還要少的 primecoin。如果有多個收款人的話，手續費會平均分配來扣除。</translation>
     </message>
     <message>
@@ -2372,7 +2372,7 @@
         <translation>請輸入這個位址的標記，來把它加進去已使用過位址的清單。</translation>
     </message>
     <message>
-        <source>A message that was attached to the bitcoin: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Bitcoin network.</source>
+        <source>A message that was attached to the primecoin: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Primecoin network.</source>
         <translation>附加在 Primecoin 付款協議的資源識別碼(URI)中的訊息，會和交易內容一起存起來，給你自己做參考。注意: 這個訊息不會送到 Primecoin 網路上。</translation>
     </message>
     <message>
@@ -2417,11 +2417,11 @@
         <translation>簽署訊息(&amp;S)</translation>
     </message>
     <message>
-        <source>You can sign messages/agreements with your addresses to prove you can receive bitcoins sent to them. Be careful not to sign anything vague or random, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</source>
+        <source>You can sign messages/agreements with your addresses to prove you can receive primecoins sent to them. Be careful not to sign anything vague or random, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</source>
         <translation>你可以用自己的位址簽署訊息或合約，來證明你可以從該位址收款。但是請小心，不要簽署語意含糊不清，或隨機產生的內容，因為釣魚式詐騙可能會用騙你簽署的手法來冒充是你。只有在語句中的細節你都同意時才簽署。</translation>
     </message>
     <message>
-        <source>The Bitcoin address to sign the message with</source>
+        <source>The Primecoin address to sign the message with</source>
         <translation>用來簽署訊息的 Primecoin 位址</translation>
     </message>
     <message>
@@ -2453,7 +2453,7 @@
         <translation>複製目前的簽章到系統剪貼簿</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this Bitcoin address</source>
+        <source>Sign the message to prove you own this Primecoin address</source>
         <translation>簽署這個訊息來證明這個 Primecoin 位址是你的</translation>
     </message>
     <message>
@@ -2477,11 +2477,11 @@
         <translation>請在下面輸入收款人的位址，訊息(請確定完整複製了所包含的換行，空格，跳位符號等等)，以及簽章，來驗證這個訊息。請小心，除了訊息內容以外，不要對簽章本身過度解讀，以避免被用「中間人攻擊法」詐騙。請注意，通過驗證的簽章只能證明簽章人確實可以從該位址收款，不能證明任何交易中的付款人身份！</translation>
     </message>
     <message>
-        <source>The Bitcoin address the message was signed with</source>
+        <source>The Primecoin address the message was signed with</source>
         <translation>簽署這個訊息的 Primecoin 位址</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified Bitcoin address</source>
+        <source>Verify the message to ensure it was signed with the specified Primecoin address</source>
         <translation>驗證這個訊息來確定是用指定的 Primecoin 位址簽署的</translation>
     </message>
     <message>
@@ -3175,7 +3175,7 @@
         <translation>無法啟動 HTTP 伺服器。詳情請看除錯紀錄。</translation>
     </message>
     <message>
-        <source>Bitcoin Core</source>
+        <source>Primecoin Core</source>
         <translation>Primecoin Core</translation>
     </message>
     <message>
