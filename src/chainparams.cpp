@@ -195,8 +195,8 @@ public:
         consensus.BIP16Height = 0; // 221156cf301bc3585e72de34fe1efdb6fbd703bc27cfc468faa1cdd889d0efa0
         consensus.BIP34Height = 0;
         consensus.BIP34Hash = uint256S("0x221156cf301bc3585e72de34fe1efdb6fbd703bc27cfc468faa1cdd889d0efa0");
-        consensus.BIP65Height = 3013321; // twin prime (3013319, 3013321)
-        consensus.BIP66Height = 3013319;
+        consensus.BIP65Height = 3050777; // approximate December 19, 2021
+        consensus.BIP66Height = 3050777;
         consensus.powLimit = uint256S("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 7 * 24 * 60 * 60; // a week
         consensus.nPowTargetSpacing = 60;
@@ -275,7 +275,7 @@ public:
         };
 
         // Deployment of upgrade fee rule, destroy fee
-        consensus.RFC2Height = 3014189; // approximate November 28, 2021.
+        consensus.RFC2Height = 3050777; // approximate December 19, 2021
 
     }
 };
