@@ -388,7 +388,8 @@ bool CheckBlockHeaderIntegrity(uint256 hashBlockHeader, unsigned int nBits, cons
     // Check target for prime proof-of-work
     CBigNum bnPrimeChainOrigin = CBigNum(hashBlockHeader) * bnPrimeChainMultiplier;
     if (bnPrimeChainOrigin < bnPrimeMin) {
-        LogPrint(BCLog::PRIME, "CheckBlockHeaderIntegrity() : prime too small");
+        LogPrint(BCLog::PRIME, "CheckBlockHeaderIntegrity() : prime too small, %s, %s, %s < %s", CBigNum(hashBlockHeader).GetHex(),
+            bnPrimeChainMultiplier.GetHex(), bnPrimeChainOrigin.GetHex(), bnPrimeMin.GetHex());
         return false;
     }
     // First prime in chain must not exceed cap

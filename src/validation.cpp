@@ -3012,7 +3012,7 @@ static bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state,
 {
     // Check proof of work matches claimed amount
     if (fCheckPOW && !CheckProofOfWork(block.GetHeaderHash(), block.nBits, block.bnPrimeChainMultiplier, block.nPrimeChainType, block.nPrimeChainLength, consensusParams))
-        return state.DoS(50, false, REJECT_INVALID, "high-hash", false, "proof of work failed");
+        return state.DoS(50, false, REJECT_INVALID, "bad-work", false, "proof of work failed");
 
     return true;
 }
