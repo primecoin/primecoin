@@ -388,8 +388,7 @@ bool CheckBlockHeaderIntegrity(uint256 hashBlockHeader, unsigned int nBits, cons
     // Check target for prime proof-of-work
     CBigNum bnPrimeChainOrigin = CBigNum(hashBlockHeader) * bnPrimeChainMultiplier;
     if (bnPrimeChainOrigin < bnPrimeMin) {
-        LogPrint(BCLog::PRIME, "CheckBlockHeaderIntegrity() : prime too small, %s, %s, %s < %s", CBigNum(hashBlockHeader).GetHex(),
-            bnPrimeChainMultiplier.GetHex(), bnPrimeChainOrigin.GetHex(), bnPrimeMin.GetHex());
+        LogPrint(BCLog::PRIME, "CheckBlockHeaderIntegrity() : prime too small");
         return false;
     }
     // First prime in chain must not exceed cap
@@ -417,26 +416,24 @@ bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CB
 
     // Check target
     if (TargetGetLength(nBits) < consensus_params.nTargetMinLength || TargetGetLength(nBits) > 99) {
-        LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : invalid chain length target %s", TargetToString(nBits).c_str());
+        LogPrintf("CheckPrimeProofOfWork() : invalid chain length target %s", TargetToString(nBits).c_str());
         return false;
 	}
 	
     // Check header hash limit
     if (UintToArith256(hashBlockHeader) < hashBlockHeaderLimit) {
-        LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : block header hash under limit: %s", hashBlockHeader.ToString().c_str());
+        LogPrintf("CheckPrimeProofOfWork() : block header hash under limit: %s", hashBlockHeader.ToString().c_str());
         return false;
 	}
     // Check target for prime proof-of-work
     CBigNum bnPrimeChainOrigin = CBigNum(hashBlockHeader) * bnPrimeChainMultiplier;
     if (bnPrimeChainOrigin < bnPrimeMin) {
-        LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : prime too small");
-        LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : prime too small, %s, %s, %s < %s", CBigNum(hashBlockHeader).GetHex(),
-            bnPrimeChainMultiplier.GetHex(), bnPrimeChainOrigin.GetHex(), bnPrimeMin.GetHex());
+        LogPrintf("CheckPrimeProofOfWork() : prime too small");
         return false;
 	}
     // First prime in chain must not exceed cap
     if (bnPrimeChainOrigin > bnPrimeMax) {
-        LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : prime too big");
+        LogPrintf("CheckPrimeProofOfWork() : prime too big");
         return false;
 	}
 
