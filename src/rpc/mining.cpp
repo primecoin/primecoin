@@ -508,6 +508,9 @@ UniValue getwork(const JSONRPCRequest& request)
         RegisterValidationInterface(&sc);
         bool fAccepted = ProcessNewBlock(Params(), pblock, true, nullptr);
         UnregisterValidationInterface(&sc);
+        if (fAccepted && !sc.found) {
+            return "duplicate-inconclusive";
+        }
         if (!sc.found) {
             return "inconclusive";
         }
