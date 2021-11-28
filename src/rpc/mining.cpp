@@ -503,13 +503,33 @@ UniValue getwork(const JSONRPCRequest& request)
         if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
             throw JSONRPCError(RPC_MISC_ERROR, "PrimecoinMiner : generated block is stale");
 
+        uint256 hash = pblock->GetHash();
+        bool fBlockPresent = false;
+        {
+            LOCK(cs_main);
+            BlockMap::iterator mi = mapBlockIndex.find(hash);
+            if (mi != mapBlockIndex.end()) {
+                CBlockIndex *pindex = mi->second;
+                if (pindex->IsValid(BLOCK_VALID_SCRIPTS)) {
+                    return "duplicate";
+                }
+                if (pindex->nStatus & BLOCK_FAILED_MASK) {
+                    return "duplicate-invalid";
+                }
+                // Otherwise, we might only have the header - process the block before returning
+                fBlockPresent = true;
+            }
+        }
         // Process this block the same as if we had received it from another node
         submitblock_StateCatcher sc(pblock->GetHash());
         RegisterValidationInterface(&sc);
         bool fAccepted = ProcessNewBlock(Params(), pblock, true, nullptr);
         UnregisterValidationInterface(&sc);
-        if (fAccepted && !sc.found) {
-            return "duplicate-inconclusive";
+        if (fBlockPresent) {
+            if (fAccepted && !sc.found) {
+                return "duplicate-inconclusive";
+            }
+            return "duplicate";
         }
         if (!sc.found) {
             return "inconclusive";
