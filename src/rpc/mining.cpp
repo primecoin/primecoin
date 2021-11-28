@@ -315,6 +315,24 @@ int static FormatHashBlocks(void* pbuffer, unsigned int len)
     return blocks;
 }
 
+class submitblock_StateCatcher : public CValidationInterface
+{
+public:
+    uint256 hash;
+    bool found;
+    CValidationState state;
+
+    explicit submitblock_StateCatcher(const uint256 &hashIn) : hash(hashIn), found(false), state() {}
+
+protected:
+    void BlockChecked(const CBlock& block, const CValidationState& stateIn) override {
+        if (block.GetHash() != hash)
+            return;
+        found = true;
+        state = stateIn;
+    }
+};
+
 UniValue getwork(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() > 1)
@@ -486,11 +504,14 @@ UniValue getwork(const JSONRPCRequest& request)
             throw JSONRPCError(RPC_MISC_ERROR, "PrimecoinMiner : generated block is stale");
 
         // Process this block the same as if we had received it from another node
-        bool fnewBlock;
-        if (!ProcessNewBlock(Params(), pblock, true, &fnewBlock))
-            throw JSONRPCError(RPC_MISC_ERROR, "PrimecoinMiner : ProcessBlock, block not accepted");
-
-        return true;
+        submitblock_StateCatcher sc(pblock->GetHash());
+        RegisterValidationInterface(&sc);
+        bool fAccepted = ProcessNewBlock(Params(), pblock, true, nullptr);
+        UnregisterValidationInterface(&sc);
+        if (!sc.found) {
+            return "inconclusive";
+        }
+        return BIP22ValidationResult(sc.state);
     }
 }
 
@@ -887,24 +908,6 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
 
     return result;
 }
-
-class submitblock_StateCatcher : public CValidationInterface
-{
-public:
-    uint256 hash;
-    bool found;
-    CValidationState state;
-
-    explicit submitblock_StateCatcher(const uint256 &hashIn) : hash(hashIn), found(false), state() {}
-
-protected:
-    void BlockChecked(const CBlock& block, const CValidationState& stateIn) override {
-        if (block.GetHash() != hash)
-            return;
-        found = true;
-        state = stateIn;
-    }
-};
 
 UniValue submitblock(const JSONRPCRequest& request)
 {
