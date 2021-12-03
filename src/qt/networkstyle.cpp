@@ -27,9 +27,10 @@ NetworkStyle::NetworkStyle(const QString &_appName, const int iconColorHueShift,
     titleAddText(qApp->translate("SplashScreen", _titleAddText))
 {
     // load pixmap
-    QPixmap pixmap;
+    QPixmap pixmap, splashmap;
     if (std::char_traits<char>::length(_titleAddText) == 0) {
         pixmap.load(":/icons/bitcoin");
+        splashmap.load(":/icons/splash_png");
     } else {
         pixmap.load(":/icons/primecoin_splash");
     }
@@ -80,6 +81,7 @@ NetworkStyle::NetworkStyle(const QString &_appName, const int iconColorHueShift,
 #endif
     }
 
+    splashIcon          = QIcon(splashmap);
     appIcon             = QIcon(pixmap);
     trayAndWindowIcon   = QIcon(pixmap.scaled(QSize(256,256)));
 }
