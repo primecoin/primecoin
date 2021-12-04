@@ -740,7 +740,7 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
             nMinmumRelayFees = ::minRelayTxFeeV1.GetFee(nSize, true);
         }
         if (!bypass_limits && nModifiedFees < nMinmumRelayFees) {
-            return state.DoS(0, false, REJECT_INSUFFICIENTFEE, strprintf("Required minimum fee for this transaction is %g", ::minRelayTxFee.GetFee(nSize)*1./COIN));
+            return state.DoS(0, false, REJECT_INSUFFICIENTFEE, strprintf("Required minimum fee for this transaction is %g", nMinmumRelayFees*1./COIN));
         }
 
         if (nAbsurdFee && nFees > nAbsurdFee)
