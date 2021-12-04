@@ -734,7 +734,7 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
 
         // No transactions are allowed below minRelayTxFee except from disconnected blocks
         CAmount nMinmumRelayFees;
-        if(chainActive.Tip()->nHeight >= chainparams.GetConsensus().RFC2Height) {
+        if(chainActive.Tip()->nHeight >= chainparams.GetConsensus().RFC2Height - 60 * 24) {
             nMinmumRelayFees = ::minRelayTxFee.GetFee(nSize);
         } else {
             nMinmumRelayFees = ::minRelayTxFeeV1.GetFee(nSize, true);
