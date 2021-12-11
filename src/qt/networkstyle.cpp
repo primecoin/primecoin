@@ -30,7 +30,7 @@ NetworkStyle::NetworkStyle(const QString &_appName, const int iconColorHueShift,
     QPixmap pixmap, splashmap;
     if (std::char_traits<char>::length(_titleAddText) == 0) {
         pixmap.load(":/icons/bitcoin");
-        splashmap.load(":/icons/prime_splash");
+        splashmap.load(":/icons/primecoin_splash");
     } else {
         pixmap.load(":/icons/primecoin_testnet");
     }
