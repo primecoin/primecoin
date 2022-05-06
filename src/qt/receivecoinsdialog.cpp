@@ -143,7 +143,10 @@ void ReceiveCoinsDialog::on_receiveButton_clicked()
     /* Generate new receiving address */
     OutputType address_type;
     if (ui->useBech32->isChecked()) {
-        address_type = OUTPUT_TYPE_BECH32;
+        //address_type = OUTPUT_TYPE_BECH32;
+        //warning ! Can't use
+        QMessageBox::warning(this, windowTitle(), tr("Bech32 address is not available."), QMessageBox::Ok, QMessageBox::Ok);
+        return ;
     } else {
         address_type = model->getDefaultAddressType();
         if (address_type == OUTPUT_TYPE_BECH32) {

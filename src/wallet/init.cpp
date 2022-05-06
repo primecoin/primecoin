@@ -16,8 +16,8 @@
 std::string GetWalletHelpString(bool showDebug)
 {
     std::string strUsage = HelpMessageGroup(_("Wallet options:"));
-    strUsage += HelpMessageOpt("-addresstype", strprintf("What type of addresses to use (\"legacy\", \"p2sh-segwit\", or \"bech32\", default: \"%s\")", FormatOutputType(OUTPUT_TYPE_DEFAULT)));
-    strUsage += HelpMessageOpt("-changetype", "What type of change to use (\"legacy\", \"p2sh-segwit\", or \"bech32\"). Default is same as -addresstype, except when -addresstype=p2sh-segwit a native segwit output is used when sending to a native segwit address)");
+    strUsage += HelpMessageOpt("-addresstype", strprintf("What type of addresses to use (\"legacy\" or \"p2sh-segwit\", default: \"%s\")", FormatOutputType(OUTPUT_TYPE_DEFAULT)));
+    strUsage += HelpMessageOpt("-changetype", "What type of change to use (\"legacy\" or \"p2sh-segwit\"). Default is same as -addresstype, except when -addresstype=p2sh-segwit a native segwit output is used when sending to a native segwit address)");
     strUsage += HelpMessageOpt("-disablewallet", _("Do not load the wallet and disable wallet RPC calls"));
     strUsage += HelpMessageOpt("-keypool=<n>", strprintf(_("Set key pool size to <n> (default: %u)"), DEFAULT_KEYPOOL_SIZE));
     strUsage += HelpMessageOpt("-fallbackfee=<amt>", strprintf(_("A fee rate (in %s/kB) that will be used when fee estimation has insufficient data (default: %s)"),
@@ -181,12 +181,20 @@ bool WalletParameterInteraction()
     if (g_address_type == OUTPUT_TYPE_NONE) {
         return InitError(strprintf("Unknown address type '%s'", gArgs.GetArg("-addresstype", "")));
     }
+    if (g_address_type == OUTPUT_TYPE_BECH32) {
+        g_address_type = OUTPUT_TYPE_NONE;
+    	return InitError(strprintf("Address type '%s' not available", gArgs.GetArg("-addresstype", "")));
+    }
 
     // If changetype is set in config file or parameter, check that it's valid.
     // Default to OUTPUT_TYPE_NONE if not set.
     g_change_type = ParseOutputType(gArgs.GetArg("-changetype", ""), OUTPUT_TYPE_NONE);
     if (g_change_type == OUTPUT_TYPE_NONE && !gArgs.GetArg("-changetype", "").empty()) {
         return InitError(strprintf("Unknown change type '%s'", gArgs.GetArg("-changetype", "")));
+    }
+    if (g_change_type == OUTPUT_TYPE_BECH32 && !gArgs.GetArg("-changetype", "").empty()) {
+        g_address_type = OUTPUT_TYPE_NONE;
+        return InitError(strprintf("Address type '%s' not available", gArgs.GetArg("-addresstype", "")));
     }
 
     return true;
