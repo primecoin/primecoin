@@ -144,7 +144,8 @@ void ReceiveCoinsDialog::on_receiveButton_clicked()
     OutputType address_type;
     if (ui->useBech32->isChecked()) {
         //address_type = OUTPUT_TYPE_BECH32;
-        //warning ! Can't use
+        // BECH32 address support is disabled
+        // Should only enable BECH32 after segwit
         QMessageBox::warning(this, windowTitle(), tr("Bech32 address is not available."), QMessageBox::Ok, QMessageBox::Ok);
         return ;
     } else {
