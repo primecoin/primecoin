@@ -181,12 +181,20 @@ bool WalletParameterInteraction()
     if (g_address_type == OUTPUT_TYPE_NONE) {
         return InitError(strprintf("Unknown address type '%s'", gArgs.GetArg("-addresstype", "")));
     }
+    if (g_address_type == OUTPUT_TYPE_BECH32) {
+        g_address_type = OUTPUT_TYPE_NONE;
+    	return InitError(strprintf("Address type '%s' not available", gArgs.GetArg("-addresstype", "")));
+    }
 
     // If changetype is set in config file or parameter, check that it's valid.
     // Default to OUTPUT_TYPE_NONE if not set.
     g_change_type = ParseOutputType(gArgs.GetArg("-changetype", ""), OUTPUT_TYPE_NONE);
     if (g_change_type == OUTPUT_TYPE_NONE && !gArgs.GetArg("-changetype", "").empty()) {
         return InitError(strprintf("Unknown change type '%s'", gArgs.GetArg("-changetype", "")));
+    }
+    if (g_change_type == OUTPUT_TYPE_BECH32 && !gArgs.GetArg("-changetype", "").empty()) {
+        g_address_type = OUTPUT_TYPE_NONE;
+        return InitError(strprintf("Address type '%s' not available", gArgs.GetArg("-addresstype", "")));
     }
 
     return true;
