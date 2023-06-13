@@ -23,12 +23,12 @@ carried out collectively by the network. Primecoin is also the name of the open
 source software which enables the use of this currency.
 
 For more information, as well as an immediately useable, binary version of
-the Primecoin client sofware, see http://primecoin.org.
+the Primecoin client software, see http://primecoin.org.
 
 License
 -------
 
-Primecoin is released under conditional MIT license. See  COPYING` for more
+Primecoin is released under conditional MIT license. See  [COPYING](COPYING) for more
 information.
 
 Development process
@@ -37,16 +37,16 @@ Development process
 Developers work in their own trees, then submit pull requests when they think
 their feature or bug fix is ready.
 
-If it is a simple/trivial/non-controversial change, then one of the Bitcoin
+If it is a simple/trivial/non-controversial change, then one of the Primecoin
 development team members simply pulls it.
 
 If it is a *more complicated or potentially controversial* change, then the patch
 submitter will be asked to start a discussion (if they haven't already) on the
-ppcoin/primecoin forum (https://talk.peercoin.net).
+ppcoin/primecoin forum ([https://discord.com/invite/g9mctgx](https://discord.com/invite/g9mctgx)).
 
 The patch will be accepted if there is broad consensus that it is a good thing.
 Developers should expect to rework and resubmit patches if the code doesn't
-match the project's coding conventions (see `doc/coding.md`) or are
+match the project's coding conventions (see [doc/coding.md](doc/coding.md)) or are
 controversial.
 
 The `master` branch is regularly built and tested, but is not guaranteed to be
@@ -98,5 +98,3 @@ Unit tests for the GUI code are in `src/qt/test/`. To compile and run them:
 
 Large changes should have a test plan, and should be tested by somebody other
 than the developer who wrote the code.
-
-See https://github.com/bitcoin/QA/ for how to create a test plan.
