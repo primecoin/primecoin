@@ -1717,7 +1717,7 @@ UniValue listtopprimes(const JSONRPCRequest& request)
 
     // Search for top prime chains
     unsigned int nRankingSize = 100; // ranking list size
-    unsigned int nSortVectorSize = 128; // vector size for sort operation
+    unsigned int nSortVectorSize = 256; // vector size for sort operation
     CBigNum bnPrimeQualify = 0; // minimum qualify value for ranking list
     vector<pair<CBigNum, uint256> > vSortedByOrigin;
     for (CBlockIndex* pindex = chainActive.Genesis(); pindex; pindex = chainActive.Next(pindex))
