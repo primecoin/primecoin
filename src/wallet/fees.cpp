@@ -53,7 +53,7 @@ CAmount GetMinimumFee(unsigned int nTxBytes, const CCoinControl& coin_control, c
         else if (coin_control.m_fee_mode == FeeEstimateMode::ECONOMICAL) conservative_estimate = false;
 
         fee_needed = estimator.estimateSmartFee(target, feeCalc, conservative_estimate).GetFee(nTxBytes);
-        fprintf(stderr, "4.fee_needed: %lld \n", fee_needed);
+        fprintf(stderr, "4.fee_needed: %lld Target: %d conservative_estimate: %d\n", fee_needed, target, conservative_estimate);
         if (fee_needed == 0) {
             // if we don't have enough data for estimateSmartFee, then use fallbackFee
             fee_needed = CWallet::fallbackFee.GetFee(nTxBytes);

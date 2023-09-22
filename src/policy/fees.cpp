@@ -833,15 +833,17 @@ CFeeRate CBlockPolicyEstimator::estimateSmartFee(int confTarget, FeeCalculation 
     if (confTarget <= 0 || (unsigned int)confTarget > longStats->GetMaxConfirms()) {
         return CFeeRate(0);  // error condition
     }
-
+    fprintf(stderr, "IN estimateSmartFee 0: confTarget: %d\n", confTarget);
     // It's not possible to get reasonable estimates for confTarget of 1
     if (confTarget == 1) confTarget = 2;
 
     unsigned int maxUsableEstimate = MaxUsableEstimate();
+    fprintf(stderr, "IN estimateSmartFee 1: confTarget: %d maxUsableEstimate : %d\n", confTarget, maxUsableEstimate);
     if ((unsigned int)confTarget > maxUsableEstimate) {
         confTarget = maxUsableEstimate;
     }
     if (feeCalc) feeCalc->returnedTarget = confTarget;
+    fprintf(stderr, "IN estimateSmartFee 2: confTarget: %d\n", confTarget);
 
     if (confTarget <= 1) return CFeeRate(0); // error condition
 
@@ -862,6 +864,7 @@ CFeeRate CBlockPolicyEstimator::estimateSmartFee(int confTarget, FeeCalculation 
         feeCalc->reason = FeeReason::HALF_ESTIMATE;
     }
     median = halfEst;
+    fprintf(stderr, "IN estimateSmartFee 3: confTarget: %lf\n", median);
     double actualEst = estimateCombinedFee(confTarget, SUCCESS_PCT, true, &tempResult);
     if (actualEst > median) {
         median = actualEst;
@@ -870,6 +873,7 @@ CFeeRate CBlockPolicyEstimator::estimateSmartFee(int confTarget, FeeCalculation 
             feeCalc->reason = FeeReason::FULL_ESTIMATE;
         }
     }
+    fprintf(stderr, "IN estimateSmartFee 4 median: %lf actualEst: %lf\n", median, actualEst);
     double doubleEst = estimateCombinedFee(2 * confTarget, DOUBLE_SUCCESS_PCT, !conservative, &tempResult);
     if (doubleEst > median) {
         median = doubleEst;
@@ -878,7 +882,7 @@ CFeeRate CBlockPolicyEstimator::estimateSmartFee(int confTarget, FeeCalculation 
             feeCalc->reason = FeeReason::DOUBLE_ESTIMATE;
         }
     }
-
+    fprintf(stderr, "IN estimateSmartFee 5 median: %lf doubleEst: %lf\n", median, doubleEst);
     if (conservative || median == -1) {
         double consEst =  estimateConservativeFee(2 * confTarget, &tempResult);
         if (consEst > median) {
@@ -888,6 +892,7 @@ CFeeRate CBlockPolicyEstimator::estimateSmartFee(int confTarget, FeeCalculation 
                 feeCalc->reason = FeeReason::CONSERVATIVE;
             }
         }
+        fprintf(stderr, "IN estimateSmartFee 6 median: %lf consEst: %lf\n", median, consEst);
     }
 
     if (median < 0) return CFeeRate(0); // error condition
