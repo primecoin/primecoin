@@ -757,6 +757,7 @@ unsigned int CBlockPolicyEstimator::MaxUsableEstimate() const
 double CBlockPolicyEstimator::estimateCombinedFee(unsigned int confTarget, double successThreshold, bool checkShorterHorizon, EstimationResult *result) const
 {
     double estimate = -1;
+    fprintf(stderr, "estimateCombinedFee confTarget: %d longStats->GetMaxConfirms(): %d shortStats->GetMaxConfirms(): %d feeStats->GetMaxConfirms(): %d\n", confTarget, longStats->GetMaxConfirms(), shortStats->GetMaxConfirms(), feeStats->GetMaxConfirms());
     if (confTarget >= 1 && confTarget <= longStats->GetMaxConfirms()) {
         // Find estimate from shortest time horizon possible
         if (confTarget <= shortStats->GetMaxConfirms()) { // short horizon
@@ -768,6 +769,7 @@ double CBlockPolicyEstimator::estimateCombinedFee(unsigned int confTarget, doubl
         else { // long horizon
             estimate = longStats->EstimateMedianVal(confTarget, SUFFICIENT_FEETXS, successThreshold, true, nBestSeenHeight, result);
         }
+        fprintf(stderr, "estimateCombinedFee estimate: %lf \n", estimate);
         if (checkShorterHorizon) {
             EstimationResult tempResult;
             // If a lower confTarget from a more recent horizon returns a lower answer use it.
@@ -864,7 +866,7 @@ CFeeRate CBlockPolicyEstimator::estimateSmartFee(int confTarget, FeeCalculation 
         feeCalc->reason = FeeReason::HALF_ESTIMATE;
     }
     median = halfEst;
-    fprintf(stderr, "IN estimateSmartFee 3: confTarget: %lf\n", median);
+    fprintf(stderr, "IN estimateSmartFee 3: median: %lf halfEst: %lf\n", median, halfEst);
     double actualEst = estimateCombinedFee(confTarget, SUCCESS_PCT, true, &tempResult);
     if (actualEst > median) {
         median = actualEst;
