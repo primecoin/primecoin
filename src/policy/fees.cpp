@@ -755,6 +755,7 @@ unsigned int CBlockPolicyEstimator::HistoricalBlockSpan() const
 unsigned int CBlockPolicyEstimator::MaxUsableEstimate() const
 {
     // Block spans are divided by 2 to make sure there are enough potential failing data points for the estimate
+    fprintf(stderr, "MaxUsableEstimate: %lf %lf\n", longStats->GetMaxConfirms(), std::max(BlockSpan(), HistoricalBlockSpan()) / 2);
     return std::min(longStats->GetMaxConfirms(), std::max(BlockSpan(), HistoricalBlockSpan()) / 2);
 }
 
