@@ -253,6 +253,7 @@ double TxConfirmStats::EstimateMedianVal(int confTarget, double sufficientTxVal,
     int periodTarget = (confTarget + scale - 1)/scale;
 
     int maxbucketindex = buckets.size() - 1;
+    printf("maxbucketindex: %d", maxbucketindex);
 
     // requireGreater means we are looking for the lowest feerate such that all higher
     // values pass, so we start at maxbucketindex (highest feerate) and look at successively
@@ -295,6 +296,7 @@ double TxConfirmStats::EstimateMedianVal(int confTarget, double sufficientTxVal,
         // we can test for success
         // (Only count the confirmed data points, so that each confirmation count
         // will be looking at the same amount of data and same bucket breaks)
+        printf("totalNum: %lf, sufficientTxVal: %lf, failNum: %lf, extraNum: %lf", totalNum, sufficientTxVal, failNum, extraNum);
         if (totalNum >= sufficientTxVal / (1 - decay)) {
             double curPct = nConf / (totalNum + failNum + extraNum);
 
@@ -335,7 +337,7 @@ double TxConfirmStats::EstimateMedianVal(int confTarget, double sufficientTxVal,
         }
     }
 
-    double median = -1;
+    double median = 1.0;
     double txSum = 0;
 
     // Calculate the "average" feerate of the best bucket range that met success conditions
