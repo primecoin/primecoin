@@ -34,6 +34,7 @@ CCriticalSection cs_main;
 CTxMemPool mempool;
 unsigned int nTransactionsUpdated = 0;
 
+multimap<CBigNum, CBlockIndex*> primeOriginIndex;
 map<uint256, CBlockIndex*> mapBlockIndex;
 uint256 hashGenesisBlock = hashGenesisBlockOfficial;
 CBlockIndex* pindexGenesisBlock = NULL;
@@ -1898,6 +1899,7 @@ bool CBlock::AddToBlockIndex(CValidationState &state, const CDiskBlockPos &pos)
     // Construct new block index object
     CBlockIndex* pindexNew = new CBlockIndex(*this);
     assert(pindexNew);
+    primeOriginIndex.insert(make_pair(GetPrimeOrigin(), pindexNew));
     map<uint256, CBlockIndex*>::iterator mi = mapBlockIndex.insert(make_pair(hash, pindexNew)).first;
     pindexNew->phashBlock = &((*mi).first);
     map<uint256, CBlockIndex*>::iterator miPrev = mapBlockIndex.find(hashPrevBlock);
@@ -2127,6 +2129,19 @@ bool CBlock::AcceptBlock(CValidationState &state, CDiskBlockPos *dbp)
             return state.DoS(10, error("AcceptBlock() : prev block not found"));
         pindexPrev = (*mi).second;
         nHeight = pindexPrev->nHeight+1;
+
+        // Check reusing of prime origin
+        CBigNum primeOrigin = GetPrimeOrigin();
+        for (auto I = primeOriginIndex.lower_bound(primeOrigin); I != primeOriginIndex.end() && I->first == primeOrigin; ++I) {
+          // Can't accept block if chain have block with same prime origin
+          CBlockIndex *lo = I->second;
+          CBlockIndex *hi = pindexPrev;
+          while (hi && hi->nHeight > lo->nHeight)
+            hi = hi->pprev;
+
+          if (lo == hi)
+            return state.DoS(100, error("AcceptBlock() : reuse prime origin found!"));
+        }
 
         // Check proof of work
         if (nBits != GetNextWorkRequired(pindexPrev, this))
