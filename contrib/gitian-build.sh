@@ -25,7 +25,6 @@ scriptName=$(basename -- "$0")
 signProg="gpg --detach-sign"
 # TODO: enable signing
 commitFiles=false
-
 # Help Message
 read -d '' usage <<- EOF
 Usage: $scriptName [-c|u|v|b|s|B|o|h|j|m|] signer version
@@ -259,7 +258,7 @@ then
 	    echo ""
 	    ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} --url primecoin=${url} ../primecoin/contrib/gitian-descriptors/gitian-linux.yml
 	    # TODO: enable signing
-	    # ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../primecoin/contrib/gitian-descriptors/gitian-linux.yml
+	     ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../primecoin/contrib/gitian-descriptors/gitian-linux.yml
 	    mv build/out/primecoin-*.tar.gz build/out/src/primecoin-*.tar.gz ../primecoin-binaries/${VERSION}
 	fi
 	# Windows
