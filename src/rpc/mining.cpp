@@ -969,10 +969,16 @@ UniValue submitblock(const JSONRPCRequest& request)
         if (mi != mapBlockIndex.end()) {
             CBlockIndex *pindex = mi->second;
             if (pindex->IsValid(BLOCK_VALID_SCRIPTS)) {
-                return "duplicate";
+                UniValue ret(UniValue::VOBJ);
+                ret.push_back(Pair("result", "duplicate"));
+                ret.push_back(Pair("bits", strprintf("%08x", block.nBits)));
+                return ret;
             }
             if (pindex->nStatus & BLOCK_FAILED_MASK) {
-                return "duplicate-invalid";
+                UniValue ret(UniValue::VOBJ);
+                ret.push_back(Pair("result", "duplicate-invalid"));
+                ret.push_back(Pair("bits", strprintf("%08x", block.nBits)));
+                return ret;
             }
             // Otherwise, we might only have the header - process the block before returning
             fBlockPresent = true;
@@ -991,16 +997,20 @@ UniValue submitblock(const JSONRPCRequest& request)
     RegisterValidationInterface(&sc);
     bool fAccepted = ProcessNewBlock(Params(), blockptr, true, nullptr);
     UnregisterValidationInterface(&sc);
+
+    UniValue ret(UniValue::VOBJ);
     if (fBlockPresent) {
-        if (fAccepted && !sc.found) {
-            return "duplicate-inconclusive";
-        }
-        return "duplicate";
+        if (fAccepted && !sc.found)
+            ret.push_back(Pair("result", "duplicate-inconclusive"));
+        else
+            ret.push_back(Pair("result", "duplicate"));
+    } else if (!sc.found) {
+        ret.push_back(Pair("result", "inconclusive"));
+    } else {
+        ret.push_back(Pair("result", BIP22ValidationResult(sc.state)));
     }
-    if (!sc.found) {
-        return "inconclusive";
-    }
-    return BIP22ValidationResult(sc.state);
+    ret.push_back(Pair("bits", strprintf("%08x", block.nBits)));
+    return ret;
 }
 
 UniValue estimatefee(const JSONRPCRequest& request)
