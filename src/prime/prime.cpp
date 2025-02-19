@@ -298,6 +298,12 @@ std::string GetPrimeChainName(unsigned int nChainType, unsigned int nChainLength
     return strprintf("%s%s", strLabels[std::min(nChainType, 4u)].c_str(), TargetToString(nChainLength).c_str());
 }
 
+std::string GetPrimeChainNameCuda(unsigned int nChainType, unsigned int nChainLength)
+{
+    const std::string strLabels[3] = {"1CC", "2CC", "TWN"};
+    return strprintf("%s%s", strLabels[std::min(nChainType, 2u)].c_str(), TargetToString(nChainLength).c_str());
+}
+
 // primorial form of prime chain origin
 std::string GetPrimeOriginPrimorialForm(CBigNum& bnPrimeChainOrigin)
 {
