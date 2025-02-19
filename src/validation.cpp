@@ -3019,11 +3019,9 @@ static bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state,
 {
     // Check proof of work matches claimed amount
     if (fCheckPOW && !CheckProofOfWork(block.GetHeaderHash(), block.nBits, block.bnPrimeChainMultiplier, block.nPrimeChainType, block.nPrimeChainLength, consensusParams))
-    UniValue result(UniValue::VOBJ);
-    result.pushKV("result", "bad-prime-work");
-    result.pushKV("nBits", strprintf("%08x", block.nBits));  // nBits
-    result.pushKV("ChainType", block.nPrimeChainType);       // ChainType
-    return state.DoS(50, false, REJECT_INVALID, result.write(), false);
+    std::string target = strprintf("%08x", block.nBits);  
+    std::string scale = GetPrimeChainTypeName(block.nPrimeChainType, block.nPrimeChainLength);
+    return state.DoS(50, false, REJECT_INVALID, strprintf("bad-prime-work: scale=%s target=%s", scale, target),false, "proof of work failed");
 
     return true;
 }
