@@ -90,7 +90,6 @@ double GetPrimeDifficulty(unsigned int nBits);
 unsigned int EstimateWorkTransition(unsigned int nPrevWorkTransition, unsigned int nBits, unsigned int nChainLength);
 // prime chain type and length value
 std::string GetPrimeChainName(unsigned int nChainType, unsigned int nChainLength);
-std::string GetPrimeChainNameCuda(unsigned int nChainType, unsigned int nChainLength);
 // primorial form of prime chain origin
 std::string GetPrimeOriginPrimorialForm(CBigNum& bnPrimeChainOrigin);
 
