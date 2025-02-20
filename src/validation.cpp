@@ -3020,7 +3020,7 @@ static bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state,
     // Check proof of work matches claimed amount
     if (fCheckPOW && !CheckProofOfWork(block.GetHeaderHash(), block.nBits, block.bnPrimeChainMultiplier, block.nPrimeChainType, block.nPrimeChainLength, consensusParams)) {
         std::string target = TargetToString(block.nBits);  
-        std::string scale = GetPrimeChainNameCuda(block.nPrimeChainType, block.nPrimeChainLength);
+        std::string scale = GetPrimeChainName(block.nPrimeChainType, block.nPrimeChainLength);
         return state.DoS(50, false, REJECT_INVALID, strprintf("bad-prime-work: scale=%s target=%s", scale, target), false, "proof of work failed");
     }
 
