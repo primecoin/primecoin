@@ -409,11 +409,14 @@ bool CheckBlockHeaderIntegrity(uint256 hashBlockHeader, unsigned int nBits, cons
 }
 
 // Check prime proof-of-work
-bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CBigNum& bnPrimeChainMultiplier, unsigned int& nChainType, unsigned int& nChainLength, const Consensus::Params& consensus_params)
+bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CBigNum& bnPrimeChainMultiplier, unsigned int& nChainType, unsigned int& nChainLength, const Consensus::Params& consensus_params,bool& isNormalizationFailure)
 {
     nChainType = 0;   // clear output chain type
     nChainLength = 0; // clear output chain length
-
+    isNormalizationFailure = false;
+    LogPrintf("CheckPrimeProofOfWork() : Start verification\n");
+    LogPrintf("CheckPrimeProofOfWork() : Target (nBits) = %s\n", TargetToString(nBits).c_str());
+    LogPrintf("CheckPrimeProofOfWork() : Computed Target Length = %u\n", TargetGetLength(nBits));
     // Check target
     if (TargetGetLength(nBits) < consensus_params.nTargetMinLength || TargetGetLength(nBits) > 99) {
         LogPrintf("CheckPrimeProofOfWork() : invalid chain length target %s", TargetToString(nBits).c_str());
@@ -427,6 +430,7 @@ bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CB
 	}
     // Check target for prime proof-of-work
     CBigNum bnPrimeChainOrigin = CBigNum(hashBlockHeader) * bnPrimeChainMultiplier;
+    LogPrintf("CheckPrimeProofOfWork() : Prime Chain Origin = %s\n", bnPrimeChainOrigin.ToString().c_str());
     if (bnPrimeChainOrigin < bnPrimeMin) {
         LogPrintf("CheckPrimeProofOfWork() : prime too small");
         return false;
@@ -437,6 +441,7 @@ bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CB
         return false;
 	}
 
+    LogPrintf("CheckPrimeProofOfWork() : Computed Chain Length = %u, Required Target Length = %u\n", nChainLength, TargetGetLength(nBits));
     // Check prime chain
     unsigned int nChainLengthCunningham1 = 0;
     unsigned int nChainLengthCunningham2 = 0;
@@ -455,6 +460,7 @@ bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CB
             nChainLength = nChainLengthBiTwin;
             nChainType = PRIME_CHAIN_BI_TWIN;
         }
+        LogPrintf("CheckPrimeProofOfWork() : Computed Chain Length = %u, Required Target Length = %u\n", nChainLength, TargetGetLength(nBits));
         LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : failed prime chain test target=%s length=(%s %s %s)", TargetToString(nBits).c_str(), TargetToString(nChainLengthCunningham1).c_str(), TargetToString(nChainLengthCunningham2).c_str(), TargetToString(nChainLengthBiTwin).c_str());
         return false;
     }
@@ -467,7 +473,13 @@ bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CB
     unsigned int nChainLengthCunningham1FermatTest = 0;
     unsigned int nChainLengthCunningham2FermatTest = 0;
     unsigned int nChainLengthBiTwinFermatTest = 0;
+    LogPrintf("CheckPrimeProofOfWork() : Starting Fermat-only double-check\n");
+    LogPrintf("CheckPrimeProofOfWork() : Fermat check origin=%s\n", bnPrimeChainOrigin.ToString().c_str());
+
     if (!ProbablePrimeChainTest(bnPrimeChainOrigin, nBits, true, nChainLengthCunningham1FermatTest, nChainLengthCunningham2FermatTest, nChainLengthBiTwinFermatTest)) {
+        LogPrintf("CheckPrimeProofOfWork() : Fermat test FAILED. Original lengths - C1: %u, C2: %u, BiTwin: %u | Fermat lengths - C1: %u, C2: %u, BiTwin: %u\n",
+                  nChainLengthCunningham1, nChainLengthCunningham2, nChainLengthBiTwin,
+                  nChainLengthCunningham1FermatTest, nChainLengthCunningham2FermatTest, nChainLengthBiTwinFermatTest);
         LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : failed Fermat test target=%s length=(%s %s %s) lengthFermat=(%s %s %s)", TargetToString(nBits).c_str(),
             TargetToString(nChainLengthCunningham1).c_str(), TargetToString(nChainLengthCunningham2).c_str(), TargetToString(nChainLengthBiTwin).c_str(),
             TargetToString(nChainLengthCunningham1FermatTest).c_str(), TargetToString(nChainLengthCunningham2FermatTest).c_str(), TargetToString(nChainLengthBiTwinFermatTest).c_str());
@@ -498,21 +510,30 @@ bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CB
     // Check that the certificate (bnPrimeChainMultiplier) is normalized
     if (bnPrimeChainMultiplier % 2 == 0 && bnPrimeChainOrigin % 4 == 0)
     {
+        LogPrintf("CheckPrimeProofOfWork() : Checking certificate normalization. Multiplier: %s, Origin: %s\n", 
+                  bnPrimeChainMultiplier.ToString().c_str(), bnPrimeChainOrigin.ToString().c_str());
         unsigned int nChainLengthCunningham1Extended = 0;
         unsigned int nChainLengthCunningham2Extended = 0;
         unsigned int nChainLengthBiTwinExtended = 0;
         if (ProbablePrimeChainTest(bnPrimeChainOrigin / 2, nBits, false, nChainLengthCunningham1Extended, nChainLengthCunningham2Extended, nChainLengthBiTwinExtended))
         { // try extending down the primechain with a halved multiplier
+            LogPrintf("CheckPrimeProofOfWork() : Extended test results - C1: %u, C2: %u, BiTwin: %u\n",
+                      nChainLengthCunningham1Extended, nChainLengthCunningham2Extended, nChainLengthBiTwinExtended);
             if (nChainLengthCunningham1Extended > nChainLength || nChainLengthCunningham2Extended > nChainLength || nChainLengthBiTwinExtended > nChainLength) {
+                LogPrintf("CheckPrimeProofOfWork() : Normalization FAILED. Extended chain longer than original.\n");
                 LogPrint(BCLog::PRIME, "CheckPrimeProofOfWork() : prime certificate not normalzied target=%s length=(%s %s %s) extend=(%s %s %s)",
                     TargetToString(nBits).c_str(),
                     TargetToString(nChainLengthCunningham1).c_str(), TargetToString(nChainLengthCunningham2).c_str(), TargetToString(nChainLengthBiTwin).c_str(),
                     TargetToString(nChainLengthCunningham1Extended).c_str(), TargetToString(nChainLengthCunningham2Extended).c_str(), TargetToString(nChainLengthBiTwinExtended).c_str());
-                return false; 
+                isNormalizationFailure = true;
+                return false;
+
 			}
+        }else {
+            LogPrintf("CheckPrimeProofOfWork() : Extended test failed for origin/2.\n");
         }
     }
-
+    LogPrintf("CheckPrimeProofOfWork() : Proof-of-Work Verified! Chain Type = %u, Chain Length = %u\n", nChainType, nChainLength);
     return true;
 }
 

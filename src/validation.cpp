@@ -1115,7 +1115,7 @@ static bool WriteBlockToDisk(const CBlock& block, CDiskBlockPos& pos, const CMes
 bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus::Params& consensusParams)
 {
     block.SetNull();
-
+    bool isNormalizationFailure = false;
     // Open history file to read
     CAutoFile filein(OpenBlockFile(pos, true), SER_DISK, CLIENT_VERSION);
     if (filein.IsNull())
@@ -1130,7 +1130,7 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus:
     }
 
     // Check the header
-    if (!CheckProofOfWork(block.GetHeaderHash(), block.nBits, block.bnPrimeChainMultiplier, block.nPrimeChainType, block.nPrimeChainLength, consensusParams))
+    if (!CheckProofOfWork(block.GetHeaderHash(), block.nBits, block.bnPrimeChainMultiplier, block.nPrimeChainType, block.nPrimeChainLength, consensusParams, isNormalizationFailure))
         return error("ReadBlockFromDisk: Errors in block header at %s", pos.ToString());
 
     return true;
@@ -3018,10 +3018,14 @@ static bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, 
 static bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true)
 {
     // Check proof of work matches claimed amount
-    if (fCheckPOW && !CheckProofOfWork(block.GetHeaderHash(), block.nBits, block.bnPrimeChainMultiplier, block.nPrimeChainType, block.nPrimeChainLength, consensusParams)) {
+    bool isNormalizationFailure = false;
+    if (fCheckPOW && !CheckProofOfWork(block.GetHeaderHash(), block.nBits, block.bnPrimeChainMultiplier, block.nPrimeChainType, block.nPrimeChainLength, consensusParams,isNormalizationFailure)) {
         std::string target = TargetToString(block.nBits);  
         std::string scale = GetPrimeChainName(block.nPrimeChainType, block.nPrimeChainLength);
-        return state.DoS(50, false, REJECT_INVALID, strprintf("bad-prime-work: scale=%s target=%s", scale, target), false, "proof of work failed");
+        CBigNum bnPrimeChainOrigin = CBigNum(block.GetHeaderHash()) * block.bnPrimeChainMultiplier;
+        std::string Multiplier = block.bnPrimeChainMultiplier.ToString();
+        const std::string errorPrefix = isNormalizationFailure ? "work-not-normalized" : "bad-prime-work";
+        return state.DoS(50, false, REJECT_INVALID, strprintf("%s: scale=%s target=%s Multiplier=%s",errorPrefix, scale, target, Multiplier), false, "proof of work failed");
     }
 
     return true;
