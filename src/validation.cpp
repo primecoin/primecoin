@@ -3022,8 +3022,8 @@ static bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state,
         std::string scale = GetPrimeChainName(block.nPrimeChainType, block.nPrimeChainLength);
         CBigNum bnPrimeChainOrigin = CBigNum(block.GetHeaderHash()) * block.bnPrimeChainMultiplier;
         std::string Multiplier = block.bnPrimeChainMultiplier.ToString();
-        std::string errorPrefix = (block.nPrimeChainLength > block.nBits) ? "work-not-normalized" : "bad-prime-work";
-        return state.DoS(50, false, REJECT_INVALID, strprintf("%s? scale=%s target=%s Multiplier=%s",errorPrefix, scale, target, Multiplier), false, "proof of work failed");
+        std::string errorPrefix = (block.nPrimeChainLength > block.nBits) ? "work-not-normalized?" : "bad-prime-work:";
+        return state.DoS(50, false, REJECT_INVALID, strprintf("%s scale=%s target=%s Multiplier=%s",errorPrefix, scale, target, Multiplier), false, "proof of work failed");
     }
 
     return true;
