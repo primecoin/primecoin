@@ -491,8 +491,7 @@ UniValue getwork(const JSONRPCRequest& request)
         }
         unsigned int nChainType = 0;
         unsigned int nChainLength = 0;
-        bool isNormalizationFailure = false;
-        if (!CheckPrimeProofOfWork(pblock->GetHeaderHash(), pblock->nBits, pblock->bnPrimeChainMultiplier, nChainType, nChainLength, Params().GetConsensus(),isNormalizationFailure)){
+        if (!CheckPrimeProofOfWork(pblock->GetHeaderHash(), pblock->nBits, pblock->bnPrimeChainMultiplier, nChainType, nChainLength, Params().GetConsensus())){
             const std::string message = strprintf("Insufficient work %s<%s for header hash=%s multiplier=%s",
                 GetPrimeChainName(nChainType, nChainLength).c_str(),
                 TargetToString(pblock->nBits).c_str(),

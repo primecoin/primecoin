@@ -81,7 +81,7 @@ enum // prime chain type
     PRIME_CHAIN_BI_TWIN     = 3u,
 };
 bool CheckBlockHeaderIntegrity(uint256 hashBlockHeader, unsigned int nBits, const CBigNum& bnPrimeChainMultiplier, const Consensus::Params& consensus_params);
-bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CBigNum& bnPrimeChainMultiplier, unsigned int& nChainType, unsigned int& nChainLength, const Consensus::Params& consensus_params,bool& isNormalizationFailure);
+bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CBigNum& bnPrimeChainMultiplier, unsigned int& nChainType, unsigned int& nChainLength, const Consensus::Params& consensus_params);
 bool CheckPrimeProofOfWorkV02Compatibility(uint256 hashBlockHeader);
 
 // prime target difficulty value for visualization

@@ -70,8 +70,7 @@ unsigned int PrimeCoin::GetPrimeWorkRequired(const CBlockIndex* pindexLast, cons
 
 bool PrimeCoin::CheckPrimeProofs(uint256 hashBlockHeader, unsigned int nBits, const CBigNum& bnProbablePrime, unsigned int& nChainType, unsigned int& nChainLength, const Consensus::Params& params)
 {
-    bool isNormalizationFailure = false;
-    if (!CheckPrimeProofOfWork(hashBlockHeader, nBits, bnProbablePrime, nChainType, nChainLength, params,isNormalizationFailure))
+    if (!CheckPrimeProofOfWork(hashBlockHeader, nBits, bnProbablePrime, nChainType, nChainLength, params))
         return error("CheckProofOfWork() : check failed for prime proof-of-work");
 
     return true;

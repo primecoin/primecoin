@@ -409,11 +409,10 @@ bool CheckBlockHeaderIntegrity(uint256 hashBlockHeader, unsigned int nBits, cons
 }
 
 // Check prime proof-of-work
-bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CBigNum& bnPrimeChainMultiplier, unsigned int& nChainType, unsigned int& nChainLength, const Consensus::Params& consensus_params,bool& isNormalizationFailure)
+bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CBigNum& bnPrimeChainMultiplier, unsigned int& nChainType, unsigned int& nChainLength, const Consensus::Params& consensus_params)
 {
     nChainType = 0;   // clear output chain type
     nChainLength = 0; // clear output chain length
-    isNormalizationFailure = false;
     LogPrintf("CheckPrimeProofOfWork() : Start verification\n");
     LogPrintf("CheckPrimeProofOfWork() : Target (nBits) = %s\n", TargetToString(nBits).c_str());
     LogPrintf("CheckPrimeProofOfWork() : Computed Target Length = %u\n", TargetGetLength(nBits));
@@ -525,7 +524,6 @@ bool CheckPrimeProofOfWork(uint256 hashBlockHeader, unsigned int nBits, const CB
                     TargetToString(nBits).c_str(),
                     TargetToString(nChainLengthCunningham1).c_str(), TargetToString(nChainLengthCunningham2).c_str(), TargetToString(nChainLengthBiTwin).c_str(),
                     TargetToString(nChainLengthCunningham1Extended).c_str(), TargetToString(nChainLengthCunningham2Extended).c_str(), TargetToString(nChainLengthBiTwinExtended).c_str());
-                isNormalizationFailure = true;
                 return false;
 
 			}
