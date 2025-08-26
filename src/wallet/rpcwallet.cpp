@@ -166,6 +166,10 @@ UniValue getnewaddress(const JSONRPCRequest& request)
         if (output_type == OUTPUT_TYPE_NONE) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, strprintf("Unknown address type '%s'", request.params[1].get_str()));
         }
+        // Disable bech32 address creation
+        if (output_type == OUTPUT_TYPE_BECH32) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
+        }
     }
 
     if (!pwallet->IsLocked()) {
@@ -262,6 +266,10 @@ UniValue getrawchangeaddress(const JSONRPCRequest& request)
         output_type = ParseOutputType(request.params[0].get_str(), output_type);
         if (output_type == OUTPUT_TYPE_NONE) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, strprintf("Unknown address type '%s'", request.params[0].get_str()));
+        }
+        // Disable bech32 address creation
+        if (output_type == OUTPUT_TYPE_BECH32) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
         }
     }
 
@@ -1229,6 +1237,10 @@ UniValue addmultisigaddress(const JSONRPCRequest& request)
         output_type = ParseOutputType(request.params[3].get_str(), output_type);
         if (output_type == OUTPUT_TYPE_NONE) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, strprintf("Unknown address type '%s'", request.params[3].get_str()));
+        }
+        // Disable bech32 address creation
+        if (output_type == OUTPUT_TYPE_BECH32) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
         }
     }
 
@@ -3163,6 +3175,10 @@ UniValue fundrawtransaction(const JSONRPCRequest& request)
             coinControl.change_type = ParseOutputType(options["change_type"].get_str(), coinControl.change_type);
             if (coinControl.change_type == OUTPUT_TYPE_NONE) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, strprintf("Unknown change type '%s'", options["change_type"].get_str()));
+            }
+            // Disable bech32 address creation
+            if (coinControl.change_type == OUTPUT_TYPE_BECH32) {
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
             }
         }
 
