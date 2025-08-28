@@ -144,6 +144,21 @@ bool SendCoinsEntry::validate()
         ui->payTo->setValid(false);
         retval = false;
     }
+    else
+    {
+        // Temporarily block bech32 addresses with hrp "pm"
+        const QString addressText = ui->payTo->text();
+        if (addressText.startsWith("pm", Qt::CaseInsensitive))
+        {
+            ui->payTo->setValid(false);
+            ui->payTo->setToolTip(tr("Bech32 address type is not available"));
+            retval = false;
+        }
+        else
+        {
+            ui->payTo->setToolTip("");
+        }
+    }
 
     if (!ui->payAmount->validate())
     {

@@ -155,6 +155,10 @@ bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
     if (rv.address.endsWith("/")) {
         rv.address.truncate(rv.address.length() - 1);
     }
+    // Block bech32 (hrp "pm") addresses in URI
+    if (rv.address.startsWith("pm", Qt::CaseInsensitive)) {
+        return false;
+    }
     rv.amount = 0;
 
 #if QT_VERSION < 0x050000
