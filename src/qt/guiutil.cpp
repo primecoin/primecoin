@@ -16,6 +16,7 @@
 #include <script/script.h>
 #include <script/standard.h>
 #include <util.h>
+#include <chainparams.h>
 
 #ifdef WIN32
 #ifdef _WIN32_WINNT
@@ -155,8 +156,8 @@ bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
     if (rv.address.endsWith("/")) {
         rv.address.truncate(rv.address.length() - 1);
     }
-    // Block bech32 (hrp "pm") addresses in URI
-    if (rv.address.startsWith("pm", Qt::CaseInsensitive)) {
+    // Block bech32 addresses in URI (using dynamic HRP from chain params)
+    if (rv.address.startsWith(QString::fromStdString(Params().Bech32HRP()), Qt::CaseInsensitive)) {
         return false;
     }
     rv.amount = 0;
