@@ -30,9 +30,6 @@
 #include <wallet/walletutil.h>
 
 #include <init.h>  // For StartShutdown
-#include <chainparams.h>
-#include <algorithm>
-#include <cctype>
 
 #include <stdint.h>
 
@@ -53,16 +50,6 @@ CWallet *GetWalletForJSONRPCRequest(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_WALLET_NOT_FOUND, "Requested wallet does not exist or is not loaded");
     }
     return ::vpwallets.size() == 1 || (request.fHelp && ::vpwallets.size() > 0) ? ::vpwallets[0] : nullptr;
-}
-
-static bool IsBech32AddressString(const std::string& address) {
-    const std::string hrp = Params().Bech32HRP();
-    if (hrp.empty() || address.size() < hrp.size()) return false;
-    std::string prefix = address.substr(0, hrp.size());
-    std::string hrpLower = hrp;
-    std::transform(prefix.begin(), prefix.end(), prefix.begin(), [](unsigned char c){ return std::tolower(c); });
-    std::transform(hrpLower.begin(), hrpLower.end(), hrpLower.begin(), [](unsigned char c){ return std::tolower(c); });
-    return prefix == hrpLower;
 }
 
 std::string HelpRequiringPassphrase(CWallet * const pwallet)
@@ -321,13 +308,13 @@ UniValue setaccount(const JSONRPCRequest& request)
 
     LOCK2(cs_main, pwallet->cs_wallet);
 
-    // Reject bech32 address (pm HRP)
-    if (IsBech32AddressString(request.params[0].get_str())) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
-    }
     CTxDestination dest = DecodeDestination(request.params[0].get_str());
     if (!IsValidDestination(dest)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
+    }
+    // Reject native segwit (bech32) destinations
+    if (boost::get<WitnessV0KeyHash>(&dest) || boost::get<WitnessV0ScriptHash>(&dest)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
     }
 
     std::string strAccount;
@@ -515,8 +502,8 @@ UniValue sendtoaddress(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
     }
 
-    // Reject bech32 address (pm HRP)
-    if (IsBech32AddressString(request.params[0].get_str())) {
+    // Reject native segwit (bech32) destinations
+    if (boost::get<WitnessV0KeyHash>(&dest) || boost::get<WitnessV0ScriptHash>(&dest)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
     }
 
@@ -1016,6 +1003,12 @@ UniValue sendfrom(const JSONRPCRequest& request)
     if (!IsValidDestination(dest)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
     }
+
+    // Reject native segwit (bech32) destinations
+    if (boost::get<WitnessV0KeyHash>(&dest) || boost::get<WitnessV0ScriptHash>(&dest)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
+    }
+
     CAmount nAmount = AmountFromValue(request.params[2]);
     if (nAmount <= 0)
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount for send");
@@ -1141,13 +1134,13 @@ UniValue sendmany(const JSONRPCRequest& request)
     CAmount totalAmount = 0;
     std::vector<std::string> keys = sendTo.getKeys();
     for (const std::string& name_ : keys) {
-        // Reject bech32 address (pm HRP)
-        if (IsBech32AddressString(name_)) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
-        }
         CTxDestination dest = DecodeDestination(name_);
         if (!IsValidDestination(dest)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Bitcoin address: ") + name_);
+        }
+        // Reject native segwit (bech32) destinations
+        if (boost::get<WitnessV0KeyHash>(&dest) || boost::get<WitnessV0ScriptHash>(&dest)) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
         }
 
         if (destinations.count(dest)) {
