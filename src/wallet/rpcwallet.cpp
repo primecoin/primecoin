@@ -515,6 +515,11 @@ UniValue sendtoaddress(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
     }
 
+    // Reject bech32 address (pm HRP)
+    if (IsBech32AddressString(request.params[0].get_str())) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
+    }
+
     // Amount
     CAmount nAmount = AmountFromValue(request.params[1]);
     if (nAmount <= 0)
