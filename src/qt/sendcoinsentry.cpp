@@ -11,6 +11,7 @@
 #include <qt/optionsmodel.h>
 #include <qt/platformstyle.h>
 
+#include <chainparams.h>
 #include <QApplication>
 #include <QClipboard>
 
@@ -146,9 +147,9 @@ bool SendCoinsEntry::validate()
     }
     else
     {
-        // Temporarily block bech32 addresses with hrp "pm"
+        // Temporarily block bech32 addresses (using dynamic HRP from chain params)
         const QString addressText = ui->payTo->text();
-        if (addressText.startsWith("pm", Qt::CaseInsensitive))
+        if (addressText.startsWith(QString::fromStdString(Params().Bech32HRP()), Qt::CaseInsensitive))
         {
             ui->payTo->setValid(false);
             ui->payTo->setToolTip(tr("Bech32 address type is not available"));
