@@ -156,7 +156,7 @@ bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
     if (rv.address.endsWith("/")) {
         rv.address.truncate(rv.address.length() - 1);
     }
-    // Block bech32 addresses in URI (using dynamic HRP from chain params)
+    // Disable bech32 addresses for now
     if (rv.address.startsWith(QString::fromStdString(Params().Bech32HRP()), Qt::CaseInsensitive)) {
         return false;
     }

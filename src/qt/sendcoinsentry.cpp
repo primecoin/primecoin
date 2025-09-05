@@ -147,7 +147,7 @@ bool SendCoinsEntry::validate()
     }
     else
     {
-        // Temporarily block bech32 addresses (using dynamic HRP from chain params)
+        // Disable bech32 addresses for now
         const QString addressText = ui->payTo->text();
         if (addressText.startsWith(QString::fromStdString(Params().Bech32HRP()), Qt::CaseInsensitive))
         {
