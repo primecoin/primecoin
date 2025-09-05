@@ -16,6 +16,7 @@
 #include <script/script.h>
 #include <script/standard.h>
 #include <util.h>
+#include <chainparams.h>
 
 #ifdef WIN32
 #ifdef _WIN32_WINNT
@@ -146,7 +147,7 @@ void setupAmountWidget(QLineEdit *widget, QWidget *parent)
 bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
 {
     // return if URI is not valid or is no bitcoin: URI
-    if(!uri.isValid() || uri.scheme() != QString("bitcoin"))
+    if(!uri.isValid() || uri.scheme() != QString("primecoin"))
         return false;
 
     SendCoinsRecipient rv;
@@ -154,6 +155,10 @@ bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
     // Trim any following forward slash which may have been added by the OS
     if (rv.address.endsWith("/")) {
         rv.address.truncate(rv.address.length() - 1);
+    }
+    // Disable bech32 addresses for now
+    if (rv.address.startsWith(QString::fromStdString(Params().Bech32HRP()), Qt::CaseInsensitive)) {
+        return false;
     }
     rv.amount = 0;
 
@@ -212,7 +217,7 @@ bool parseBitcoinURI(QString uri, SendCoinsRecipient *out)
     //    which will lower-case it (and thus invalidate the address).
     if(uri.startsWith("primecoin://", Qt::CaseInsensitive))
     {
-        uri.replace(0, 10, "primecoin:");
+        uri.replace(0, 12, "primecoin:");
     }
     QUrl uriInstance(uri);
     return parseBitcoinURI(uriInstance, out);

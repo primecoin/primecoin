@@ -166,6 +166,10 @@ UniValue getnewaddress(const JSONRPCRequest& request)
         if (output_type == OUTPUT_TYPE_NONE) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, strprintf("Unknown address type '%s'", request.params[1].get_str()));
         }
+        // Disable bech32 address creation
+        if (output_type == OUTPUT_TYPE_BECH32) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
+        }
     }
 
     if (!pwallet->IsLocked()) {
@@ -263,6 +267,10 @@ UniValue getrawchangeaddress(const JSONRPCRequest& request)
         if (output_type == OUTPUT_TYPE_NONE) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, strprintf("Unknown address type '%s'", request.params[0].get_str()));
         }
+        // Disable bech32 address creation
+        if (output_type == OUTPUT_TYPE_BECH32) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
+        }
     }
 
     CReserveKey reservekey(pwallet);
@@ -303,6 +311,10 @@ UniValue setaccount(const JSONRPCRequest& request)
     CTxDestination dest = DecodeDestination(request.params[0].get_str());
     if (!IsValidDestination(dest)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
+    }
+    // Reject native segwit (bech32) destinations
+    if (boost::get<WitnessV0KeyHash>(&dest) || boost::get<WitnessV0ScriptHash>(&dest)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
     }
 
     std::string strAccount;
@@ -488,6 +500,11 @@ UniValue sendtoaddress(const JSONRPCRequest& request)
     CTxDestination dest = DecodeDestination(request.params[0].get_str());
     if (!IsValidDestination(dest)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
+    }
+
+    // Reject native segwit (bech32) destinations
+    if (boost::get<WitnessV0KeyHash>(&dest) || boost::get<WitnessV0ScriptHash>(&dest)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
     }
 
     // Amount
@@ -986,6 +1003,12 @@ UniValue sendfrom(const JSONRPCRequest& request)
     if (!IsValidDestination(dest)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
     }
+
+    // Reject native segwit (bech32) destinations
+    if (boost::get<WitnessV0KeyHash>(&dest) || boost::get<WitnessV0ScriptHash>(&dest)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
+    }
+
     CAmount nAmount = AmountFromValue(request.params[2]);
     if (nAmount <= 0)
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid amount for send");
@@ -1115,6 +1138,10 @@ UniValue sendmany(const JSONRPCRequest& request)
         if (!IsValidDestination(dest)) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Bitcoin address: ") + name_);
         }
+        // Reject native segwit (bech32) destinations
+        if (boost::get<WitnessV0KeyHash>(&dest) || boost::get<WitnessV0ScriptHash>(&dest)) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
+        }
 
         if (destinations.count(dest)) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, std::string("Invalid parameter, duplicated address: ") + name_);
@@ -1229,6 +1256,10 @@ UniValue addmultisigaddress(const JSONRPCRequest& request)
         output_type = ParseOutputType(request.params[3].get_str(), output_type);
         if (output_type == OUTPUT_TYPE_NONE) {
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, strprintf("Unknown address type '%s'", request.params[3].get_str()));
+        }
+        // Disable bech32 address creation
+        if (output_type == OUTPUT_TYPE_BECH32) {
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
         }
     }
 
@@ -3163,6 +3194,10 @@ UniValue fundrawtransaction(const JSONRPCRequest& request)
             coinControl.change_type = ParseOutputType(options["change_type"].get_str(), coinControl.change_type);
             if (coinControl.change_type == OUTPUT_TYPE_NONE) {
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, strprintf("Unknown change type '%s'", options["change_type"].get_str()));
+            }
+            // Disable bech32 address creation
+            if (coinControl.change_type == OUTPUT_TYPE_BECH32) {
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
             }
         }
 
