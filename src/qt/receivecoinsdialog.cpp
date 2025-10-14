@@ -96,7 +96,11 @@ void ReceiveCoinsDialog::setModel(WalletModel *_model)
 
         // Disable Bech32 checkbox
         ui->useBech32->setEnabled(false);
-        ui->useBech32->setCheckState(Qt::Unchecked);
+        if (model->getDefaultAddressType() == OUTPUT_TYPE_BECH32) {
+            ui->useBech32->setCheckState(Qt::Checked);
+        } else {
+            ui->useBech32->setCheckState(Qt::Unchecked);
+        }
     }
 }
 
