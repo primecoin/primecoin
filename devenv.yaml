@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://devenv.sh/devenv.schema.json
+inputs:
+  nixpkgs:
+    url: github:cachix/devenv-nixpkgs/rolling
+  # Import a source containing old versions of OpenSSL and Boost
+  # Using a 2019 commit (contains boost164 and openssl_1_0_2)
+  # This is a known commit that contains these packages
+  nixpkgs-old:
+    url: github:NixOS/nixpkgs/d1c3fea7ecbed758168787fe4e4a3157e52bc808
+
+# Allow use of unfree software
+allowUnfree: true
+
+# Allow use of insecure packages
+permittedInsecurePackages:
+  - "openssl-1.0.2u"
+  - "db-4.8.30"
+
+# If you have more than one devenv you can merge them
+#imports:
+# - ./backend
