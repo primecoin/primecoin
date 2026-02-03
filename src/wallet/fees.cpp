@@ -8,6 +8,7 @@
 #include <policy/policy.h>
 #include <txmempool.h>
 #include <util.h>
+#include <stdio.h>
 #include <validation.h>
 #include <wallet/coincontrol.h>
 #include <wallet/wallet.h>
@@ -33,14 +34,16 @@ CAmount GetMinimumFee(unsigned int nTxBytes, const CCoinControl& coin_control, c
         fee_needed = coin_control.m_feerate->GetFee(nTxBytes);
         if (feeCalc) feeCalc->reason = FeeReason::PAYTXFEE;
         // Allow to override automatic min/max check over coin control instance
+        fprintf(stderr, "1.fee_needed: %lld \n", fee_needed);
         if (coin_control.fOverrideFeeRate) return fee_needed;
     }
     else if (!coin_control.m_confirm_target && ::payTxFee != CFeeRate(0)) { // 3. TODO: remove magic value of 0 for global payTxFee
         fee_needed = ::payTxFee.GetFee(nTxBytes);
         if (feeCalc) feeCalc->reason = FeeReason::PAYTXFEE;
+        fprintf(stderr, "3.fee_needed: %lld \n", fee_needed);
     }
     // Primecoin: disable smart fee estimation here
-    else if (false) { // 2. or 4.
+    else { // 2. or 4.
         // We will use smart fee estimation
         unsigned int target = coin_control.m_confirm_target ? *coin_control.m_confirm_target : ::nTxConfirmTarget;
         // By default estimates are economical iff we are signaling opt-in-RBF
@@ -50,6 +53,7 @@ CAmount GetMinimumFee(unsigned int nTxBytes, const CCoinControl& coin_control, c
         else if (coin_control.m_fee_mode == FeeEstimateMode::ECONOMICAL) conservative_estimate = false;
 
         fee_needed = estimator.estimateSmartFee(target, feeCalc, conservative_estimate).GetFee(nTxBytes);
+        fprintf(stderr, "4.fee_needed: %lld Target: %d conservative_estimate: %d\n", fee_needed, target, conservative_estimate);
         if (fee_needed == 0) {
             // if we don't have enough data for estimateSmartFee, then use fallbackFee
             fee_needed = CWallet::fallbackFee.GetFee(nTxBytes);
@@ -74,6 +78,7 @@ CAmount GetMinimumFee(unsigned int nTxBytes, const CCoinControl& coin_control, c
         fee_needed = maxTxFee;
         if (feeCalc) feeCalc->reason = FeeReason::MAXTXFEE;
     }
+    fprintf(stderr, "2.fee_needed: %lld \n", fee_needed);
     return fee_needed;
 }
 
@@ -83,6 +88,7 @@ CFeeRate GetDiscardRate(const CBlockPolicyEstimator& estimator)
     unsigned int highest_target = estimator.HighestTargetTracked(FeeEstimateHorizon::LONG_HALFLIFE);
     CFeeRate discard_rate = estimator.estimateSmartFee(highest_target, nullptr /* FeeCalculation */, false /* conservative */);
     // Don't let discard_rate be greater than longest possible fee estimate if we get a valid fee estimate
+    fprintf(stderr, "discard_rate: %lld \n", discard_rate);
     discard_rate = (discard_rate == CFeeRate(0)) ? CWallet::m_discard_rate : std::min(discard_rate, CWallet::m_discard_rate);
     // Discard rate must be at least dustRelayFee
     discard_rate = std::max(discard_rate, ::dustRelayFee);
