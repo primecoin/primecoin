@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://devenv.sh/devenv.schema.json
+inputs:
+  nixpkgs:
+    url: github:cachix/devenv-nixpkgs/rolling
+  # Same as 0.16.3: old nixpkgs for db48, openssl 1.0.2, boost, etc. (not in current nixpkgs)
+  nixpkgs-old:
+    url: github:NixOS/nixpkgs/d1c3fea7ecbed758168787fe4e4a3157e52bc808
+
+allowUnfree: true
+
+# Packages from old nixpkgs are marked insecure in current; must permit explicitly
+permittedInsecurePackages:
+  - "openssl-1.0.2u"
+  - "db-4.8.30"
+
+# If you have more than one devenv you can merge them
+#imports:
+# - ./backend
