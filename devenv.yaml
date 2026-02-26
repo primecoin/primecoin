@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://devenv.sh/devenv.schema.json
 inputs:
   nixpkgs:
-    url: github:cachix/devenv-nixpkgs/rolling
+    url: github:NixOS/nixpkgs/nixos-25.05
   # Same as 0.16.3: old nixpkgs for db48, openssl 1.0.2, boost, etc. (not in current nixpkgs)
   nixpkgs-old:
     url: github:NixOS/nixpkgs/d1c3fea7ecbed758168787fe4e4a3157e52bc808
