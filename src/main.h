@@ -79,6 +79,7 @@ extern CScript COINBASE_FLAGS;
 
 
 extern CCriticalSection cs_main;
+extern std::multimap<CBigNum, CBlockIndex*> primeOriginIndex;
 extern std::map<uint256, CBlockIndex*> mapBlockIndex;
 extern std::set<CBlockIndex*, CBlockIndexWorkComparator> setBlockIndexValid;
 extern uint256 hashGenesisBlock;
@@ -1337,6 +1338,11 @@ public:
         CDataStream ss(SER_GETHASH, 0);
         ss << nVersion << hashPrevBlock << hashMerkleRoot << nTime << nBits << nNonce << bnPrimeChainMultiplier;
         return Hash(ss.begin(), ss.end());
+    }
+
+    CBigNum GetPrimeOrigin() const
+    {
+        return CBigNum(GetHash()) * bnPrimeChainMultiplier;
     }
 
     int64 GetBlockTime() const
