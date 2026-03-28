@@ -122,6 +122,14 @@ void WalletTxToJSON(const CWalletTx& wtx, UniValue& entry)
         entry.push_back(Pair(item.first, item.second));
 }
 
+std::string LabelFromValue(const UniValue& value)
+{
+    std::string strLabel = value.get_str();
+    if (strLabel == "*")
+        throw JSONRPCError(RPC_WALLET_INVALID_LABEL_NAME, "Invalid label name");
+    return strLabel;
+}
+
 std::string AccountFromValue(const UniValue& value)
 {
     std::string strAccount = value.get_str();
@@ -284,6 +292,51 @@ UniValue getrawchangeaddress(const JSONRPCRequest& request)
     CTxDestination dest = GetDestinationForKey(vchPubKey, output_type);
 
     return EncodeDestination(dest);
+}
+
+
+UniValue setlabel(const JSONRPCRequest& request)
+{
+    CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
+    if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
+        return NullUniValue;
+    }
+
+    if (request.fHelp || request.params.size() < 1 || request.params.size() > 2)
+        throw std::runtime_error(
+            "setlabel \"address\" \"label\"\n"
+            "\nSets the label associated with the given address.\n"
+            "\nArguments:\n"
+	    "1. \"address\"         (string, required) The primecoin address to be associated with a label.\n"
+            "2. \"label\"           (string, required) The label to assign the address to.\n"
+            "\nExamples:\n"
+            + HelpExampleCli("setlabel", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XX\" \"tabby\"")
+            + HelpExampleRpc("setlabel", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XX\", \"tabby\"")
+        );
+
+    LOCK2(cs_main, pwallet->cs_wallet);
+
+    CTxDestination dest = DecodeDestination(request.params[0].get_str());
+    if (!IsValidDestination(dest)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Primecoin address");
+    }
+    // Reject native segwit (bech32) destinations
+    if (boost::get<WitnessV0KeyHash>(&dest) || boost::get<WitnessV0ScriptHash>(&dest)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Bech32 address type is not available");
+    }
+
+    std::string strLabel;
+    if (!request.params[1].isNull())
+        strLabel = LabelFromValue(request.params[1]);
+
+    // Only add the label if the address is yours.
+    if (IsMine(*pwallet, dest)) {
+        pwallet->SetAddressBook(dest, strLabel, "receive");
+    }
+    else
+        throw JSONRPCError(RPC_MISC_ERROR, "setlabel can only be used with own address");
+
+    return NullUniValue;
 }
 
 
@@ -3613,6 +3666,7 @@ static const CRPCCommand commands[] =
     { "wallet",             "sendfrom",                 &sendfrom,                 {"fromaccount","toaddress","amount","minconf","comment","comment_to"} },
     { "wallet",             "sendmany",                 &sendmany,                 {"fromaccount","amounts","minconf","comment","subtractfeefrom","replaceable","conf_target","estimate_mode"} },
     { "wallet",             "sendtoaddress",            &sendtoaddress,            {"address","amount","comment","comment_to","subtractfeefromamount","replaceable","conf_target","estimate_mode"} },
+    { "wallet",             "setlabel",                 &setlabel,                 {"address","label"} },
     { "wallet",             "setaccount",               &setaccount,               {"address","account"} },
     { "wallet",             "settxfee",                 &settxfee,                 {"amount"} },
     { "wallet",             "signmessage",              &signmessage,              {"address","message"} },
