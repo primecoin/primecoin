@@ -466,39 +466,61 @@ UniValue getaccount(const JSONRPCRequest& request)
 }
 
 
-UniValue getaddressesbyaccount(const JSONRPCRequest& request)
+UniValue getaddresses(const JSONRPCRequest& request)
 {
     CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
     if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
         return NullUniValue;
     }
-
+    
+    std::string strMethod = request.strMethod;
     if (request.fHelp || request.params.size() != 1)
-        throw std::runtime_error(
-            "getaddressesbyaccount \"account\"\n"
-            "\nDEPRECATED. Returns the list of addresses for the given account.\n"
-            "\nArguments:\n"
-            "1. \"account\"        (string, required) The account name.\n"
-            "\nResult:\n"
-            "[                     (json array of string)\n"
-            "  \"address\"         (string) a primecoin address associated with the given account\n"
-            "  ,...\n"
-            "]\n"
-            "\nExamples:\n"
-            + HelpExampleCli("getaddressesbyaccount", "\"tabby\"")
-            + HelpExampleRpc("getaddressesbyaccount", "\"tabby\"")
+        if (strMethod == "getaddressesbyaccount") {
+            throw std::runtime_error(
+                "getaddressesbyaccount \"account\"\n"
+                "\nDEPRECATED. Returns the list of addresses for the given account.\n"
+                "\nArguments:\n"
+                "1. \"account\"          (string, required) The account name.\n"
+                "\nResult:\n"
+                "[                     (json array of strings)\n"
+                "  \"address\"           (string) a primecoin address associated with the given account\n"
+                "  ,...\n"
+                "]\n"
+                "\nExamples:\n"
+                + HelpExampleCli("getaddressesbyaccount", "\"tabby\"")
+                + HelpExampleRpc("getaddressesbyaccount", "\"tabby\"")
         );
+        } else if (strMethod == "getaddressesbylabel") {
+            throw std::runtime_error(
+                "getaddressesbylabel \"label\"\n"
+                "\nReturns the list of addresses for the given label.\n"
+                "\nArguments:\n"
+                "1. \"label\"            (string, required) The label name.\n"
+                "\nResult:\n"
+                "[                     (json array of strings)\n"
+                "  \"address\"           (string) a primecoin address associated with the given label\n"
+                "  ,...\n"
+                "]\n"
+                "\nExamples:\n"
+                + HelpExampleCli("getaddressesbylabel", "\"tabby\"")
+                + HelpExampleRpc("getaddressesbylabel", "\"tabby\"")
+        );
+        } else 
+            throw JSONRPCError(RPC_INVALID_PARAMETER,"Method must match 'getaddressesbyaccount' or 'getaddressesbylabel' (" + strMethod + ").");
 
     LOCK2(cs_main, pwallet->cs_wallet);
 
-    std::string strAccount = AccountFromValue(request.params[0]);
-
+    std::string strAccountOrLabel;
+    if (strMethod == "getaddressesbyaccount")
+        strAccountOrLabel = AccountFromValue(request.params[0]);
+    if (strMethod == "getaddressesbylabel")
+        strAccountOrLabel = LabelFromValue(request.params[0]);
     // Find all addresses that have the given account
     UniValue ret(UniValue::VARR);
     for (const std::pair<CTxDestination, CAddressBookData>& item : pwallet->mapAddressBook) {
         const CTxDestination& dest = item.first;
         const std::string& strName = item.second.name;
-        if (strName == strAccount) {
+        if (strName == strAccountOrLabel) {
             ret.push_back(EncodeDestination(dest));
         }
     }
@@ -3746,7 +3768,8 @@ static const CRPCCommand commands[] =
     { "wallet",             "encryptwallet",            &encryptwallet,            {"passphrase"} },
     { "wallet",             "getaccountaddress",        &getaccountaddress,        {"account"} },
     { "wallet",             "getaccount",               &getaccount,               {"address"} },
-    { "wallet",             "getaddressesbyaccount",    &getaddressesbyaccount,    {"account"} },
+    { "wallet",             "getaddressesbyaccount",    &getaddresses,             {"account"} },
+    { "wallet",             "getaddressesbylabel",      &getaddresses,             {"label"} },
     { "wallet",             "getbalance",               &getbalance,               {"account","minconf","include_watchonly"} },
     { "wallet",             "getnewaddress",            &getnewaddress,            {"account","address_type"} },
     { "wallet",             "getrawchangeaddress",      &getrawchangeaddress,      {"address_type"} },
