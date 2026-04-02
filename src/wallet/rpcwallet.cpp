@@ -323,7 +323,7 @@ UniValue setlabel(const JSONRPCRequest& request)
     if (!request.params[2].isNull()) {
         purpose = request.params[2].get_str();
         if (purpose != "send" && purpose != "receive")
-            throw(JSONRPCError(RPC_INVALID_PARAMETER, "purpose must be 'send' or 'receive'"));
+            throw(JSONRPCError(RPC_INVALID_PARAMETER, "purpose must be 'send' or 'receive' (" + purpose + ")"));
     }
 
     CTxDestination dest = DecodeDestination(request.params[0].get_str());
@@ -430,25 +430,41 @@ UniValue setaccount(const JSONRPCRequest& request)
 }
 
 
-UniValue getaccount(const JSONRPCRequest& request)
+UniValue getname(const JSONRPCRequest& request)
 {
     CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
     if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
         return NullUniValue;
     }
 
+    std::string strMethod = request.strMethod;
     if (request.fHelp || request.params.size() != 1)
-        throw std::runtime_error(
-            "getaccount \"address\"\n"
-            "\nDEPRECATED. Returns the account associated with the given address.\n"
-            "\nArguments:\n"
-            "1. \"address\"         (string, required) The primecoin address for account lookup.\n"
-            "\nResult:\n"
-            "\"accountname\"        (string) the account address\n"
-            "\nExamples:\n"
-            + HelpExampleCli("getaccount", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XX\"")
-            + HelpExampleRpc("getaccount", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XX\"")
-        );
+        if (strMethod == "getaccount") {
+            throw std::runtime_error(
+                "getaccount \"address\"\n"
+                "\nDEPRECATED. Returns the account associated with the given address.\n"
+                "\nArguments:\n"
+                "1. \"address\"         (string, required) The primecoin address for account lookup.\n"
+                "\nResult:\n"
+                "\"accountname\"        (string) the account name\n"
+                "\nExamples:\n"
+                + HelpExampleCli("getaccount", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XX\"")
+                + HelpExampleRpc("getaccount", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XX\"")
+            );
+        } else if (strMethod == "getlabel") {
+            throw std::runtime_error(
+                "getlabel \"address\"\n"
+                "\nReturns the label associated with the given address.\n"
+                "\nArguments:\n"
+                "1. \"address\"         (string, required) The primecoin address for label lookup.\n"
+                "\nResult:\n"
+                "\"accountname\"        (string) the label name\n"
+                "\nExamples:\n"
+                + HelpExampleCli("getlabel", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XX\"")
+                + HelpExampleRpc("getlabel", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XX\"")
+            );
+        } else 
+            throw JSONRPCError(RPC_INVALID_PARAMETER,"Method must match 'getaccount' or 'getlabel' (" + strMethod + ").");
 
     LOCK2(cs_main, pwallet->cs_wallet);
 
@@ -457,12 +473,12 @@ UniValue getaccount(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Primecoin address");
     }
 
-    std::string strAccount;
+    std::string strAccountOrLabel;
     std::map<CTxDestination, CAddressBookData>::iterator mi = pwallet->mapAddressBook.find(dest);
     if (mi != pwallet->mapAddressBook.end() && !(*mi).second.name.empty()) {
-        strAccount = (*mi).second.name;
+        strAccountOrLabel = (*mi).second.name;
     }
-    return strAccount;
+    return strAccountOrLabel;
 }
 
 
@@ -3767,7 +3783,8 @@ static const CRPCCommand commands[] =
     { "wallet",             "dumpwallet",               &dumpwallet,               {"filename"} },
     { "wallet",             "encryptwallet",            &encryptwallet,            {"passphrase"} },
     { "wallet",             "getaccountaddress",        &getaccountaddress,        {"account"} },
-    { "wallet",             "getaccount",               &getaccount,               {"address"} },
+    { "wallet",             "getaccount",               &getname,                  {"address"} },
+    { "wallet",             "getlabel",                 &getname,                  {"address"} },
     { "wallet",             "getaddressesbyaccount",    &getaddresses,             {"account"} },
     { "wallet",             "getaddressesbylabel",      &getaddresses,             {"label"} },
     { "wallet",             "getbalance",               &getbalance,               {"account","minconf","include_watchonly"} },
