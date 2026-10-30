@@ -276,6 +276,10 @@ public:
 
         // Deployment of upgrade fee rule, destroy fee
         consensus.RFC2Height = 3058199; // approximate December 26, 2021
+        // Deployment of RFC2: upgrade fee rule and destroy fee rule.
+        consensus.vDeployments[Consensus::DEPLOYMENT_RFC2].bit = 2;
+        consensus.vDeployments[Consensus::DEPLOYMENT_RFC2].nStartTime = 1773728928; // March 17, 2026
+        consensus.vDeployments[Consensus::DEPLOYMENT_RFC2].nTimeout = 1781620195; // June 16, 2026
 
     }
 };
