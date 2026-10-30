@@ -278,9 +278,9 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
                 {
                     char fTmp;
                     char fUnused;
-                    ssValue >> fTmp >> fUnused >> wtx.strFromAccount;
+                    ssValue >> fTmp >> fUnused >> wtx.strFromAccountOrLabel;
                     strErr = strprintf("LoadWallet() upgrading tx ver=%d %d '%s' %s",
-                                       wtx.fTimeReceivedIsTxTime, fTmp, wtx.strFromAccount, hash.ToString());
+                                       wtx.fTimeReceivedIsTxTime, fTmp, wtx.strFromAccountOrLabel, hash.ToString());
                     wtx.fTimeReceivedIsTxTime = fTmp;
                 }
                 else
