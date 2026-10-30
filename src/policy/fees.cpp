@@ -253,6 +253,7 @@ double TxConfirmStats::EstimateMedianVal(int confTarget, double sufficientTxVal,
     int periodTarget = (confTarget + scale - 1)/scale;
 
     int maxbucketindex = buckets.size() - 1;
+    printf("maxbucketindex: %d", maxbucketindex);
 
     // requireGreater means we are looking for the lowest feerate such that all higher
     // values pass, so we start at maxbucketindex (highest feerate) and look at successively
@@ -295,6 +296,7 @@ double TxConfirmStats::EstimateMedianVal(int confTarget, double sufficientTxVal,
         // we can test for success
         // (Only count the confirmed data points, so that each confirmation count
         // will be looking at the same amount of data and same bucket breaks)
+        printf("totalNum: %lf, sufficientTxVal: %lf, failNum: %lf, extraNum: %lf", totalNum, sufficientTxVal, failNum, extraNum);
         if (totalNum >= sufficientTxVal / (1 - decay)) {
             double curPct = nConf / (totalNum + failNum + extraNum);
 
@@ -335,7 +337,7 @@ double TxConfirmStats::EstimateMedianVal(int confTarget, double sufficientTxVal,
         }
     }
 
-    double median = -1;
+    double median = 1.0;
     double txSum = 0;
 
     // Calculate the "average" feerate of the best bucket range that met success conditions
@@ -373,7 +375,15 @@ double TxConfirmStats::EstimateMedianVal(int confTarget, double sufficientTxVal,
         failBucket.inMempool = extraNum;
         failBucket.leftMempool = failNum;
     }
-
+    
+    fprintf(stderr, "FeeEst: %d %s%.0f%% decay %.5f: feerate: %g from (%g - %g) %.2f%% %.1f/(%.1f %d mem %.1f out) Fail: (%g - %g) %.2f%% %.1f/(%.1f %d mem %.1f out)\n",
+             confTarget, requireGreater ? ">" : "<", 100.0 * successBreakPoint, decay,
+             median, passBucket.start, passBucket.end,
+             100 * passBucket.withinTarget / (passBucket.totalConfirmed + passBucket.inMempool + passBucket.leftMempool),
+             passBucket.withinTarget, passBucket.totalConfirmed, passBucket.inMempool, passBucket.leftMempool,
+             failBucket.start, failBucket.end,
+             100 * failBucket.withinTarget / (failBucket.totalConfirmed + failBucket.inMempool + failBucket.leftMempool),
+             failBucket.withinTarget, failBucket.totalConfirmed, failBucket.inMempool, failBucket.leftMempool);
     LogPrint(BCLog::ESTIMATEFEE, "FeeEst: %d %s%.0f%% decay %.5f: feerate: %g from (%g - %g) %.2f%% %.1f/(%.1f %d mem %.1f out) Fail: (%g - %g) %.2f%% %.1f/(%.1f %d mem %.1f out)\n",
              confTarget, requireGreater ? ">" : "<", 100.0 * successBreakPoint, decay,
              median, passBucket.start, passBucket.end,
@@ -747,6 +757,7 @@ unsigned int CBlockPolicyEstimator::HistoricalBlockSpan() const
 unsigned int CBlockPolicyEstimator::MaxUsableEstimate() const
 {
     // Block spans are divided by 2 to make sure there are enough potential failing data points for the estimate
+    fprintf(stderr, "MaxUsableEstimate: %lf %lf\n", longStats->GetMaxConfirms(), std::max(BlockSpan(), HistoricalBlockSpan()) / 2);
     return std::min(longStats->GetMaxConfirms(), std::max(BlockSpan(), HistoricalBlockSpan()) / 2);
 }
 
@@ -757,6 +768,7 @@ unsigned int CBlockPolicyEstimator::MaxUsableEstimate() const
 double CBlockPolicyEstimator::estimateCombinedFee(unsigned int confTarget, double successThreshold, bool checkShorterHorizon, EstimationResult *result) const
 {
     double estimate = -1;
+    fprintf(stderr, "estimateCombinedFee confTarget: %d longStats->GetMaxConfirms(): %d shortStats->GetMaxConfirms(): %d feeStats->GetMaxConfirms(): %d\n", confTarget, longStats->GetMaxConfirms(), shortStats->GetMaxConfirms(), feeStats->GetMaxConfirms());
     if (confTarget >= 1 && confTarget <= longStats->GetMaxConfirms()) {
         // Find estimate from shortest time horizon possible
         if (confTarget <= shortStats->GetMaxConfirms()) { // short horizon
@@ -768,6 +780,7 @@ double CBlockPolicyEstimator::estimateCombinedFee(unsigned int confTarget, doubl
         else { // long horizon
             estimate = longStats->EstimateMedianVal(confTarget, SUFFICIENT_FEETXS, successThreshold, true, nBestSeenHeight, result);
         }
+        fprintf(stderr, "estimateCombinedFee estimate: %lf \n", estimate);
         if (checkShorterHorizon) {
             EstimationResult tempResult;
             // If a lower confTarget from a more recent horizon returns a lower answer use it.
@@ -833,15 +846,17 @@ CFeeRate CBlockPolicyEstimator::estimateSmartFee(int confTarget, FeeCalculation 
     if (confTarget <= 0 || (unsigned int)confTarget > longStats->GetMaxConfirms()) {
         return CFeeRate(0);  // error condition
     }
-
+    fprintf(stderr, "IN estimateSmartFee 0: confTarget: %d\n", confTarget);
     // It's not possible to get reasonable estimates for confTarget of 1
     if (confTarget == 1) confTarget = 2;
 
     unsigned int maxUsableEstimate = MaxUsableEstimate();
+    fprintf(stderr, "IN estimateSmartFee 1: confTarget: %d maxUsableEstimate : %d\n", confTarget, maxUsableEstimate);
     if ((unsigned int)confTarget > maxUsableEstimate) {
         confTarget = maxUsableEstimate;
     }
     if (feeCalc) feeCalc->returnedTarget = confTarget;
+    fprintf(stderr, "IN estimateSmartFee 2: confTarget: %d\n", confTarget);
 
     if (confTarget <= 1) return CFeeRate(0); // error condition
 
@@ -862,6 +877,7 @@ CFeeRate CBlockPolicyEstimator::estimateSmartFee(int confTarget, FeeCalculation 
         feeCalc->reason = FeeReason::HALF_ESTIMATE;
     }
     median = halfEst;
+    fprintf(stderr, "IN estimateSmartFee 3: median: %lf halfEst: %lf\n", median, halfEst);
     double actualEst = estimateCombinedFee(confTarget, SUCCESS_PCT, true, &tempResult);
     if (actualEst > median) {
         median = actualEst;
@@ -870,6 +886,7 @@ CFeeRate CBlockPolicyEstimator::estimateSmartFee(int confTarget, FeeCalculation 
             feeCalc->reason = FeeReason::FULL_ESTIMATE;
         }
     }
+    fprintf(stderr, "IN estimateSmartFee 4 median: %lf actualEst: %lf\n", median, actualEst);
     double doubleEst = estimateCombinedFee(2 * confTarget, DOUBLE_SUCCESS_PCT, !conservative, &tempResult);
     if (doubleEst > median) {
         median = doubleEst;
@@ -878,7 +895,7 @@ CFeeRate CBlockPolicyEstimator::estimateSmartFee(int confTarget, FeeCalculation 
             feeCalc->reason = FeeReason::DOUBLE_ESTIMATE;
         }
     }
-
+    fprintf(stderr, "IN estimateSmartFee 5 median: %lf doubleEst: %lf\n", median, doubleEst);
     if (conservative || median == -1) {
         double consEst =  estimateConservativeFee(2 * confTarget, &tempResult);
         if (consEst > median) {
@@ -888,6 +905,7 @@ CFeeRate CBlockPolicyEstimator::estimateSmartFee(int confTarget, FeeCalculation 
                 feeCalc->reason = FeeReason::CONSERVATIVE;
             }
         }
+        fprintf(stderr, "IN estimateSmartFee 6 median: %lf consEst: %lf\n", median, consEst);
     }
 
     if (median < 0) return CFeeRate(0); // error condition
