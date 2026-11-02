@@ -178,8 +178,8 @@ void SendCoinsDialog::setModel(WalletModel *_model)
         connect(ui->checkBoxMinimumFee, SIGNAL(stateChanged(int)), this, SLOT(coinControlUpdateLabels()));
         connect(ui->optInRBF, SIGNAL(stateChanged(int)), this, SLOT(updateSmartFeeLabel()));
         connect(ui->optInRBF, SIGNAL(stateChanged(int)), this, SLOT(coinControlUpdateLabels()));
-        // Primecoin use aligned to minimum (0.01) fee, use 99 as argument of GetRequiredFee
-        ui->customFee->setSingleStep(GetRequiredFee(999));
+        // Primecoin use aligned to minimum (1 XPM/kB) fee, use 1000 as argument of GetRequiredFee
+        ui->customFee->setSingleStep(GetRequiredFee(1000));
         updateFeeSectionControls();
         updateMinFeeLabel();
         updateSmartFeeLabel();
@@ -636,8 +636,8 @@ void SendCoinsDialog::useAvailableBalance(SendCoinsEntry* entry)
 
 void SendCoinsDialog::setMinimumFee()
 {
-    // Primecoin use aligned to minimum (0.01) fee, use 99 as argument of GetRequiredFee
-    ui->customFee->setValue(GetRequiredFee(999));
+    // Primecoin use aligned to minimum (1 XPM/kB) fee, use 1000 as argument of GetRequiredFee
+    ui->customFee->setValue(GetRequiredFee(1000));
 }
 
 void SendCoinsDialog::updateFeeSectionControls()
@@ -667,10 +667,10 @@ void SendCoinsDialog::updateFeeMinimizedLabel()
 
 void SendCoinsDialog::updateMinFeeLabel()
 {
-    // Primecoin use aligned to minimum (0.01) fee, use 99 as argument of GetRequiredFee
+    // Primecoin use aligned to minimum (1 XPM/kB) fee, use 1000 as argument of GetRequiredFee
     if (model && model->getOptionsModel())
         ui->checkBoxMinimumFee->setText(tr("Pay only the required fee of %1").arg(
-            BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), GetRequiredFee(999)) + "/kB")
+            BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), GetRequiredFee(1000)) + "/kB")
         );
 }
 
@@ -695,8 +695,8 @@ void SendCoinsDialog::updateSmartFeeLabel()
     updateCoinControlState(coin_control);
     coin_control.m_feerate.reset(); // Explicitly use only fee estimation rate for smart fee labels
     FeeCalculation feeCalc;
-    // Primecoin use aligned to minimum (0.01) fee, use 99 as argument of GetMinimumFee
-    CFeeRate feeRate = CFeeRate(GetMinimumFee(999, coin_control, ::mempool, ::feeEstimator, &feeCalc));
+    // Primecoin use aligned to minimum (1 XPM/kB) fee, use 1000 as argument of GetMinimumFee
+    CFeeRate feeRate = CFeeRate(GetMinimumFee(1000, coin_control, ::mempool, ::feeEstimator, &feeCalc));
 
     ui->labelSmartFee->setText(BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), feeRate.GetFeePerK()) + "/kB");
 
