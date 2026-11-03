@@ -55,6 +55,10 @@
 #define MICRO 0.000001
 #define MILLI 0.001
 
+// RFC2 BIP9 helper functions (forward declarations, definitions are below)
+static bool IsRFC2ActiveBIP9(const CBlockIndex* pindexPrev, const Consensus::Params& params);
+static bool IsRFC2LockedInOrActiveBIP9(const CBlockIndex* pindexPrev, const Consensus::Params& params);
+
 /**
  * Global state
  */
@@ -734,7 +738,8 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
 
         // No transactions are allowed below minRelayTxFee except from disconnected blocks
         CAmount nMinmumRelayFees;
-        if(chainActive.Tip()->nHeight >= chainparams.GetConsensus().RFC2Height - 60 * 24) {
+        if(chainActive.Tip()->nHeight >= chainparams.GetConsensus().RFC2Height - 60 * 24
+           || IsRFC2LockedInOrActiveBIP9(chainActive.Tip(), chainparams.GetConsensus())) {
             nMinmumRelayFees = ::minRelayTxFee.GetFee(nSize);
         } else {
             nMinmumRelayFees = ::minRelayTxFeeV1.GetFee(nSize, true);
@@ -1694,6 +1699,19 @@ void ThreadScriptCheck() {
 // Protected by cs_main
 VersionBitsCache versionbitscache;
 
+static bool IsRFC2ActiveBIP9(const CBlockIndex* pindexPrev, const Consensus::Params& params)
+{
+    return VersionBitsState(pindexPrev, params,
+        Consensus::DEPLOYMENT_RFC2, versionbitscache) == THRESHOLD_ACTIVE;
+}
+
+static bool IsRFC2LockedInOrActiveBIP9(const CBlockIndex* pindexPrev, const Consensus::Params& params)
+{
+    ThresholdState state = VersionBitsState(pindexPrev, params,
+                           Consensus::DEPLOYMENT_RFC2, versionbitscache);
+    return (state == THRESHOLD_LOCKED_IN || state == THRESHOLD_ACTIVE);
+}
+
 int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Params& params)
 {
     LOCK(cs_main);
@@ -1915,6 +1933,8 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     std::vector<PrecomputedTransactionData> txdata;
     txdata.reserve(block.vtx.size()); // Required so that pointers to individual PrecomputedTransactionData don't get invalidated
     CAmount nCoinbaseFee = 0;
+    bool fRFC2Active = (pindex->nHeight >= chainparams.GetConsensus().RFC2Height)
+                       || IsRFC2ActiveBIP9(pindex->pprev, chainparams.GetConsensus());
     for (unsigned int i = 0; i < block.vtx.size(); i++)
     {
         const CTransaction &tx = *(block.vtx[i]);
@@ -1930,7 +1950,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
 
             size_t nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS);
             CAmount nMinTxFee;
-            if(pindex->nHeight >= chainparams.GetConsensus().RFC2Height) {
+            if (fRFC2Active) {
                 nMinTxFee = ::minProtocolTxFee.GetFee(nSize);
             } else {
                 nMinTxFee = ::minProtocolTxFeeV1.GetFee(nSize, true);
@@ -1960,7 +1980,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
             }
         } else {
             size_t nSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS);
-            if(pindex->nHeight >= chainparams.GetConsensus().RFC2Height) {
+            if (fRFC2Active) {
                 nCoinbaseFee = ::minProtocolTxFee.GetFee(nSize);
             }
         }
@@ -1995,7 +2015,7 @@ bool CChainState::ConnectBlock(const CBlock& block, CValidationState& state, CBl
     LogPrint(BCLog::BENCH, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs (%.2fms/blk)]\n", (unsigned)block.vtx.size(), MILLI * (nTime3 - nTime2), MILLI * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : MILLI * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * MICRO, nTimeConnect * MILLI / nBlocksTotal);
 
     CAmount blockReward = GetBlockSubsidy(pindex->nBits, chainparams.GetConsensus());
-    if(pindex->nHeight >= chainparams.GetConsensus().RFC2Height) {
+    if (fRFC2Active) {
         blockReward -= nCoinbaseFee; // destroy fee and charge for coinbase tx
     } else {
         blockReward += nFees;
