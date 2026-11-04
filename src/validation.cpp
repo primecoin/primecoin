@@ -231,7 +231,6 @@ uint256 hashAssumeValid;
 arith_uint256 nMinimumChainWork;
 
 CFeeRate minRelayTxFee = CFeeRate(DEFAULT_MIN_RELAY_TX_FEE);
-CFeeRate minRelayTxFeeV1 = CFeeRate(DEFAULT_MIN_RELAY_TX_FEE_V1);
 CFeeRate minProtocolTxFee = CFeeRate(COIN);
 CFeeRate minProtocolTxFeeV1 = CFeeRate(CENT);
 CAmount maxTxFee = DEFAULT_TRANSACTION_MAXFEE;
@@ -733,14 +732,8 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
         }
 
         // No transactions are allowed below minRelayTxFee except from disconnected blocks
-        CAmount nMinmumRelayFees;
-        if(chainActive.Tip()->nHeight >= chainparams.GetConsensus().RFC2Height - 60 * 24) {
-            nMinmumRelayFees = ::minRelayTxFee.GetFee(nSize);
-        } else {
-            nMinmumRelayFees = ::minRelayTxFeeV1.GetFee(nSize, true);
-        }
-        if (!bypass_limits && nModifiedFees < nMinmumRelayFees) {
-            return state.DoS(0, false, REJECT_INSUFFICIENTFEE, strprintf("Required minimum fee for this transaction is %g", nMinmumRelayFees*1./COIN));
+        if (!bypass_limits && nModifiedFees < ::minRelayTxFee.GetFee(nSize)) {
+            return state.DoS(0, false, REJECT_INSUFFICIENTFEE, strprintf("Required minimum fee for this transaction is %g", ::minRelayTxFee.GetFee(nSize)*1./COIN));
         }
 
         if (nAbsurdFee && nFees > nAbsurdFee)
