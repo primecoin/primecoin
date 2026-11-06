@@ -1,7 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/icons">
-        <file alias="bitcoin">res/icons/bitcoin.png</file>
-        <file alias="primecoin_testnet">res/icons/bitcoin_testnet.png</file>
+        <file alias="primecoin">res/icons/primecoin.png</file>
+        <file alias="primecoin_testnet">res/icons/primecoin_testnet.png</file>
         <file alias="primecoin_splash">res/icons/primecoin_splash.png</file>
         <file alias="address-book">res/icons/address-book.png</file>
         <file alias="quit">res/icons/quit.png</file>
