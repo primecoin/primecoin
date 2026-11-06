@@ -261,7 +261,7 @@ Result CommitTransaction(CWallet* wallet, const uint256& txid, CMutableTransacti
     wtxBumped.mapValue = oldWtx.mapValue;
     wtxBumped.mapValue["replaces_txid"] = oldWtx.GetHash().ToString();
     wtxBumped.vOrderForm = oldWtx.vOrderForm;
-    wtxBumped.strFromAccount = oldWtx.strFromAccount;
+    wtxBumped.strFromAccountOrLabel = oldWtx.strFromAccountOrLabel;
     wtxBumped.fTimeReceivedIsTxTime = true;
     wtxBumped.fFromMe = true;
     CValidationState state;

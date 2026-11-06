@@ -557,7 +557,7 @@ void CWallet::SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator> ran
         // nTimeReceived not copied on purpose
         copyTo->nTimeSmart = copyFrom->nTimeSmart;
         copyTo->fFromMe = copyFrom->fFromMe;
-        copyTo->strFromAccount = copyFrom->strFromAccount;
+        copyTo->strFromAccountOrLabel = copyFrom->strFromAccountOrLabel;
         // nOrderPos not copied on purpose
         // cached members not copied on purpose
     }
@@ -1509,12 +1509,12 @@ int64_t CWalletTx::GetTxTime() const
 }
 
 void CWalletTx::GetAmounts(std::list<COutputEntry>& listReceived,
-                           std::list<COutputEntry>& listSent, CAmount& nFee, std::string& strSentAccount, const isminefilter& filter) const
+                           std::list<COutputEntry>& listSent, CAmount& nFee, std::string& strSentAccountOrLabel, const isminefilter& filter) const
 {
     nFee = 0;
     listReceived.clear();
     listSent.clear();
-    strSentAccount = strFromAccount;
+    strSentAccountOrLabel = strFromAccountOrLabel;
 
     // Compute fee:
     CAmount nDebit = GetDebit(filter);
@@ -2134,7 +2134,7 @@ CAmount CWallet::GetLegacyBalance(const isminefilter& filter, int minDepth, cons
         }
 
         // For outgoing txs, subtract amount debited.
-        if (outgoing && (!account || *account == wtx.strFromAccount)) {
+        if (outgoing && (!account || *account == wtx.strFromAccountOrLabel)) {
             balance -= debit;
         }
     }
@@ -4056,7 +4056,7 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
                     copyTo->nTimeReceived = copyFrom->nTimeReceived;
                     copyTo->nTimeSmart = copyFrom->nTimeSmart;
                     copyTo->fFromMe = copyFrom->fFromMe;
-                    copyTo->strFromAccount = copyFrom->strFromAccount;
+                    copyTo->strFromAccountOrLabel = copyFrom->strFromAccountOrLabel;
                     copyTo->nOrderPos = copyFrom->nOrderPos;
                     walletdb.WriteTx(*copyTo);
                 }

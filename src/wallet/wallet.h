@@ -286,24 +286,24 @@ public:
      * The following keys can be read and written through the map and are
      * serialized in the wallet database:
      *
-     *     "comment", "to"   - comment strings provided to sendtoaddress,
-     *                         sendfrom, sendmany wallet RPCs
-     *     "replaces_txid"   - txid (as HexStr) of transaction replaced by
-     *                         bumpfee on transaction created by bumpfee
-     *     "replaced_by_txid" - txid (as HexStr) of transaction created by
-     *                         bumpfee on transaction replaced by bumpfee
-     *     "from", "message" - obsolete fields that could be set in UI prior to
-     *                         2011 (removed in commit 4d9b223)
+     *     "comment", "to"      - comment strings provided to sendtoaddress,
+     *                            sendfrom, sendmany wallet RPCs
+     *     "replaces_txid"      - txid (as HexStr) of transaction replaced by
+     *                            bumpfee on transaction created by bumpfee
+     *     "replaced_by_txid"   - txid (as HexStr) of transaction created by
+     *                            bumpfee on transaction replaced by bumpfee
+     *     "from", "message"    - obsolete fields that could be set in UI prior to
+     *                            2011 (removed in commit 4d9b223)
      *
      * The following keys are serialized in the wallet database, but shouldn't
      * be read or written through the map (they will be temporarily added and
      * removed from the map during serialization):
      *
-     *     "fromaccount"     - serialized strFromAccount value
-     *     "n"               - serialized nOrderPos value
-     *     "timesmart"       - serialized nTimeSmart value
-     *     "spent"           - serialized vfSpent value that existed prior to
-     *                         2014 (removed in commit 93a18a3)
+     *     "fromaccountorlabel" - serialized strFromAccountOrLabel value
+     *     "n"                  - serialized nOrderPos value
+     *     "timesmart"          - serialized nTimeSmart value
+     *     "spent"              - serialized vfSpent value that existed prior to
+     *                            2014 (removed in commit 93a18a3)
      */
     mapValue_t mapValue;
     std::vector<std::pair<std::string, std::string> > vOrderForm;
@@ -325,7 +325,7 @@ public:
      * externally and came in through the network or sendrawtransaction RPC.
      */
     char fFromMe;
-    std::string strFromAccount;
+    std::string strFromAccountOrLabel;
     int64_t nOrderPos; //!< position in ordered transaction list
     std::multimap<int64_t, std::pair<CWalletTx*, CAccountingEntry*>>::const_iterator m_it_wtxOrdered;
 
@@ -369,7 +369,7 @@ public:
         nTimeReceived = 0;
         nTimeSmart = 0;
         fFromMe = false;
-        strFromAccount.clear();
+        strFromAccountOrLabel.clear();
         fDebitCached = false;
         fCreditCached = false;
         fImmatureCreditCached = false;
@@ -402,7 +402,7 @@ public:
 
         if (!ser_action.ForRead())
         {
-            mapValue["fromaccount"] = strFromAccount;
+            mapValue["fromaccountorlabel"] = strFromAccountOrLabel;
 
             WriteOrderPos(nOrderPos, mapValue);
 
@@ -422,14 +422,14 @@ public:
 
         if (ser_action.ForRead())
         {
-            strFromAccount = mapValue["fromaccount"];
+            strFromAccountOrLabel = mapValue["fromaccountorlabel"];
 
             ReadOrderPos(nOrderPos, mapValue);
 
             nTimeSmart = mapValue.count("timesmart") ? (unsigned int)atoi64(mapValue["timesmart"]) : 0;
         }
 
-        mapValue.erase("fromaccount");
+        mapValue.erase("fromaccountorlabel");
         mapValue.erase("spent");
         mapValue.erase("n");
         mapValue.erase("timesmart");
@@ -1036,6 +1036,7 @@ public:
     DBErrors ZapWalletTx(std::vector<CWalletTx>& vWtx);
     DBErrors ZapSelectTx(std::vector<uint256>& vHashIn, std::vector<uint256>& vHashOut);
 
+    //bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose, const bool update = true);
     bool SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& purpose);
 
     bool DelAddressBook(const CTxDestination& address);
