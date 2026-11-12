@@ -11,6 +11,7 @@
 #include <qt/optionsmodel.h>
 #include <qt/platformstyle.h>
 
+#include <chainparams.h>
 #include <QApplication>
 #include <QClipboard>
 
@@ -143,6 +144,21 @@ bool SendCoinsEntry::validate()
     {
         ui->payTo->setValid(false);
         retval = false;
+    }
+    else
+    {
+        // Disable bech32 addresses for now
+        const QString addressText = ui->payTo->text();
+        if (addressText.startsWith(QString::fromStdString(Params().Bech32HRP()), Qt::CaseInsensitive))
+        {
+            ui->payTo->setValid(false);
+            ui->payTo->setToolTip(tr("Bech32 address type is not available"));
+            retval = false;
+        }
+        else
+        {
+            ui->payTo->setToolTip("");
+        }
     }
 
     if (!ui->payAmount->validate())

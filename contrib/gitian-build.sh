@@ -221,8 +221,8 @@ if [[ $setup = true ]]
 then
     sudo apt-get install ruby apache2 git apt-cacher-ng python-vm-builder
     git clone https://github.com/devrandom/gitian-builder.git
+    git clone https://github.com/primecoin/primecoin.gitian
     # TODO: enable signing
-    # git clone https://github.com/primecoin/gitian.sigs.git
     # git clone https://github.com/primecoin/primecoin-detached-sigs.git    
     pushd ./gitian-builder
     bin/make-base-vm --suite trusty --arch amd64 --docker
@@ -258,8 +258,7 @@ then
 	    echo "Compiling ${VERSION} Linux"
 	    echo ""
 	    ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} --url primecoin=${url} ../primecoin/contrib/gitian-descriptors/gitian-linux.yml
-	    # TODO: enable signing
-	    # ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs/ ../primecoin/contrib/gitian-descriptors/gitian-linux.yml
+	    ./bin/gsign -p "$signProg" --signer $SIGNER --release ${VERSION}-linux --destination ../primecoin.gitian/ ../primecoin/contrib/gitian-descriptors/gitian-linux.yml
 	    mv build/out/primecoin-*.tar.gz build/out/src/primecoin-*.tar.gz ../primecoin-binaries/${VERSION}
 	fi
 	# Windows
@@ -269,8 +268,7 @@ then
 	    echo "Compiling ${VERSION} Windows"
 	    echo ""
 	    ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} --url primecoin=${url} ../primecoin/contrib/gitian-descriptors/gitian-win.yml
-	    # TODO: enable signing
-	    # ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs/ ../primecoin/contrib/gitian-descriptors/gitian-win.yml
+	    ./bin/gsign -p "$signProg" --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../primecoin.gitian/ ../primecoin/contrib/gitian-descriptors/gitian-win.yml
 	    mv build/out/primecoin-*-win-unsigned.tar.gz inputs/primecoin-win-unsigned.tar.gz
 	    mv build/out/primecoin-*.zip build/out/primecoin-*.exe ../primecoin-binaries/${VERSION}
 	fi
@@ -281,8 +279,7 @@ then
 	    echo "Compiling ${VERSION} Mac OSX"
 	    echo ""
 	    ./bin/gbuild -j ${proc} -m ${mem} --commit primecoin=${COMMIT} --url primecoin=${url} ../primecoin/contrib/gitian-descriptors/gitian-osx.yml
-	    # TODO: enable signing	    
-	    # ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs/ ../primecoin/contrib/gitian-descriptors/gitian-osx.yml
+	    ./bin/gsign -p "$signProg" --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../primecoin.gitian/ ../primecoin/contrib/gitian-descriptors/gitian-osx.yml
 	    mv build/out/primecoin-*-osx-unsigned.tar.gz inputs/primecoin-osx-unsigned.tar.gz
 	    mv build/out/primecoin-*.tar.gz build/out/primecoin-*.dmg ../primecoin-binaries/${VERSION}
 	fi
@@ -311,27 +308,27 @@ then
 	echo ""
 	echo "Verifying v${VERSION} Linux"
 	echo ""
-	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-linux ../primecoin/contrib/gitian-descriptors/gitian-linux.yml
+	./bin/gverify -v -d ../primecoin.gitian/ -r ${VERSION}-linux ../primecoin/contrib/gitian-descriptors/gitian-linux.yml
 	# Windows
 	echo ""
 	echo "Verifying v${VERSION} Windows"
 	echo ""
-	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-win-unsigned ../primecoin/contrib/gitian-descriptors/gitian-win.yml
+	./bin/gverify -v -d ../primecoin.gitian/ -r ${VERSION}-win-unsigned ../primecoin/contrib/gitian-descriptors/gitian-win.yml
 	# Mac OSX	
 	echo ""
 	echo "Verifying v${VERSION} Mac OSX"
 	echo ""	
-	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-osx-unsigned ../primecoin/contrib/gitian-descriptors/gitian-osx.yml
+	./bin/gverify -v -d ../primecoin.gitian/ -r ${VERSION}-osx-unsigned ../primecoin/contrib/gitian-descriptors/gitian-osx.yml
 	# Signed Windows
 	echo ""
 	echo "Verifying v${VERSION} Signed Windows"
 	echo ""
-	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-osx-signed ../primecoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+	./bin/gverify -v -d ../primecoin.gitian/ -r ${VERSION}-win-signed ../primecoin/contrib/gitian-descriptors/gitian-win-signer.yml
 	# Signed Mac OSX
 	echo ""
 	echo "Verifying v${VERSION} Signed Mac OSX"
 	echo ""
-	./bin/gverify -v -d ../gitian.sigs/ -r ${VERSION}-osx-signed ../primecoin/contrib/gitian-descriptors/gitian-osx-signer.yml	
+	./bin/gverify -v -d ../primecoin.gitian/ -r ${VERSION}-osx-signed ../primecoin/contrib/gitian-descriptors/gitian-osx-signer.yml	
 	popd
 fi
 
@@ -347,7 +344,7 @@ then
 	    echo "Signing ${VERSION} Windows"
 	    echo ""
 	    ./bin/gbuild -i --commit signature=${COMMIT} ../primecoin/contrib/gitian-descriptors/gitian-win-signer.yml
-	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-win-signed --destination ../gitian.sigs/ ../primecoin/contrib/gitian-descriptors/gitian-win-signer.yml
+	    ./bin/gsign -p "$signProg" --signer $SIGNER --release ${VERSION}-win-signed --destination ../primecoin.gitian/ ../primecoin/contrib/gitian-descriptors/gitian-win-signer.yml
 	    mv build/out/primecoin-*win64-setup.exe ../primecoin-binaries/${VERSION}
 	    mv build/out/primecoin-*win32-setup.exe ../primecoin-binaries/${VERSION}
 	fi
@@ -358,7 +355,7 @@ then
 	    echo "Signing ${VERSION} Mac OSX"
 	    echo ""
 	    ./bin/gbuild -i --commit signature=${COMMIT} ../primecoin/contrib/gitian-descriptors/gitian-osx-signer.yml
-	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-osx-signed --destination ../gitian.sigs/ ../primecoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+	    ./bin/gsign -p "$signProg" --signer $SIGNER --release ${VERSION}-osx-signed --destination ../primecoin.gitian/ ../primecoin/contrib/gitian-descriptors/gitian-osx-signer.yml
 	    mv build/out/primecoin-osx-signed.dmg ../primecoin-binaries/${VERSION}/primecoin-${VERSION}-osx.dmg
 	fi
 	popd
